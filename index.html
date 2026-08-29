@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ढूंढो</title>
+<style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #fff; color: #202124; }
+    
+    /* Top Bar */
+    .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-bottom: 1px solid #e0e0e0; }
+    .top-left { font-size: 20px; display: flex; gap: 15px; align-items: center; color: #5f6368; }
+    .top-left span { cursor: pointer; }
+    .address-bar { background: #f1f3f4; padding: 8px 20px; border-radius: 20px; font-size: 14px; color: #202124; display: flex; align-items: center; gap: 10px; }
+    .top-right { display: flex; gap: 15px; align-items: center; color: #5f6368; position: relative; }
+    .avatar { width: 32px; height: 32px; background: #4285F4; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; cursor: pointer; }
+    .dots { cursor: pointer; font-size: 24px; font-weight: bold; user-select: none; }
+
+    /* Drawer Menu */
+    .menu-popup { display: none; position: absolute; top: 50px; right: 0; width: 320px; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); padding: 10px; z-index: 1000; }
+    .menu-popup.active { display: block; }
+    .shortcut-icons { display: flex; justify-content: space-around; padding: 10px 0; border-bottom: 1px solid #eee; margin-bottom: 10px; }
+    .shortcut { text-align: center; cursor: pointer; font-size: 12px; color: #5f6368; }
+    .shortcut .icon { width: 40px; height: 40px; border-radius: 50%; background: #f1f3f4; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .menu-item { display: flex; align-items: center; gap: 15px; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; color: #202124; }
+    .menu-item:hover { background: #f1f3f4; }
+    .menu-item .m-icon { font-size: 20px; }
+
+    /* LOGO - FIXED SOLID TEXT WITH GOOGLE COLOR GRADIENT */
+    .logo-container { text-align: center; padding-top: 10px; }
+    .logo {
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+        display: inline-block;
+        /* Exact Google Color Flow: ढ(Blue) ू(Red) ं(Yellow) ढ(Blue) ो(Green) */
+        background-image: linear-gradient(
+            to right, 
+            #4285F4 0%, 
+            #4285F4 20%, 
+            #EA4335 20%, 
+            #EA4335 40%, 
+            #FBBC05 40%, 
+            #FBBC05 60%, 
+            #4285F4 60%, 
+            #4285F4 80%, 
+            #34A853 80%, 
+            #34A853 100%
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    /* Search Bar */
+    .search-container { max-width: 580px; margin: 15px auto 0; position: relative; }
+    .search-bar { width: 100%; height: 44px; border: 1px solid #dfe1e5; border-radius: 24px; padding: 0 50px 0 20px; font-size: 16px; outline: none; }
+    .search-bar:hover { box-shadow: 0 1px 6px rgba(32,33,36,0.28); }
+    .icons { position: absolute; right: 15px; top: 10px; display: flex; gap: 10px; cursor: pointer; }
+    .icons svg { width: 24px; height: 24px; fill: #5f6368; }
+
+    /* Hindi Search Chips */
+    .suggest-chips { max-width: 580px; margin: 10px auto; display: flex; gap: 15px; padding-left: 20px; }
+    .suggest-chips .chip { background: #f1f3f4; padding: 8px 15px; border-radius: 20px; font-size: 14px; cursor: pointer; }
+    .suggest-chips .chip:hover { background: #e8eaed; }
+
+    /* Tabs - Exact Order: AI Mode, All, Images, Videos, Maps, News, Shopping */
+    .tabs { display: flex; gap: 20px; border-bottom: 1px solid #dfe1e5; padding: 0 20px; font-size: 14px; color: #5f6368; max-width: 900px; margin: 20px auto 0; }
+    .tab { padding: 10px; cursor: pointer; border-bottom: 3px solid transparent; }
+    .tab.active { color: #1a73e8; border-bottom-color: #1a73e8; font-weight: bold; }
+
+    /* Homepage */
+    #home { display: block; text-align: center; max-width: 800px; margin: 30px auto; padding: 20px; }
+    #home h3 { font-weight: normal; color: #202124; margin-bottom: 20px; }
+    .topics-chip { display: inline-block; background: #f1f3f4; padding: 10px 20px; border-radius: 20px; margin: 5px; cursor: pointer; font-size: 14px; }
+    .topics-chip:hover { background: #e8eaed; }
+
+    /* Layouts */
+    #all-results { display: none; max-width: 700px; margin: 20px auto; padding: 0 20px; }
+    #images-results { display: none; padding: 20px; max-width: 900px; margin: 0 auto; }
+    #videos-results { display: none; padding: 20px; max-width: 800px; margin: 0 auto; }
+    #news-results { display: none; padding: 20px; max-width: 800px; margin: 0 auto; }
+
+    .url { font-size: 13px; color: #202124; }
+    .title { font-size: 20px; color: #1a0dab; cursor: pointer; text-decoration: none; display: block; }
+    .title:hover { text-decoration: underline; }
+    .snippet { font-size: 14px; color: #4d5156; }
+    .main-specific { margin-bottom: 25px; }
+
+    /* Images */
+    .img-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+    .img-card { border: 1px solid #dadce0; border-radius: 8px; overflow: hidden; cursor: pointer; }
+    .img-card:hover { box-shadow: 0 1px 6px rgba(32,33,36,0.28); }
+    .img-placeholder { width: 100%; height: 150px; background: #f1f3f4; display: flex; justify-content: center; align-items: center; font-size: 50px; }
+    .img-info { padding: 10px; font-size: 13px; color: #202124; }
+
+    /* Videos - YouTube Logo Style Simulation */
+    .video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .video-card { cursor: pointer; }
+    .video-thumb { width: 100%; padding-top: 56.25%; background-color: #f1f3f4; border-radius: 8px; position: relative; display: flex; justify-content: center; align-items: center; }
+    .yt-logo { background: #FF0000; color: #fff; width: 50px; height: 35px; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: bold; }
+    .video-title { font-size: 14px; font-weight: bold; margin-top: 5px; color: #202124; }
+    .video-src { font-size: 12px; color: #70757a; }
+
+    /* News */
+    .news-item { border-bottom: 1px solid #eee; padding: 15px 0; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+    .news-img { width: 100px; height: 60px; background: #f1f3f4; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 30px; }
+    .news-title { font-size: 18px; color: #1a0dab; font-weight: bold; }
+    .news-src { font-size: 13px; color: #70757a; margin-top: 5px; }
+
+    /* Vibrant Developer Footer */
+    .owner-section { display: flex; align-items: center; justify-content: center; gap: 20px; padding: 30px; margin-top: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .owner-circle { width: 80px; height: 80px; background: #fff; color: #764ba2; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: bold; border: 4px solid rgba(255,255,255,0.3); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    .owner-details { text-align: left; }
+    .owner-name { font-size: 24px; font-weight: bold; }
+    .owner-info { font-size: 16px; margin-top: 5px; opacity: 0.9; }
+    .footer { background: #f2f2f2; padding: 15px; text-align: center; font-size: 14px; color: #5f6368; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="top-left">
+        <span>🏠</span>
+        <div class="address-bar">🌐 www.Dhundho.com/search</div>
+        <span>📁</span>
+    </div>
+    <div class="top-right">
+        <span style="cursor:pointer;">🗂️</span>
+        <span style="cursor:pointer;">▦</span>
+        <div class="avatar">D</div>
+        <div class="dots" onclick="toggleMenu()">⋮</div>
+        <div class="menu-popup" id="menuPopup">
+            <div class="shortcut-icons">
+                <div class="shortcut" onclick="workInProgress()"><div class="icon">➡️</div>New tab</div>
+                <div class="shortcut" onclick="workInProgress()"><div class="icon">⭐</div>Bookmark</div>
+                <div class="shortcut" onclick="workInProgress()"><div class="icon">⬇️</div>Download</div>
+                <div class="shortcut" onclick="workInProgress()"><div class="icon">ℹ️</div>Info</div>
+                <div class="shortcut" onclick="workInProgress()"><div class="icon">🔄</div>Refresh</div>
+            </div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">➕</span> New tab</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">🎭</span> New Incognito tab</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">📚</span> Add tab to group</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">🕒</span> History</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">🗑️</span> Delete browsing data</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">⬇️</span> Downloads</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">⭐</span> Bookmarks</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">🗂️</span> Recent tabs</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">🔍</span> Zoom</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">🔗</span> Share...</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">🔍</span> Find in page</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">🌐</span> Translate...</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">📖</span> Show Reading mode</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">⬇️</span> Install shortcut</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">🖥️</span> Desktop site</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">⚙️</span> Settings</div>
+            <div class="menu-item" onclick="workInProgress()"><span class="m-icon">❓</span> Help & feedback</div>
+        </div>
+    </div>
+</div>
+
+<!-- LOGO - FIXED SOLID TEXT WITH GOOGLE COLOR GRADIENT -->
+<div class="logo-container">
+    <div class="logo" onclick="location.reload()">ढूंढो</div>
+</div>
+
+<!-- Search Bar -->
+<div class="search-container">
+    <input type="text" class="search-bar" id="searchInput" placeholder="ढूंढिए" onkeypress="handleEnter(event)">
+    <div class="icons">
+        <svg onclick="startVoiceSearch()" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+        <svg onclick="window.open('https://lens.google.com', '_blank')" viewBox="0 0 24 24"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm0-14a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/><path d="M3 5V2h3v2H5v1H3zM21 5V2h-3v2h1v1h2zM3 19v3h3v-2H5v-1H3zM21 19v3h-3v-2h1v-1h2z"/></svg>
+    </div>
+</div>
+
+<!-- Hindi Search Chips -->
+<div class="suggest-chips">
+    <div class="chip" onclick="performSearch('हिंदी में खोजें')">हिंदी में खोजें</div>
+    <div class="chip" onclick="performSearch('सरकारी परिणाम')">सरकारी परिणाम 🔍</div>
+</div>
+
+<!-- Tabs (Strict Order) -->
+<div class="tabs">
+    <div class="tab" onclick="window.open('https://www.deepseek.com', '_blank')">AI Mode</div>
+    <div class="tab active" onclick="showTab('all')">All</div>
+    <div class="tab" onclick="showTab('images')">Images</div>
+    <div class="tab" onclick="showTab('videos')">Videos</div>
+    <div class="tab" onclick="openExternal('https://www.google.com/maps/search/' + encodeURIComponent(document.getElementById('searchInput').value))">Maps</div>
+    <div class="tab"
+    onclick="showTab('news')">News</div>
+    <div class="tab" onclick="openExternal('https://www.amazon.in/s?k=' + encodeURIComponent(document.getElementById('searchInput').value))">Shopping</div>
+</div>
+
+<div id="home">
+    <h3>भारत में लोकप्रिय खोजें</h3>
+    <div id="homeLinks"></div>
+</div>
+
+<div id="all-results"><div id="result-container"></div></div>
+<div id="images-results"><div class="img-grid" id="imageGrid"></div></div>
+<div id="videos-results"><div class="video-grid" id="videoGrid"></div></div>
+<div id="news-results"></div>
+
+<div class="owner-section">
+    <div class="owner-circle">D</div>
+    <div class="owner-details">
+        <div class="owner-name">DIVY</div>
+        <div class="owner-info">IIT ENGINEERING QUALIFIED | EX-BSF ARMY | EX INDIAN BANK EMPLOYEE</div>
+    </div>
+</div>
+<div class="footer">भारत, 271821, Uttar Pradesh - Based on your past activity</div>
+
+<script>
+    function toggleMenu() { document.getElementById('menuPopup').classList.toggle('active'); }
+    function workInProgress() { alert("Work in Progress! यह सुविधा वर्तमान में कार्य प्रगति पर है।"); }
+    function openExternal(url) { window.open(url, '_blank'); }
+    function handleEnter(e) { if (e.key === 'Enter') performSearch(); }
+
+    function showTab(tab) {
+        document.getElementById('home').style.display = 'none';
+        document.getElementById('all-results').style.display = 'none';
+        document.getElementById('images-results').style.display = 'none';
+        document.getElementById('videos-results').style.display = 'none';
+        document.getElementById('news-results').style.display = 'none';
+        
+        if (tab === 'all') document.getElementById('all-results').style.display = 'block';
+        if (tab === 'images') document.getElementById('images-results').style.display = 'block';
+        if (tab === 'videos') document.getElementById('videos-results').style.display = 'block';
+        if (tab === 'news') document.getElementById('news-results').style.display = 'block';
+        
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        if (tab === 'all') document.querySelectorAll('.tab')[1].classList.add('active');
+        if (tab === 'images') document.querySelectorAll('.tab')[2].classList.add('active');
+        if (tab === 'videos') document.querySelectorAll('.tab')[3].classList.add('active');
+        if (tab === 'news') document.querySelectorAll('.tab')[5].classList.add('active');
+    }
+
+    // Voice Search using Web Speech API
+    function startVoiceSearch() {
+        if (!('webkitSpeechRecognition' in window)) { alert("वॉइस सर्च सपोर्ट नहीं है"); return; }
+        
+        var recognition = new webkitSpeechRecognition();
+        recognition.lang = 'hi-IN';
+        recognition.interimResults = false;
+        recognition.start();
+        
+        recognition.onresult = function(event) {
+            const text = event.results[0][0].transcript;
+            document.getElementById('searchInput').value = text;
+            performSearch(text);
+        };
+        
+        recognition.onerror = function(event) {
+            if (event.error === 'not-allowed') {
+                alert("माइक्रोफ़ोन एक्सेस अनुमति नहीं दी गई। कृपया ब्राउज़र सेटिंग में अनुमति दें।");
+            }
+        };
+    }
+
+    const topics = ["सरकारी रिजल्ट", "भगवान शिव", "कृष्णा जी", "राम जी", "मौसम", "Instagram", "Facebook", "YouTube", "SSC", "UPSC", "उत्तर प्रदेश", "भारत", "Maths", "English"];
+    const homeLinksDiv = document.getElementById('homeLinks');
+    topics.forEach(topic => {
+        const chip = document.createElement('div');
+        chip.className = 'topics-chip';
+        chip.innerText = topic;
+        chip.onclick = () => performSearch(topic);
+        homeLinksDiv.appendChild(chip);
+    });
+
+    // Massive Search Database
+    const db = {
+        "ram": { exLinks: [
+            { t: "राम जी का इतिहास - Wikipedia", u: "https://www.wikipedia.org" },
+            { t: "राम मंदिर की ताज़ा खबरें - Facebook", u: "https://www.facebook.com" },
+            { t: "राम भजन और दर्शन - Instagram", u: "https://www.instagram.com" },
+            { t: "राम लला की तस्वीरें - Pinterest", u: "https://in.pinterest.com" },
+            { t: "राम और रामायण - Britannica", u: "https://www.britannica.com" },
+            { t: "राम भक्ति ऐप्स - Play Store", u: "https://play.google.com" },
+            { t: "राम पर चर्चा - Quora", u: "https://www.quora.com" },
+            { t: "राम की तकनीक - Intel", u: "https://www.intel.com" }
+        ], rand: ["राम का जीवन परिचय", "रामायण की कहानी", "अयोध्या राम मंदिर", "राम चालीसा", "राम नवमी", "राम का महत्व", "राम भक्ति", "राम की आरती", "राम दरबार", "राम नाम स्मरण", "राम कथा", "राम जन्मभूमि", "राम के 12 नाम", "राम स्तुति", "राम का इतिहास", "राम की फोटो", "राम मंत्र", "राम भजन", "राम अयोध्या", "राम दोहा", "राम स्मृति"],
+            images: ["🚩","🏹","🔱","📿","🛕","🪔","🌺","🙏","🦚","🐚","🧘","📖","🎶","⚔️","🛡️","🌅","🌄","🕉️","🎥","🏹"],
+            videos: ["राम भजन", "रामायण पूरा एपिसोड", "राम चालीसा", "राम मंदिर दर्शन", "राम जी की कहानी", "राम नवमी स्पेशल", "राम दरबार", "राम जयकारा", "राम कथा", "राम स्तुति", "बाल राम", "राम लला", "राम नाम स्मरण", "राम भक्ति गीत", "राम महिमा", "राम अयोध्या"],
+            news: [{ t: "अयोध्या में विशेष पूजा", s: "आज तक", u: "https://www.aajtak.in" }, { t: "राम नवमी पर भीड़", s: "TV9", u: "https://www.tv9bharatvarsh.com" }, { t: "राम मंदिर निर्माण", s: "रिपब्लिक", u: "https://www.republicbharat.com" }, { t: "राम भक्ति में डूबे भक्त", s: "ABP", u: "https://www.abplive.com/hindi" }, { t: "अयोध्या में उत्सव", s: "ज़ी न्यूज़", u: "https://zeenews.india.com/hindi/" }, { t: "राम लला का दर्शन", s: "News18", u: "https://www.news18.com/hindi/" }] },
+        "shiv": { exLinks: [
+            { t: "शिव का महत्व - Wikipedia", u: "https://www.wikipedia.org" }, 
+            { t: "शिव भक्त समूह - Facebook", u: "https://www.facebook.com" }, 
+            { t: "शिव तांडव - Instagram", u: "https://www.instagram.com" }, 
+            { t: "शिवलिंग की तस्वीरें - Pinterest", u: "https://in.pinterest.com" }, 
+            { t: "शिव का इतिहास - Britannica", u: "https://www.britannica.com" }, 
+            { t: "शिव भक्ति ऐप्स - Play Store", u: "https://play.google.com" }, 
+            { t: "शिव पर चर्चा - Quora", u: "https://www.quora.com" }
+        ], rand: ["शिव महापुराण", "शिव तांडव स्तोत्र", "शिव चालीसा", "शिव मंदिर", "शिव जी की आरती", "शिव भक्ति कथा", "शिव रुद्राष्टकम", "शिव का महत्व", "शिव विवाह", "शिव पूजा विधि", "शिव साधना", "शिव भक्ति गीत", "शिव अष्टक", "शिव जी की पूजा", "शिव महिमा", "शिव दर्शन", "शिव स्तोत्र", "शिव नाम स्मरण", "शिव कैलाश", "शिव भोले", "शिव मंत्र"],
+            images: ["🔱","🕉️","🐍","🔥","🌙","🛕","🌺","🙏","⚡","💧","🗿","🖤","📿","🕯️","🚩","🦚","🧘","🌌","🎥","🔥"],
+            videos: ["शिव तांडव", "शिव चालीसा", "शिव भजन", "शिव पूजा विधि", "शिव आरती", "शिव महापुराण", "शिव कथा", "शिव स्तुति", "शिव मंत्र", "शिव रुद्राष्टकम", "शिव नाम स्मरण", "शिव का इतिहास", "शिव विवाह", "शिव साधना", "शिव भक्ति गीत", "शिव अष्टक"],
+            news: [{ t: "महाशिवरात्रि पर भीड़", s: "आज तक", u: "https://www.aajtak.in" }, { t: "मंदिरों में अभिषेक", s: "TV9", u: "https://www.tv9bharatvarsh.com" }, { t: "काशी विश्वनाथ", s: "रिपब्लिक", u: "https://www.republicbharat.com" }, { t: "शिव भक्ति में उमड़ा सैलाब", s: "ABP", u: "https://www.abplive.com/hindi" }, { t: "शिव मंदिरों का महत्व", s: "ज़ी", u: "https://zeenews.india.com/hindi/" }, { t: "शिवरात्रि व्रत", s: "News18", u: "https://www.news18.com/hindi/" }] },
+        "instagram": { exLinks: [
+            { t: "इंस्टाग्राम का इतिहास - Wikipedia", u: "https://www.wikipedia.org" }, 
+            { t: "इंस्टाग्राम टिप्स - Facebook", u: "https://www.facebook.com" }, 
+            { t: "इंस्टाग्राम रील्स - Instagram", u: "https://www.instagram.com" }, 
+            { t: "इंस्टाग्राम फोटो - Pinterest", u: "https://in.pinterest.com" }, 
+            { t: "इंस्टाग्राम एल्गोरिदम - Intel", u: "https://www.intel.com" }, 
+            { t: "इंस्टाग्राम ऐप - Play Store", u: "https://play.google.com" }, 
+            { t: "इंस्टाग्राम पर सवाल - Quora", u: "https://www.quora.com" }
+        ], rand: ["इंस्टाग्राम रील्स ट्रिक्स", "इंस्टाग्राम फोटो", "इंस्टाग्राम स्टोरी व्यूअर", "इंस्टाग्राम 2026", "इंस्टाग्राम फॉलोअर्स", "इंस्टाग्राम डीपी", "इंस्टाग्राम अल्गोरिदम", "इंस्टाग्राम कैप्शन", "इंस्टाग्राम हैशटैग", "इंस्टाग्राम बिजनेस", "इंस्टाग्राम मार्केटिंग", "इंस्टाग्राम पर पैसे कैसे कमाएं", "इंस्टाग्राम प्राइवेसी", "इंस्टाग्राम पर फेमस कैसे हों", "इंस्टाग्राम टिप्स एंड ट्रिक्स", "इंस्टाग्राम न्यू अपडेट", "इंस्टाग्राम रील्स वायरल", "इंस्टाग्राम स्टोरी हैक्स", "इंस्टाग्राम ब्लू टिक", "इंस्टाग्राम वेरिफाई", "इंस्टाग्राम ग्रोथ"],
+            images: ["📸","📱","❤️","📷","✨","🎥","🎞️","🖼️","📲","💡","👥","🌈","🔥","💎","🤳","🧿","🕶️","👗","🌆","🎬"],
+            videos: ["इंस्टाग्राम रील्स ट्रिक्स", "इंस्टाग्राम स्टोरी", "इंस्टाग्राम एल्गोरिदम", "इंस्टाग्राम ग्रोथ", "इंस्टाग्राम बिजनेस", "इंस्टाग्राम कैप्शन", "इंस्टाग्राम फिल्टर", "इंस्टाग्राम से कमाई", "इंस्टाग्राम मार्केटिंग", "इंस्टाग्राम एडिटिंग", "इंस्टाग्राम प्राइवेसी", "इंस्टाग्राम अपडेट", "इंस्टाग्राम फीचर्स", "इंस्टाग्राम प्रोफाइल", "इंस्टाग्राम फॉलोअर्स", "इंस्टाग्राम लाइव"],
+            news: [{ t: "इंस्टाग्राम का नया फीचर", s: "आज तक", u: "https://www.aajtak.in" }, { t: "इंस्टाग्राम सिक्योरिटी", s: "TV9", u: "https://www.tv9bharatvarsh.com" }, { t: "इंस्टाग्राम इन्फ्लुएंसर", s: "रिपब्लिक", u: "https://www.republicbharat.com" }, { t: "इंस्टाग्राम पर नई पहल", s: "ABP", u: "https://www.abplive.com/hindi" }, { t: "इंस्टाग्राम रील्स का क्रेज", s: "ज़ी", u: "https://zeenews.india.com/hindi/" }, { t: "इंस्टाग्राम की नई पॉलिसी", s: "News18", u: "https://www.news18.com/hindi/" }] },
+        "facebook": { exLinks: [
+            { t: "फेसबुक का इतिहास - Wikipedia", u: "https://www.wikipedia.org" }, 
+            { t: "फेसबुक रील्स - Facebook", u: "https://www.facebook.com" }, 
+            { t: "फेसबुक ग्रुप्स - Instagram", u: "https://www.instagram.com" }, 
+            { t: "फेसबुक फोटो - Pinterest", u: "https://in.pinterest.com" }, 
+            { t: "फेसबुक डेटा - Intel", u: "https://www.intel.com" }, 
+            { t: "फेसबुक ऐप - Play Store", u: "https://play.google.com" }, 
+            { t: "फेसबुक पर चर्चा - Quora", u: "https://www.quora.com" }
+        ], rand: ["फेसबुक लॉगिन", "फेसबुक रील्स", "फेसबुक स्टोरीज", "फेसबुक 2026", "फेसबुक ग्रुप", "फेसबुक पेज", "फेसबुक बिजनेस", "फेसबुक मार्केटिंग", "फेसबुक पर पैसे कैसे कमाएं", "फेसबुक फ्रेंड्स", "फेसबुक मैसेंजर", "फेसबुक प्राइवेसी", "फेसबुक वेरिफाई", "फेसबुक एल्गोरिदम", "फेसबुक ट्रेंड्स", "फेसबुक न्यूज़", "फेसबुक लाइव", "फेसबुक वीडियो", "फेसबुक टिप्स", "फेसबुक सिक्योरिटी", "फेसबुक गेम्स"],
+            images: ["💬","👥","📱","👍","🌐","💙","🔵","📸","🖼️","📊","🧑‍🤝‍🧑","🏢","✉️","📨","🗣️","🔗","💻","📲","👨‍💻","💼"],
+            videos: ["फेसबुक रील्स", "फेसबुक स्टोरी", "फेसबुक एल्गोरिदम", "फेसबुक बिजनेस", "फेसबुक मार्केटिंग", "फेसबुक ग्रुप", "फेसबुक पेज", "फेसबुक लाइव", "फेसबुक अपडेट", "फेसबुक टिप्स", "फेसबुक फ्रेंड्स", "फेसबुक मैसेंजर", "फेसबुक एड्स", "फेसबुक वीडियो", "फेसबुक ट्रेंड्स", "फेसबुक प्राइवेसी"],
+            news: [{ t: "फेसबुक के नए फीचर्स", s: "आज तक",
+            u: "https://www.aajtak.in" }, { t: "फेसबुक अलर्ट", s: "TV9", u: "https://www.tv9bharatvarsh.com" }, { t: "फेसबुक ग्रुप्स", s: "रिपब्लिक", u: "https://www.republicbharat.com" }, { t: "फेसबुक मार्केटिंग", s: "ABP", u: "https://www.abplive.com/hindi" }, { t: "फेसबुक की नई पॉलिसी", s: "ज़ी", u: "https://zeenews.india.com/hindi/" }, { t: "फेसबुक इन्फ्लुएंसर", s: "News18", u: "https://www.news18.com/hindi/" }] },
+        "ssc": { exLinks: [
+            { t: "SSC परिणाम - Wikipedia", u: "https://www.wikipedia.org" },
+            { t: "SSC भर्ती - Facebook", u: "https://www.facebook.com" },
+            { t: "SSC तैयारी - Instagram", u: "https://www.instagram.com" },
+            { t: "SSC नौकरी फोटो - Pinterest", u: "https://in.pinterest.com" },
+            { t: "SSC का इतिहास - Britannica", u: "https://www.britannica.com" },
+            { t: "SSC ऐप्स - Play Store", u: "https://play.google.com" },
+            { t: "SSC पर चर्चा - Quora", u: "https://www.quora.com" }
+        ], rand: ["SSC CGL 2026", "SSC CHSL परिणाम", "SSC GD भर्ती", "SSC MTS", "SSC सिलेबस", "SSC कटऑफ", "SSC एडमिट कार्ड", "SSC नौकरी", "SSC गणित", "SSC इंग्लिश", "SSC रीजनिंग", "SSC GK", "SSC पेपर", "SSC स्ट्रैटेजी", "SSC मॉक टेस्ट", "SSC करंट अफेयर्स", "SSC परीक्षा", "SSC फॉर्म", "SSC अपडेट", "SSC ट्रिक्स", "SSC परिणाम लिंक"],
+            images: ["📝","🧑‍💼","📚","🎓","💼","📊","📈","🖋️","📋","🗂️","⚖️","🏛️","📅","🕰️","📌","📢","👨‍🎓","👩‍🎓","📖","📄"],
+            videos: ["SSC CGL तैयारी", "SSC CHSL परिणाम", "SSC GD भर्ती", "SSC MTS परिणाम", "SSC सिलेबस", "SSC कटऑफ", "SSC एडमिट कार्ड", "SSC नौकरी", "SSC गणित", "SSC इंग्लिश", "SSC रीजनिंग", "SSC GK", "SSC पेपर", "SSC स्ट्रैटेजी", "SSC मॉक टेस्ट", "SSC करंट अफेयर्स"],
+            news: [{ t: "SSC CGL परिणाम घोषित", s: "आज तक", u: "https://www.aajtak.in" }, { t: "SSC GD भर्ती शुरू", s: "TV9", u: "https://www.tv9bharatvarsh.com" }, { t: "SSC CHSL शेड्यूल", s: "रिपब्लिक", u: "https://www.republicbharat.com" }, { t: "SSC MTS परिणाम", s: "ABP", u: "https://www.abplive.com/hindi" }, { t: "SSC कटऑफ जारी", s: "ज़ी", u: "https://zeenews.india.com/hindi/" }, { t: "SSC नई भर्ती", s: "News18", u: "https://www.news18.com/hindi/" }] },
+        "upsc": { exLinks: [
+            { t: "UPSC परिणाम - Wikipedia", u: "https://www.wikipedia.org" }, 
+            { t: "UPSC तैयारी - Facebook", u: "https://www.facebook.com" }, 
+            { t: "UPSC नोट्स - Instagram", u: "https://www.instagram.com" }, 
+            { t: "UPSC फोटो - Pinterest", u: "https://in.pinterest.com" }, 
+            { t: "UPSC का इतिहास - Britannica", u: "https://www.britannica.com" }, 
+            { t: "UPSC ऐप्स - Play Store", u: "https://play.google.com" }, 
+            { t: "UPSC पर चर्चा - Quora", u: "https://www.quora.com" }
+        ], rand: ["UPSC 2026 परिणाम", "UPSC प्रारंभिक परीक्षा", "UPSC मुख्य परीक्षा", "UPSC सिलेबस", "UPSC टॉपर", "UPSC इंटरव्यू", "UPSC रणनीति", "UPSC नोट्स", "UPSC GK", "UPSC करंट अफेयर्स", "UPSC इतिहास", "UPSC भूगोल", "UPSC पॉलिटी", "UPSC इकोनॉमी", "UPSC साइंस", "UPSC मॉक टेस्ट", "UPSC एडमिट कार्ड", "UPSC फॉर्म", "UPSC अपडेट", "UPSC परीक्षा", "UPSC स्ट्रैटेजी"],
+            images: ["📜","🏛️","🎓","👮","📝","📚","🖋️","📊","📈","🧠","🗺️","⚖️","🏆","⭐","🔥","💡","🏅","📅","📋","📖"],
+            videos: ["UPSC CSE तैयारी", "UPSC प्रारंभिक परीक्षा", "UPSC मुख्य परीक्षा", "UPSC सिलेबस", "UPSC टॉपर", "UPSC इंटरव्यू", "UPSC रणनीति", "UPSC नोट्स", "UPSC GK", "UPSC करंट अफेयर्स", "UPSC इतिहास", "UPSC भूगोल", "UPSC पॉलिटी", "UPSC इकोनॉमी", "UPSC साइंस", "UPSC मॉक टेस्ट"],
+            news: [{ t: "UPSC 2026 परिणाम", s: "आज तक", u: "https://www.aajtak.in" }, { t: "UPSC टॉपर इंटरव्यू", s: "TV9", u: "https://www.tv9bharatvarsh.com" }, { t: "UPSC परीक्षा तिथि", s: "रिपब्लिक", u: "https://www.republicbharat.com" }, { t: "UPSC नई भर्ती", s: "ABP", u: "https://www.abplive.com/hindi" }, { t: "UPSC स्ट्रैटेजी", s: "ज़ी", u: "https://zeenews.india.com/hindi/" }, { t: "UPSC इंटरव्यू टिप्स", s: "News18", u: "https://www.news18.com/hindi/" }] },
+        "india": { exLinks: [
+            { t: "भारत का इतिहास - Wikipedia", u: "https://www.wikipedia.org" },
+            { t: "भारत समाचार - Facebook", u: "https://www.facebook.com" },
+            { t: "भारत तस्वीरें - Instagram", u: "https://www.instagram.com" },
+            { t: "भारत पर्यटन - Pinterest", u: "https://in.pinterest.com" },
+            { t: "भारत का महत्व - Britannica", u: "https://www.britannica.com" },
+            { t: "भारत ऐप्स - Play Store", u: "https://play.google.com" },
+            { t: "भारत पर चर्चा - Quora", u: "https://www.quora.com" }
+        ], rand: ["भारत का नक्शा", "भारत की राजधानी", "भारत के राज्य", "भारत पर्यटन", "भारत भर्ती", "भारत योजनाएं", "भारत का इतिहास", "भारत की जनसंख्या", "भारत की भाषाएं", "भारत के त्यौहार", "भारत की नदियां", "भारत के राष्ट्रपति", "भारत के प्रधान मंत्री", "भारत की सेना", "भारत का झंडा", "भारत का संविधान", "भारत की अर्थव्यवस्था", "भारत के खेल", "भारत के मंदिर", "भारत का विकास", "भारत की संस्कृति"],
+            images: ["🚩","🦁","🐯","🐘","🦚","🌏","🗺️","🏛️","🎇","🌟","🎪","🛕","🕌","⛪","🛣️","🚉","🛫","🌾","💼","🎓"],
+            videos: ["भारत का इतिहास", "भारत का नक्शा", "भारत के राज्य", "भारत पर्यटन", "भारत भर्ती", "भारत योजनाएं", "भारत न्यूज़", "भारत GK", "भारत सेना", "भारत सड़कें", "भारत मंदिर", "भारत त्यौहार", "भारत सरकार", "भारत राजनीति", "भारत विकास", "भारत किसान"],
+            news: [{ t: "भारत की नई योजनाएं", s: "आज तक", u: "https://www.aajtak.in" }, { t: "भारत में बारिश", s: "TV9", u: "https://www.tv9bharatvarsh.com" }, { t: "भारत के विकास कार्य", s: "रिपब्लिक", u: "https://www.republicbharat.com" }, { t: "भारत की नई नीतियां", s: "ABP", u: "https://www.abplive.com/hindi" }, { t: "भारत का रक्षा बजट", s: "ज़ी", u: "https://zeenews.india.com/hindi/" }, { t: "भारत की खेल उपलब्धि", s: "News18", u: "https://www.news18.com/hindi/" }] },
+        "mausam": { exLinks: [
+            { t: "मौसम का विज्ञान - Wikipedia", u: "https://www.wikipedia.org" },
+            { t: "मौसम अपडेट - Facebook", u: "https://www.facebook.com" },
+            { t: "मौसम तस्वीरें - Instagram", u: "https://www.instagram.com" },
+            { t: "बारिश की तस्वीरें - Pinterest", u: "https://in.pinterest.com" },
+            { t: "जलवायु परिवर्तन - Britannica", u: "https://www.britannica.com" },
+            { t: "मौसम ऐप्स - Play Store", u: "https://play.google.com" },
+            { t: "मौसम पर चर्चा - Quora", u: "https://www.quora.com" }
+        ], rand: ["आज का मौसम", "मौसम विभाग", "बारिश की भविष्यवाणी", "तेज हवाओं का अलर्ट", "मौसम अपडेट", "अगले 5 दिनों का मौसम", "मौसम की जानकारी", "मौसम विज्ञान", "मौसम कैसे बदलता है", "बारिश की तैयारी", "गर्मी से राहत", "सर्दी का मौसम", "मानसून की शुरुआत", "मौसम चेतावनी", "किसानों के लिए मौसम", "शहरों में बारिश", "मौसम का नक्शा", "मौसम पूर्वानुमान", "तूफान की चेतावनी", "मौसम रिपोर्ट", "मौसम आज"],
+            images: ["🌧️","⛅","☀️","🌪️","❄️","🌊","⛈️","🌈","☔","💨","🌡️","🌫️","☁️","🔥","💧","🌵","⛰️","🏞️","🌲","🌍"],
+            videos: ["आज का मौसम", "मौसम विभाग", "बारिश की भविष्यवाणी", "तेज हवाओं का अलर्ट", "मौसम अपडेट", "अगले 5 दिनों का मौसम", "मौसम की जानकारी", "मौसम रिपोर्ट", "मौसम विज्ञान", "मौसम कैसे बदलता है", "बारिश की तैयारी", "गर्मी से राहत", "सर्दी का मौसम", "मानसून की शुरुआत", "मौसम चेतावनी", "किसानों के लिए मौसम"],
+            news: [{ t: "आज का मौसम अपडेट", s: "आज तक", u: "https://www.aajtak.in" }, { t: "भारी बारिश का अलर्ट", s: "TV9", u: "https://www.tv9bharatvarsh.com" }, { t: "मौसम विभाग की चेतावनी", s: "रिपब्लिक", u: "https://www.republicbharat.com" }, { t: "अगले 24 घंटे भारी बारिश", s: "ABP", u: "https://www.abplive.com/hindi" }, { t: "मानसून की शुरुआत", s: "ज़ी", u: "https://zeenews.india.com/hindi/" }, { t: "किसानों के लिए मौसम अपडेट", s: "News18", u: "https://www.news18.com/hindi/" }] },
+        "default": { exLinks: [
+            { t: "जानकारी - Wikipedia", u: "https://www.wikipedia.org" },
+            { t: "चर्चा - Facebook", u: "https://www.facebook.com" },
+            { t: "तस्वीरें - Instagram", u: "https://www.instagram.com" },
+            { t: "फोटो आइडियाज - Pinterest", u: "https://in.pinterest.com" },
+            { t: "विश्लेषण - Britannica", u: "https://www.britannica.com" },
+            { t: "ऐप्स - Play Store", u: "https://play.google.com" },
+            { t: "सवाल - Quora", u: "https://www.quora.com" }
+        ], rand: ["विस्तृत जानकारी", "नवीनतम अपडेट", "इतिहास", "विश्लेषण", "वीडियो", "तस्वीरें", "समाचार", "कहानी", "ट्रिक्स", "सुझाव", "गाइड", "समीक्षा", "फायदे", "उपयोग", "व्याख्या", "महत्व", "विशेषताएं", "तथ्य", "रहस्य", "सच्चाई", "भविष्य"],
+            images: ["🔍","📊","📰","🔗","⚡","💡","🎯","📚","🧠","🖥️","🌐","🔎","🗂️","📈","💎","🏆","🎨","🛠️","⏳","🔮"],
+            videos: ["विस्तृत जानकारी", "नवीनतम अपडेट", "इतिहास", "विश्लेषण", "वीडियो", "तस्वीरें", "समाचार", "कहानी", "ट्रिक्स", "सुझाव", "गाइड", "समीक्षा", "फायदे", "उपयोग", "व्याख्या", "महत्व"],
+            news: [{ t: "ताज़ा खबरें", s: "आज तक", u: "https://www.aajtak.in" }, { t: "खबरों का अपडेट", s: "TV9", u: "https://www.tv9bharatvarsh.com" }, { t: "बड़ी खबर", s: "रिपब्लिक", u: "https://www.republicbharat.com" }, { t: "आज की खबरें", s: "ABP", u: "https://www.abplive.com/hindi" }, { t: "ताज़ा अपडेट", s: "ज़ी", u: "https://zeenews.india.com/hindi/" }, { t: "देश की खबरें", s: "News18", u: "https://www.news18.com/hindi/" }] }
+    };
+
+    function performSearch(q) {
+        q = q || document.getElementById('searchInput').value;
+        if (!q) return;
+        document.getElementById('home').style.display = 'none';
+        document.getElementById('all-results').style.display = 'block';
+        
+        const lq = q.toLowerCase();
+        let data = db["default"];
+        if (lq.includes('ram')) data = db["ram"];
+        else if (lq.includes('shiv')) data = db["shiv"];
+        else if (lq.includes('instagram')) data = db["instagram"];
+        else if (lq.includes('facebook')) data = db["facebook"];
+        else if (lq.includes('ssc')) data = db["ssc"];
+        else if (lq.includes('upsc')) data = db["upsc"];
+        else if (lq.includes('india') || lq.includes('भारत')) data = db["india"];
+        else if (lq.includes('mausam') || lq.includes('weather')) data = db["mausam"];
+
+        let html = `<p style="color:#70757a; font-size:13px;">लगभग 2,00,00,000 परिणाम (0.35 सेकंड)</p>`;
+        data.exLinks.forEach(link => { html += `<div class="main-specific"><div class="url">${new
+        URL(link.u).hostname}</div><a href="${link.u}" target="_blank" class="title">${link.t}</a><div class="snippet">यह "${link.t}" से संबंधित सबसे प्रासंगिक जानकारी है।</div></div>`; });
+        data.rand.forEach(title => { html += `<div class="main-specific"><div class="url">www.google.com</div><a href="https://www.google.com/search?q=${encodeURIComponent(title)}" target="_blank" class="title">${title}</a><div class="snippet">"${title}" के लिए नए परिणाम देखें।</div></div>`; });
+        document.getElementById('result-container').innerHTML = html;
+        document.getElementById('searchInput').value = q;
+
+        let imgHtml = '';
+        data.images.forEach(img => { imgHtml += `<div class="img-card" onclick="window.open('https://in.pinterest.com/search/pins/?q=${encodeURIComponent(q)}', '_blank')"><div class="img-placeholder">${img}</div><div class="img-info">${q} - Pinterest</div></div>`; });
+        document.getElementById('imageGrid').innerHTML = imgHtml;
+
+        // Video Grid with YouTube Logo
+        let vidHtml = '';
+        data.videos.forEach(video => { vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/results?search_query=${encodeURIComponent(video)}', '_blank')"><div class="video-thumb"><div class="yt-logo">▶</div></div><div class="video-title">${video}</div><div class="video-src">YouTube</div></div>`; });
+        document.getElementById('videoGrid').innerHTML = vidHtml;
+
+        let newsHtml = `<h3 style="color:#202124;">ताज़ा खबरें</h3>`;
+        data.news.forEach(newsItem => { newsHtml += `<div class="news-item" onclick="window.open('${newsItem.u}', '_blank')"><div class="news-img">📺</div><div><div class="news-title">${newsItem.t}</div><div class="news-src">${newsItem.s} - लाइव अपडेट</div></div></div>`; });
+        document.getElementById('news-results').innerHTML = newsHtml;
+
+        showTab('all');
+    }
+</script>
+</body>
+</html>
