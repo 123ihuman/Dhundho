@@ -9,7 +9,7 @@
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
         body { background:#fff; color:#202124; transition:background .3s,color .3s; }
         .dark-mode { background:#202124 !important; color:#e8eaed !important; }
-        .dark-mode .home-search-bar, .dark-mode .search-bar, .dark-mode .suggest-chip,
+        .dark-mode .top-bar, .dark-mode .home-search-bar, .dark-mode .search-bar, .dark-mode .suggest-chip,
         .dark-mode .address-pill, .dark-mode .drawer, .dark-mode .faq-item,
         .dark-mode .search-for-item, .dark-mode .news-item { background:#303134 !important; color:#e8eaed !important; border-color:#5f6368 !important; }
         .dark-mode .title { color:#8ab4f8 !important; }
@@ -25,9 +25,19 @@
         .dark-mode .action-btn { background:#303134 !important; color:#e8eaed !important; border-color:#5f6368 !important; }
         .dark-mode .ai-answer, .dark-mode .knowledge-panel { background:#303134 !important; }
         .dark-mode .ai-answer .desc, .dark-mode .knowledge-panel .detail { color:#b0b0b0; }
+        .dark-mode .shopping-options { background:#303134 !important; border-color:#5f6368 !important; }
+
+        /* ===== TOP BAR (always visible) ===== */
+        .top-bar { display:flex; align-items:center; justify-content:space-between; padding:5px 10px; border-bottom:1px solid #e0e0e0; background:#fff; position:sticky; top:0; z-index:10; }
+        .top-left { display:flex; gap:8px; align-items:center; font-size:20px; }
+        .address-pill { background:#f1f3f4; padding:6px 12px; border-radius:20px; font-size:13px; display:flex; align-items:center; gap:8px; color:#202124; }
+        .top-right { display:flex; gap:10px; align-items:center; font-size:20px; }
+        .avatar-circle { width:28px; height:28px; background:#4285F4; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:bold; cursor:pointer; }
+        .three-dots { font-size:20px; font-weight:bold; cursor:pointer; padding-left:5px; }
+        .fullscreen-btn { cursor:pointer; font-size:20px; }
 
         /* ===== HOME ===== */
-        #home-view { min-height:100vh; display:flex; flex-direction:column; align-items:center; padding-top:80px; position:relative; }
+        #home-view { min-height:100vh; display:flex; flex-direction:column; align-items:center; padding-top:40px; position:relative; }
         .home-logo { font-size:90px; font-weight:bold; background:linear-gradient(to right, #4285F4 0%, #4285F4 20%, #EA4335 20%, #EA4335 40%, #FBBC05 40%, #FBBC05 60%, #4285F4 60%, #4285F4 80%, #34A853 80%, #34A853 100%); -webkit-background-clip:text; background-clip:text; color:transparent; margin-bottom:40px; }
         .home-search-box { width:90%; max-width:580px; position:relative; }
         .home-search-bar { width:100%; height:54px; border:1px solid #dfe1e5; border-radius:27px; padding:0 60px 0 20px; font-size:18px; outline:none; box-shadow:0 1px 6px rgba(32,33,36,0.28); }
@@ -47,13 +57,6 @@
 
         /* ===== RESULTS ===== */
         #results-view { display:none; padding:0; }
-        .top-bar { display:flex; align-items:center; justify-content:space-between; padding:5px 10px; border-bottom:1px solid #e0e0e0; }
-        .top-left { display:flex; gap:8px; align-items:center; font-size:20px; }
-        .address-pill { background:#f1f3f4; padding:6px 12px; border-radius:20px; font-size:13px; display:flex; align-items:center; gap:8px; color:#202124; }
-        .top-right { display:flex; gap:10px; align-items:center; font-size:20px; }
-        .avatar-circle { width:28px; height:28px; background:#4285F4; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:bold; cursor:pointer; }
-        .three-dots { font-size:20px; font-weight:bold; cursor:pointer; padding-left:5px; }
-
         .results-logo-container { text-align:center; padding-top:5px; margin-bottom:10px; }
         .results-logo { font-size:28px; font-weight:bold; background:linear-gradient(to right, #4285F4 0%, #4285F4 20%, #EA4335 20%, #EA4335 40%, #FBBC05 40%, #FBBC05 60%, #4285F4 60%, #4285F4 80%, #34A853 80%, #34A853 100%); -webkit-background-clip:text; background-clip:text; color:transparent; display:inline-block; }
 
@@ -102,9 +105,9 @@
 
         /* ===== IMAGES ===== */
         .img-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:10px; }
-        .img-card { background:#f1f3f4; border-radius:8px; overflow:hidden; height:120px; cursor:pointer; position:relative; }
+        .img-card { background:#f1f3f4; border-radius:8px; overflow:hidden; height:120px; cursor:pointer; position:relative; display:flex; align-items:center; justify-content:center; font-size:40px; color:#ccc; }
         .img-card img { width:100%; height:100%; object-fit:cover; }
-        .img-title { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:#fff; font-size:12px; padding:5px; }
+        .img-title { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:#fff; font-size:12px; padding:5px; text-align:center; }
 
         /* ===== VIDEOS ===== */
         .video-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:15px; margin-top:10px; }
@@ -122,7 +125,7 @@
         .news-title { font-size:15px; font-weight:bold; }
         .news-src { font-size:12px; color:#70757a; margin-top:4px; }
 
-        /* ===== TOOLS ===== */
+        /* ===== TOOLS (अब MORE) ===== */
         .tool-result { background:#f1f3f4; border-radius:12px; padding:20px; margin:10px 0; text-align:center; }
         .tool-result .big-number { font-size:48px; font-weight:bold; color:#1a73e8; }
         .tool-result .label { font-size:14px; color:#5f6368; margin-top:5px; }
@@ -135,6 +138,12 @@
         .action-btn { background:#f1f3f4; border:1px solid #dfe1e5; padding:6px 14px; border-radius:30px; font-size:13px; cursor:pointer; transition:background .2s; display:inline-flex; align-items:center; gap:5px; color:#202124; }
         .action-btn:hover { background:#e0e0e0; }
         .action-btn i { font-size:14px; }
+
+        /* ===== SHOPPING DRAWER ===== */
+        .shopping-options { display:none; background:#fff; border:1px solid #dfe1e5; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15); padding:8px 0; position:absolute; z-index:20; min-width:140px; }
+        .shopping-options a { display:block; padding:8px 16px; color:#202124; text-decoration:none; font-size:14px; cursor:pointer; }
+        .shopping-options a:hover { background:#f1f3f4; }
+        .shopping-wrapper { position:relative; display:inline-block; }
 
         /* ===== DRAWER ===== */
         .overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:999; display:none; }
@@ -165,7 +174,7 @@
 
         /* ===== OWNER ===== */
         .owner-section { display:flex; align-items:center; justify-content:center; gap:15px; padding:20px; margin-top:50px; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; }
-        .owner-img { width:60px; height:60px; border-radius:50%; border:3px solid #fff; object-fit:cover; }
+        .owner-img { width:60px; height:60px; border-radius:50%; border:3px solid #fff; object-fit:cover; background:#ccc; }
         .owner-name { font-size:20px; font-weight:bold; }
         .owner-info { font-size:14px; margin-top:5px; opacity:0.9; }
 
@@ -186,6 +195,8 @@
             .action-btn { font-size:12px; padding:4px 10px; }
             .knowledge-panel { flex-direction:column; text-align:center; }
             .knowledge-panel img { width:60px; height:60px; }
+            .top-bar { flex-wrap:wrap; }
+            .address-pill { font-size:10px; }
         }
         @media (max-width:400px) {
             .img-grid { grid-template-columns:repeat(2,1fr); }
@@ -195,11 +206,26 @@
 </head>
 <body>
 
+    <!-- ===== TOP BAR (always visible) ===== -->
+    <div class="top-bar" id="topBar">
+        <div class="top-left">
+            <span onclick="goHome()" style="cursor:pointer;" title="Home">🏠</span>
+            <span onclick="goBack()" style="cursor:pointer;" title="Back">⬅</span>
+            <div class="address-pill">🌐 www.dhundho.com/search?</div>
+        </div>
+        <div class="top-right">
+            <span onclick="showRecentSearches()" style="cursor:pointer;" title="Recent">🕒</span>
+            <div class="avatar-circle" onclick="toggleDrawer()">D</div>
+            <span class="three-dots" onclick="toggleDrawer()">⋮</span>
+            <span class="fullscreen-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</span>
+        </div>
+    </div>
+
     <!-- ===== HOME VIEW ===== -->
     <div id="home-view">
         <div class="home-logo">ढूंढो</div>
         <div class="home-search-box">
-            <input type="text" class="home-search-bar" id="homeInput" placeholder="Search Google or type URL" onfocus="showHomeSuggestions()" oninput="filterHomeSuggestions(this.value)" onkeypress="homeEnter(event)">
+            <input type="text" class="home-search-bar" id="homeInput" placeholder="Search DHUNDHO or type URL" onfocus="showHomeSuggestions()" oninput="filterHomeSuggestions(this.value)" onkeypress="homeEnter(event)">
             <div class="home-icons">
                 <i class="fas fa-microphone" onclick="voiceSearchHome()"></i>
                 <i class="fas fa-camera camera-icon" onclick="openLens()"></i>
@@ -225,18 +251,6 @@
 
     <!-- ===== RESULTS VIEW ===== -->
     <div id="results-view">
-        <div class="top-bar">
-            <div class="top-left">
-                <span onclick="goHome()" style="cursor:pointer;">🏠</span>
-                <div class="address-pill">🌐 www.dhundho.com/search?</div>
-            </div>
-            <div class="top-right">
-                <span onclick="showHistoryDrawer()" style="cursor:pointer;">🕒</span>
-                <div class="avatar-circle" onclick="toggleDrawer()">D</div>
-                <span class="three-dots" onclick="toggleDrawer()">⋮</span>
-            </div>
-        </div>
-
         <div class="results-logo-container"><span class="results-logo">ढूंढो</span></div>
 
         <div class="search-wrapper">
@@ -252,21 +266,29 @@
         <div class="action-bar">
             <button class="action-btn" onclick="translatePage()"><i class="fas fa-language"></i> Translate</button>
             <button class="action-btn" onclick="speakPage()"><i class="fas fa-volume-up"></i> Speak</button>
-            <button class="action-btn" onclick="window.open('https://mail.google.com', '_blank')"><i class="fas fa-envelope"></i> Gmail</button>
+            <button class="action-btn" onclick="openEmail()"><i class="fas fa-envelope"></i> Email</button>
             <button class="action-btn" onclick="window.open('https://www.deepseek.com', '_blank')"><i class="fas fa-robot"></i> DeepSeek</button>
             <button class="action-btn" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
             <button class="action-btn" onclick="bookmarkPage()"><i class="fas fa-star"></i> Bookmark</button>
-            <button class="action-btn" onclick="openShopping()"><i class="fas fa-shopping-cart"></i> Shop</button>
+            <div class="shopping-wrapper">
+                <button class="action-btn" onclick="toggleShopping()"><i class="fas fa-shopping-cart"></i> Shop</button>
+                <div class="shopping-options" id="shoppingOptions">
+                    <a onclick="openShop('amazon')">🛒 Amazon</a>
+                    <a onclick="openShop('flipkart')">🛒 Flipkart</a>
+                    <a onclick="openShop('meesho')">🛒 Meesho</a>
+                    <a onclick="openShop('shopclues')">🛒 Shopclues</a>
+                </div>
+            </div>
         </div>
 
         <div class="tabs">
             <div class="tab active" onclick="showTab('all')">All</div>
             <div class="tab" onclick="showTab('images')">Images</div>
             <div class="tab" onclick="showTab('videos')">Videos</div>
-            <div class="tab" onclick="openShopping()">Shopping</div>
+            <div class="tab" onclick="toggleShopping()">Shopping</div>
             <div class="tab" onclick="showTab('news')">News</div>
             <div class="tab" onclick="window.open('https://www.google.com/maps/search/'+encodeURIComponent(document.getElementById('resultInput').value), '_blank')">Maps</div>
-            <div class="tab" onclick="showTab('tools')">Tools</div>
+            <div class="tab" onclick="showTab('more')">More</div>
         </div>
         <div id="content-area"></div>
     </div>
@@ -320,93 +342,22 @@
 
     <script>
         // ================================================================
-        //  1. KNOWLEDGE BASE – प्री-लोडेड फैक्ट्स (Knowledge Panel)
+        //  1. KNOWLEDGE BASE (प्री-लोडेड फैक्ट्स)
         // ================================================================
         const knowledgeBase = {
-            // ---- स्थान ----
-            "capital of india": {
-                title: "New Delhi",
-                image: "https://picsum.photos/seed/delhi/200/200",
-                desc: "भारत की राजधानी",
-                detail: "New Delhi भारत का केंद्र शासित प्रदेश है और यहाँ संसद, राष्ट्रपति भवन और सर्वोच्च न्यायालय स्थित हैं।"
-            },
-            "india capital": {
-                title: "New Delhi",
-                image: "https://picsum.photos/seed/delhi/200/200",
-                desc: "भारत की राजधानी",
-                detail: "New Delhi भारत का केंद्र शासित प्रदेश है और यहाँ संसद, राष्ट्रपति भवन और सर्वोच्च न्यायालय स्थित हैं।"
-            },
-            // ---- व्यक्ति ----
-            "prime minister of india": {
-                title: "Narendra Modi",
-                image: "https://picsum.photos/seed/modi/200/200",
-                desc: "भारत के 14वें प्रधानमंत्री",
-                detail: "जन्म: 17 सितंबर 1950 · पार्टी: BJP · 2014 से प्रधानमंत्री।"
-            },
-            "who is prime minister of india": {
-                title: "Narendra Modi",
-                image: "https://picsum.photos/seed/modi/200/200",
-                desc: "भारत के 14वें प्रधानमंत्री",
-                detail: "जन्म: 17 सितंबर 1950 · पार्टी: BJP · 2014 से प्रधानमंत्री।"
-            },
-            "cm of uttar pradesh": {
-                title: "Yogi Adityanath",
-                image: "https://picsum.photos/seed/yogi/200/200",
-                desc: "उत्तर प्रदेश के 22वें मुख्यमंत्री",
-                detail: "जन्म: 5 जून 1972 · पार्टी: BJP · 2017 से मुख्यमंत्री।"
-            },
-            "chief minister of uttar pradesh": {
-                title: "Yogi Adityanath",
-                image: "https://picsum.photos/seed/yogi/200/200",
-                desc: "उत्तर प्रदेश के 22वें मुख्यमंत्री",
-                detail: "जन्म: 5 जून 1972 · पार्टी: BJP · 2017 से मुख्यमंत्री।"
-            },
-            "when india got independence": {
-                title: "15 August 1947",
-                image: "https://picsum.photos/seed/independence/200/200",
-                desc: "भारत की स्वतंत्रता तिथि",
-                detail: "भारत को 15 अगस्त 1947 को ब्रिटिश शासन से स्वतंत्रता मिली।"
-            },
-            "india independence day": {
-                title: "15 August 1947",
-                image: "https://picsum.photos/seed/independence/200/200",
-                desc: "भारत की स्वतंत्रता तिथि",
-                detail: "भारत को 15 अगस्त 1947 को ब्रिटिश शासन से स्वतंत्रता मिली।"
-            },
-            // ---- फिल्मी हस्तियाँ ----
-            "amitabh bachchan": {
-                title: "Amitabh Bachchan",
-                image: "https://picsum.photos/seed/amitabh/200/200",
-                desc: "महान अभिनेता",
-                detail: "जन्म: 11 अक्टूबर 1942 · फिल्में: शोले, दीवार, पिंक · पद्मश्री, पद्मभूषण।"
-            },
-            "amitabh": {
-                title: "Amitabh Bachchan",
-                image: "https://picsum.photos/seed/amitabh/200/200",
-                desc: "महान अभिनेता",
-                detail: "जन्म: 11 अक्टूबर 1942 · फिल्में: शोले, दीवार, पिंक · पद्मश्री, पद्मभूषण।"
-            },
-            "sachin tendulkar": {
-                title: "Sachin Tendulkar",
-                image: "https://picsum.photos/seed/sachin/200/200",
-                desc: "क्रिकेट के भगवान",
-                detail: "जन्म: 24 अप्रैल 1973 · 100+ शतक · भारत रत्न से सम्मानित।"
-            },
-            "virat kohli": {
-                title: "Virat Kohli",
-                image: "https://picsum.photos/seed/virat/200/200",
-                desc: "भारतीय क्रिकेट टीम के पूर्व कप्तान",
-                detail: "जन्म: 5 नवंबर 1988 · 70+ शतक · ICC प्लेयर ऑफ द ईयर।"
-            },
-            "ms dhoni": {
-                title: "M.S. Dhoni",
-                image: "https://picsum.photos/seed/dhoni/200/200",
-                desc: "भारत के पूर्व कप्तान, विकेटकीपर",
-                detail: "जन्म: 7 जुलाई 1981 · 2011 विश्व कप जीत · पद्मश्री, पद्मभूषण।"
-            }
+            "capital of india": { title: "New Delhi", image: "https://picsum.photos/seed/delhi/200/200", desc: "भारत की राजधानी", detail: "New Delhi भारत का केंद्र शासित प्रदेश है और यहाँ संसद, राष्ट्रपति भवन और सर्वोच्च न्यायालय स्थित हैं।" },
+            "prime minister of india": { title: "Narendra Modi", image: "https://picsum.photos/seed/modi/200/200", desc: "भारत के 14वें प्रधानमंत्री", detail: "जन्म: 17 सितंबर 1950 · पार्टी: BJP · 2014 से प्रधानमंत्री।" },
+            "who is prime minister of india": { title: "Narendra Modi", image: "https://picsum.photos/seed/modi/200/200", desc: "भारत के 14वें प्रधानमंत्री", detail: "जन्म: 17 सितंबर 1950 · पार्टी: BJP · 2014 से प्रधानमंत्री।" },
+            "cm of uttar pradesh": { title: "Yogi Adityanath", image: "https://picsum.photos/seed/yogi/200/200", desc: "उत्तर प्रदेश के 22वें मुख्यमंत्री", detail: "जन्म: 5 जून 1972 · पार्टी: BJP · 2017 से मुख्यमंत्री।" },
+            "chief minister of uttar pradesh": { title: "Yogi Adityanath", image: "https://picsum.photos/seed/yogi/200/200", desc: "उत्तर प्रदेश के 22वें मुख्यमंत्री", detail: "जन्म: 5 जून 1972 · पार्टी: BJP · 2017 से मुख्यमंत्री।" },
+            "when india got independence": { title: "15 August 1947", image: "https://picsum.photos/seed/independence/200/200", desc: "भारत की स्वतंत्रता तिथि", detail: "भारत को 15 अगस्त 1947 को ब्रिटिश शासन से स्वतंत्रता मिली।" },
+            "india independence day": { title: "15 August 1947", image: "https://picsum.photos/seed/independence/200/200", desc: "भारत की स्वतंत्रता तिथि", detail: "भारत को 15 अगस्त 1947 को ब्रिटिश शासन से स्वतंत्रता मिली।" },
+            "amitabh bachchan": { title: "Amitabh Bachchan", image: "https://picsum.photos/seed/amitabh/200/200", desc: "महान अभिनेता", detail: "जन्म: 11 अक्टूबर 1942 · फिल्में: शोले, दीवार, पिंक · पद्मश्री, पद्मभूषण।" },
+            "sachin tendulkar": { title: "Sachin Tendulkar", image: "https://picsum.photos/seed/sachin/200/200", desc: "क्रिकेट के भगवान", detail: "जन्म: 24 अप्रैल 1973 · 100+ शतक · भारत रत्न से सम्मानित।" },
+            "virat kohli": { title: "Virat Kohli", image: "https://picsum.photos/seed/virat/200/200", desc: "भारतीय क्रिकेट टीम के पूर्व कप्तान", detail: "जन्म: 5 नवंबर 1988 · 70+ शतक · ICC प्लेयर ऑफ द ईयर।" },
+            "ms dhoni": { title: "M.S. Dhoni", image: "https://picsum.photos/seed/dhoni/200/200", desc: "भारत के पूर्व कप्तान, विकेटकीपर", detail: "जन्म: 7 जुलाई 1981 · 2011 विश्व कप जीत · पद्मश्री, पद्मभूषण।" }
         };
 
-        // ---- Knowledge Panel Renderer ----
         function getKnowledgeAnswer(query) {
             const q = query.trim().toLowerCase();
             if (knowledgeBase[q]) return knowledgeBase[q];
@@ -417,7 +368,25 @@
         }
 
         // ================================================================
-        //  2. BASE DATA (1500+ entries – हार्डकोडेड)
+        //  2. WIKIPEDIA API – real summary fetch
+        // ================================================================
+        async function fetchWikipediaSummary(query) {
+            try {
+                const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Not found');
+                const data = await response.json();
+                if (data && data.extract) {
+                    return { title: data.title, extract: data.extract, thumbnail: data.thumbnail ? data.thumbnail.source : null };
+                }
+                return null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // ================================================================
+        //  3. BASE DATA (1500+ entries)
         // ================================================================
         const BASE_DATA = {
             "aadhaar": "https://uidai.gov.in",
@@ -625,9 +594,6 @@
             "leh": "https://leh.nic.in"
         };
 
-        // ================================================================
-        //  3. EXTRA SITES
-        // ================================================================
         const EXTRA_SITES = {
             "wikipedia": "https://www.wikipedia.org",
             "reddit": "https://www.reddit.com",
@@ -646,13 +612,12 @@
             "indiapost": "https://www.indiapost.gov.in",
             "worldbank": "https://www.worldbank.org",
             "nationalgeographic": "https://www.nationalgeographic.com",
-            "globaledge": "https://globaledge.msu.edu"
+            "globaledge": "https://globaledge.msu.edu",
+            "airindia": "https://www.airindia.com",
+            "indigo": "https://www.goindigo.in"
         };
         Object.assign(BASE_DATA, EXTRA_SITES);
 
-        // ================================================================
-        //  4. FULL_DATA और ENHANCER
-        // ================================================================
         let FULL_DATA = { ...BASE_DATA };
         let allQueries = Object.keys(FULL_DATA);
 
@@ -685,9 +650,6 @@
         }
         enhanceDataAsync();
 
-        // ================================================================
-        //  5. SEARCH FUNCTIONS
-        // ================================================================
         function getSite(query) {
             const q = query.toLowerCase().trim();
             if (FULL_DATA[q]) return FULL_DATA[q];
@@ -717,7 +679,7 @@
         }
 
         // ================================================================
-        //  6. AI ANSWER (Math, capital, PM, etc.)
+        //  4. AI ANSWER (Math, capital, etc.)
         // ================================================================
         function getAIAnswer(query) {
             const q = query.trim().toLowerCase();
@@ -731,28 +693,106 @@
         }
 
         // ================================================================
-        //  7. नए फीचर्स (Camera, Shopping, Translate, Speak, Bookmark, etc.)
+        //  5. CREATIVE TITLES FOR SOCIAL LINKS
         // ================================================================
-        function openLens() {
-            const q = document.getElementById('homeInput').value.trim() || 'search';
-            window.open('https://lens.google.com/search?p=' + encodeURIComponent(q), '_blank');
+        function getCreativeTitle(siteName, query, type) {
+            const q = query.trim();
+            const templates = {
+                'Facebook': [
+                    `${q} से जुड़ी चर्चा Facebook पर`,
+                    `Facebook पर ${q} का ट्रेंड`,
+                    `${q} के बारे में लोग क्या कह रहे हैं Facebook पर`,
+                    `${q} की ताज़ा पोस्ट Facebook पर`,
+                    `Facebook पर ${q} समुदाय`,
+                ],
+                'Instagram': [
+                    `${q} की बेस्ट तस्वीरें Instagram पर`,
+                    `Instagram पर ${q} के हैशटैग`,
+                    `${q} का रील्स कलेक्शन Instagram`,
+                    `Instagram पर ${q} फैन पेज`,
+                    `${q} की वायरल तस्वीरें Instagram`,
+                ],
+                'Quora': [
+                    `Quora पर ${q} के जवाब`,
+                    `${q} से जुड़े सवाल Quora पर`,
+                    `Quora पर ${q} विशेषज्ञों की राय`,
+                    `${q} की पूरी कहानी Quora पर`,
+                    `Quora पर ${q} अनुभव`,
+                ],
+                'Wikipedia': [
+                    `${q} का पूरा इतिहास Wikipedia पर`,
+                    `Wikipedia पर ${q} के बारे में सब कुछ`,
+                    `${q} की परिभाषा Wikipedia`,
+                    `Wikipedia पर ${q} जानकारी`,
+                    `${q} का संदर्भ Wikipedia`,
+                ],
+                'Reddit': [
+                    `Reddit पर ${q} की बहस`,
+                    `${q} समुदाय Reddit पर`,
+                    `Reddit पर ${q} की कहानियाँ`,
+                    `${q} का AMA Reddit पर`,
+                    `Reddit पर ${q} ट्रेंडिंग`,
+                ],
+                'X (Twitter)': [
+                    `X पर ${q} की चर्चा`,
+                    `${q} ट्वीट्स X पर`,
+                    `X पर ${q} ट्रेंडिंग`,
+                    `${q} की ब्रेकिंग X पर`,
+                    `X पर ${q} हैशटैग`,
+                ],
+                'LinkedIn': [
+                    `LinkedIn पर ${q} प्रोफेशनल्स`,
+                    `${q} से जुड़ी नौकरियाँ LinkedIn`,
+                    `LinkedIn पर ${q} स्किल्स`,
+                    `${q} के विशेषज्ञ LinkedIn पर`,
+                    `LinkedIn पर ${q} नेटवर्क`,
+                ]
+            };
+            const list = templates[siteName] || [`${siteName} पर ${q} देखें`];
+            const index = Math.floor(Math.random() * Math.min(list.length, 4));
+            return list[index] || list[0];
         }
 
-        function openShopping() {
-            const q = document.getElementById('resultInput').value.trim() || 'search';
-            const choice = confirm('Amazon पर खोलें? (OK = Amazon, Cancel = Flipkart)');
-            if (choice) {
-                window.open('https://www.amazon.in/s?k=' + encodeURIComponent(q), '_blank');
+        // ================================================================
+        //  6. FEATURES – Fullscreen, Shopping, Email, Back, Lens, etc.
+        // ================================================================
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
             } else {
-                const choice2 = confirm('Flipkart? (OK = Flipkart, Cancel = Meesho)');
-                if (choice2) window.open('https://www.flipkart.com/search?q=' + encodeURIComponent(q), '_blank');
-                else window.open('https://www.meesho.com/search?q=' + encodeURIComponent(q), '_blank');
+                if (document.exitFullscreen) document.exitFullscreen();
             }
         }
 
-        function translatePage() {
-            const lang = prompt('Translate to (e.g., hi, en, fr):', 'hi');
-            if (lang) window.open('https://translate.google.com/translate?sl=auto&tl=' + lang + '&u=' + encodeURIComponent(window.location.href), '_blank');
+        function openEmail() {
+            const subject = document.getElementById('resultInput').value || 'Inquiry';
+            window.location.href = 'mailto:?subject=' + encodeURIComponent(subject);
+        }
+
+        function toggleShopping() {
+            const opt = document.getElementById('shoppingOptions');
+            opt.style.display = opt.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function openShop(store) {
+            const q = document.getElementById('resultInput').value.trim() || 'search';
+            const urls = {
+                amazon: 'https://www.amazon.in/s?k=' + encodeURIComponent(q),
+                flipkart: 'https://www.flipkart.com/search?q=' + encodeURIComponent(q),
+                meesho: 'https://www.meesho.com/search?q=' + encodeURIComponent(q),
+                shopclues: 'https://www.shopclues.com/search?q=' + encodeURIComponent(q)
+            };
+            window.open(urls[store], '_blank');
+            document.getElementById('shoppingOptions').style.display = 'none';
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        function openLens() {
+            const q = document.getElementById('homeInput').value.trim() || 'search';
+            window.open('https://lens.google.com/search?p=' + encodeURIComponent(q), '_blank');
         }
 
         function speakPage() {
@@ -762,6 +802,11 @@
             utterance.lang = 'hi-IN';
             utterance.rate = 0.9;
             speechSynthesis.speak(utterance);
+        }
+
+        function translatePage() {
+            const lang = prompt('Translate to (e.g., hi, en, fr):', 'hi');
+            if (lang) window.open('https://translate.google.com/translate?sl=auto&tl=' + lang + '&u=' + encodeURIComponent(window.location.href), '_blank');
         }
 
         function bookmarkPage() {
@@ -793,12 +838,6 @@
             } else if (pwd) alert('Incorrect password!');
         }
 
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-            else if (document.exitFullscreen) document.exitFullscreen();
-            hideDrawer();
-        }
-
         function incognitoMode() {
             hideDrawer();
             window.open(window.location.href + '?incognito=true', '_blank');
@@ -821,13 +860,13 @@
         }
 
         // ================================================================
-        //  8. RENDER RESULTS (Knowledge Panel + All)
+        //  7. RENDER RESULTS (with creative social titles)
         // ================================================================
-        function renderAllResults(query) {
+        async function renderAllResults(query) {
             const q = query.trim();
             let html = '';
 
-            // ---- Knowledge Panel (सबसे ऊपर) ----
+            // ---- Knowledge Panel ----
             const knowledge = getKnowledgeAnswer(q);
             if (knowledge) {
                 html += `
@@ -842,8 +881,23 @@
                 `;
             }
 
-            // ---- AI Answer (अगर Knowledge Panel नहीं मिला) ----
-            if (!knowledge) {
+            // ---- Wikipedia Summary ----
+            const wikiData = await fetchWikipediaSummary(q);
+            if (wikiData) {
+                html += `
+                    <div class="knowledge-panel" style="border-left-color:#3366cc;">
+                        <img src="${wikiData.thumbnail || 'https://picsum.photos/seed/wiki/200/200'}" alt="${wikiData.title}" onerror="this.style.display='none'">
+                        <div class="info">
+                            <div class="title">${wikiData.title}</div>
+                            <div class="desc">Wikipedia से</div>
+                            <div class="detail">${wikiData.extract.substring(0, 300)}...</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // ---- AI Answer (if no knowledge/wikipedia) ----
+            if (!knowledge && !wikiData) {
                 const ai = getAIAnswer(q);
                 if (ai) html += `<div class="ai-answer"><div class="answer">${ai.answer}</div><div class="desc">${ai.desc}</div></div>`;
             }
@@ -855,7 +909,7 @@
                 html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">🌐</div>${new URL(directSite).hostname}</div><a href="${directSite}" target="_blank" class="title">${displayName}</a><div class="snippet">${q} की आधिकारिक वेबसाइट – सभी जानकारी यहाँ उपलब्ध है।</div></div>`;
             }
 
-            // ---- Related from database ----
+            // ---- Related sites ----
             const related = getRelated(q);
             const shown = new Set();
             let count = 0;
@@ -870,7 +924,7 @@
                 }
             }
 
-            // ---- सोशल लिंक्स ----
+            // ---- Social links with creative titles ----
             const socialSites = [
                 { name: "Facebook", icon: "f", color: "#1877F2", url: "https://www.facebook.com/search/top/?q="+encodeURIComponent(q) },
                 { name: "Instagram", icon: "I", color: "#E1306C", url: "https://www.instagram.com/explore/search/keyword/?q="+encodeURIComponent(q) },
@@ -884,7 +938,8 @@
             html += `<div class="box-title">🌐 सोशल और जानकारी</div>`;
             for (const site of socialSites) {
                 if (!shown.has(site.url)) {
-                    html += `<div class="result-block"><div class="url"><div class="favicon" style="background:${site.color};color:#fff;">${site.icon}</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${site.name} पर "${q}" खोजें</a><div class="snippet">${site.name} पर "${q}" से संबंधित परिणाम।</div></div>`;
+                    const title = getCreativeTitle(site.name, q, 'social');
+                    html += `<div class="result-block"><div class="url"><div class="favicon" style="background:${site.color};color:#fff;">${site.icon}</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${title}</a><div class="snippet">${site.name} पर "${q}" से संबंधित सामग्री।</div></div>`;
                 }
             }
 
@@ -937,7 +992,129 @@
         }
 
         // ================================================================
-        //  9. HISTORY, DARK MODE, UI
+        //  8. IMAGES, VIDEOS, NEWS, MORE (Flights)
+        // ================================================================
+        function renderImages(q) {
+            let html = `<div class="img-grid">`;
+            const titles = ['Photo 1', 'Photo 2', 'Photo 3', 'Photo 4', 'Photo 5', 'Photo 6', 'Photo 7', 'Photo 8', 'Photo 9'];
+            for (let i = 0; i < 9; i++) {
+                html += `
+                    <div class="img-card" onclick="window.open('https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}', '_blank')">
+                        <span style="font-size:60px;">🖼️</span>
+                        <div class="img-title">${titles[i]}</div>
+                    </div>
+                `;
+            }
+            html += `</div>
+                <div style="text-align:center;margin-top:10px;">
+                    <a href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}" target="_blank" style="color:#1a73e8;text-decoration:none;font-weight:bold;">Google Images पर और देखें →</a>
+                </div>
+            `;
+            return html;
+        }
+
+        function renderVideos(q) {
+            return `<div id="video-loading" style="text-align:center;padding:20px;">⏳ वीडियो लोड हो रहे हैं...</div>`;
+        }
+
+        function renderNews(q) {
+            const sources = [
+                { t: `${q} पर बड़ी खबर`, s: "आज तक", u: "https://www.aajtak.in", c: "#D32F2F" },
+                { t: `${q} से जुड़े ताज़ा अपडेट`, s: "TV9 भारतवर्ष", u: "https://www.tv9bharatvarsh.com", c: "#C62828" },
+                { t: `${q} का विश्लेषण`, s: "रिपब्लिक भारत", u: "https://www.republicbharat.com", c: "#1565C0" },
+                { t: `${q} की ब्रेकिंग न्यूज़`, s: "ABP न्यूज़", u: "https://www.abplive.com/hindi", c: "#E65100" },
+                { t: `${q} की सच्चाई`, s: "ज़ी न्यूज़", u: "https://zeenews.india.com/hindi/", c: "#4527A0" }
+            ];
+            let html = `<div class="box-title">📰 ताज़ा खबरें</div>`;
+            sources.forEach(n => {
+                html += `<div class="news-item" onclick="window.open('${n.u}')"><div class="news-icon" style="background:${n.c}">${n.s[0]}</div><div><div class="news-title">${n.t}</div><div class="news-src">${n.s} - लाइव अपडेट</div></div></div>`;
+            });
+            return html;
+        }
+
+        function renderMore(q) {
+            const flightSites = [
+                { name: "Air India", url: "https://www.airindia.com", icon: "✈️" },
+                { name: "IndiGo", url: "https://www.goindigo.in", icon: "✈️" },
+                { name: "SpiceJet", url: "https://www.spicejet.com", icon: "✈️" },
+                { name: "Vistara", url: "https://www.airvistara.com", icon: "✈️" },
+                { name: "GoAir", url: "https://www.goair.in", icon: "✈️" }
+            ];
+            let html = `<div class="box-title">✈️ उड़ान वेबसाइटें</div>`;
+            flightSites.forEach(site => {
+                html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">✈</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${site.name}</a><div class="snippet">${site.name} – उड़ान बुक करें, ऑनलाइन चेक-इन करें।</div></div>`;
+            });
+            const extra = [
+                { name: "IRCTC", url: "https://www.irctc.co.in", icon: "🚆" },
+                { name: "MakeMyTrip", url: "https://www.makemytrip.com", icon: "🏨" },
+                { name: "ClearTrip", url: "https://www.cleartrip.com", icon: "🏨" }
+            ];
+            html += `<div class="box-title">🌐 अन्य सेवाएँ</div>`;
+            extra.forEach(site => {
+                html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#0D47A1;color:#fff;">${site.icon}</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${site.name}</a><div class="snippet">${site.name} – यात्रा, टिकट, होटल।</div></div>`;
+            });
+            return html;
+        }
+
+        // ================================================================
+        //  9. TAB SWITCHING
+        // ================================================================
+        function showTab(tab) {
+            const q = document.getElementById('resultInput').value.trim() || 'भारत';
+            const area = document.getElementById('content-area');
+
+            if (tab === 'all') {
+                renderAllResults(q).then(html => area.innerHTML = html);
+            } else if (tab === 'images') {
+                area.innerHTML = renderImages(q);
+            } else if (tab === 'videos') {
+                area.innerHTML = renderVideos(q);
+                const API_KEY = "AIzaSyCggxsKMnuCCyFuw0p3LjG9LD213VCBRx8";
+                fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(q)}&key=${API_KEY}&maxResults=8`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.items && data.items.length > 0) {
+                            let vidHtml = `<div class="video-grid">`;
+                            data.items.forEach(item => {
+                                const vidId = item.id.videoId;
+                                vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${vidId}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${vidId}/hqdefault.jpg"></div><div class="video-title">${item.snippet.title}</div><div class="video-meta">${item.snippet.channelTitle}</div></div>`;
+                            });
+                            vidHtml += `</div>`;
+                            area.innerHTML = vidHtml;
+                        } else {
+                            const fallback = [{id:"AETFvQonfV8",title:"हनुमान चालीसा",channel:"भक्ति"},{id:"jdy0GgMbJY0",title:"शिव तांडव",channel:"दिव्य"}];
+                            let vidHtml = `<div class="video-grid">`;
+                            fallback.forEach(item => {
+                                vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div><div class="video-title">${item.title}</div><div class="video-meta">${item.channel}</div></div>`;
+                            });
+                            vidHtml += `</div>`;
+                            area.innerHTML = vidHtml;
+                        }
+                    })
+                    .catch(() => {
+                        const fallback = [{id:"AETFvQonfV8",title:"हनुमान चालीसा",channel:"भक्ति"},{id:"jdy0GgMbJY0",title:"शिव तांडव",channel:"दिव्य"}];
+                        let vidHtml = `<div class="video-grid">`;
+                        fallback.forEach(item => {
+                            vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div><div class="video-title">${item.title}</div><div class="video-meta">${item.channel}</div></div>`;
+                        });
+                        vidHtml += `</div>`;
+                        area.innerHTML = vidHtml;
+                    });
+            } else if (tab === 'news') {
+                area.innerHTML = renderNews(q);
+            } else if (tab === 'more') {
+                area.innerHTML = renderMore(q);
+            }
+
+            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+            const tabs = document.querySelectorAll('.tabs .tab');
+            const tabMap = { 'all':0, 'images':1, 'videos':2, 'news':4, 'more':6 };
+            const idx = tabMap[tab];
+            if (idx !== undefined && tabs[idx]) tabs[idx].classList.add('active');
+        }
+
+        // ================================================================
+        //  10. HISTORY, DARK MODE, UI (unchanged)
         // ================================================================
         let searchHistory = JSON.parse(localStorage.getItem('dhundho_history')) || [];
         function saveHistory() { localStorage.setItem('dhundho_history', JSON.stringify(searchHistory)); }
@@ -967,6 +1144,7 @@
             document.getElementById('homeSuggestions').style.display = 'none';
             hideDrawer();
             window.scrollTo(0, 0);
+            if (window.location.hash) history.pushState(null, '', window.location.pathname);
         }
 
         function toggleDrawer() {
@@ -1010,7 +1188,7 @@
         }
 
         // ================================================================
-        //  10. VOICE SEARCH (interim results)
+        //  11. VOICE SEARCH
         // ================================================================
         function voiceSearchHome() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert('वॉयस सर्च समर्थित नहीं है।'); return; }
@@ -1051,7 +1229,7 @@
         }
 
         // ================================================================
-        //  11. SUGGESTIONS
+        //  12. SUGGESTIONS
         // ================================================================
         function showHomeSuggestions() { filterHomeSuggestions(document.getElementById('homeInput').value); }
         function filterHomeSuggestions(val) {
@@ -1081,13 +1259,14 @@
         }
 
         // ================================================================
-        //  12. PERFORM SEARCH
+        //  13. PERFORM SEARCH (with hash persistence)
         // ================================================================
         function performSearch(query) {
             if (!query) return;
             query = query.trim();
             if (!query) return;
             addToHistory(query);
+            window.location.hash = encodeURIComponent(query);
 
             document.getElementById('home-view').style.display = 'none';
             document.getElementById('results-view').style.display = 'block';
@@ -1121,105 +1300,15 @@
         }
 
         // ================================================================
-        //  13. IMAGES, VIDEOS, NEWS, TOOLS TABS
+        //  14. INIT – check hash on load
         // ================================================================
-        function renderImages(q) {
-            let html = `<div class="img-grid">`;
-            for (let i = 0; i < 9; i++) {
-                const seed = q + i;
-                const imgUrl = `https://picsum.photos/seed/${seed}/300/200`;
-                html += `<div class="img-card" onclick="window.open('https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}')"><img src="${imgUrl}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'display:flex;justify-content:center;align-items:center;height:100%;font-size:40px;\\'>🖼️</div>';"><div class="img-title">${q}</div></div>`;
+        window.addEventListener('DOMContentLoaded', function() {
+            const hash = decodeURIComponent(window.location.hash.replace('#', ''));
+            if (hash) {
+                performSearch(hash);
             }
-            html += `</div><div style="text-align:center;margin-top:10px;"><a href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}" target="_blank" style="color:#1a73e8;text-decoration:none;font-weight:bold;">Google पर और तस्वीरें देखें →</a></div>`;
-            return html;
-        }
+        });
 
-        function renderVideos(q) {
-            return `<div id="video-loading" style="text-align:center;padding:20px;">⏳ वीडियो लोड हो रहे हैं...</div>`;
-        }
-
-        function renderNews(q) {
-            const sources = [
-                { t: `${q} पर बड़ी खबर`, s: "आज तक", u: "https://www.aajtak.in", c: "#D32F2F" },
-                { t: `${q} से जुड़े ताज़ा अपडेट`, s: "TV9 भारतवर्ष", u: "https://www.tv9bharatvarsh.com", c: "#C62828" },
-                { t: `${q} का विश्लेषण`, s: "रिपब्लिक भारत", u: "https://www.republicbharat.com", c: "#1565C0" },
-                { t: `${q} की ब्रेकिंग न्यूज़`, s: "ABP न्यूज़", u: "https://www.abplive.com/hindi", c: "#E65100" },
-                { t: `${q} की सच्चाई`, s: "ज़ी न्यूज़", u: "https://zeenews.india.com/hindi/", c: "#4527A0" }
-            ];
-            let html = `<div class="box-title">📰 ताज़ा खबरें</div>`;
-            sources.forEach(n => {
-                html += `<div class="news-item" onclick="window.open('${n.u}')"><div class="news-icon" style="background:${n.c}">${n.s[0]}</div><div><div class="news-title">${n.t}</div><div class="news-src">${n.s} - लाइव अपडेट</div></div></div>`;
-            });
-            return html;
-        }
-
-        function renderTools(q) {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('hi-IN', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-            const dateStr = now.toLocaleDateString('hi-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-            return `<div class="tool-result"><div class="big-number">${timeStr}</div><div class="label">⏰ वर्तमान समय</div></div><div class="tool-result"><div style="font-size:28px;font-weight:bold;color:#1a73e8;">${dateStr}</div><div class="label">📅 आज की तारीख</div></div><div style="margin-top:15px;text-align:center;"><button onclick="window.open('https://www.google.com/search?q=calculator','_blank')" style="padding:12px 30px;border-radius:30px;background:#1a73e8;color:#fff;border:none;font-size:16px;cursor:pointer;">🧮 कैलकुलेटर खोलें</button></div>`;
-        }
-
-        // ================================================================
-        //  14. TAB SWITCHING
-        // ================================================================
-        function showTab(tab) {
-            const q = document.getElementById('resultInput').value.trim() || 'भारत';
-            const area = document.getElementById('content-area');
-
-            if (tab === 'all') {
-                area.innerHTML = renderAllResults(q);
-            } else if (tab === 'images') {
-                area.innerHTML = renderImages(q);
-            } else if (tab === 'videos') {
-                area.innerHTML = renderVideos(q);
-                const API_KEY = "AIzaSyCggxsKMnuCCyFuw0p3LjG9LD213VCBRx8";
-                fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(q)}&key=${API_KEY}&maxResults=8`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.items && data.items.length > 0) {
-                            let vidHtml = `<div class="video-grid">`;
-                            data.items.forEach(item => {
-                                const vidId = item.id.videoId;
-                                vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${vidId}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${vidId}/hqdefault.jpg"></div><div class="video-title">${item.snippet.title}</div><div class="video-meta">${item.snippet.channelTitle}</div></div>`;
-                            });
-                            vidHtml += `</div>`;
-                            area.innerHTML = vidHtml;
-                        } else {
-                            const fallback = [{id:"AETFvQonfV8",title:"हनुमान चालीसा",channel:"भक्ति"},{id:"jdy0GgMbJY0",title:"शिव तांडव",channel:"दिव्य"}];
-                            let vidHtml = `<div class="video-grid">`;
-                            fallback.forEach(item => {
-                                vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div><div class="video-title">${item.title}</div><div class="video-meta">${item.channel}</div></div>`;
-                            });
-                            vidHtml += `</div>`;
-                            area.innerHTML = vidHtml;
-                        }
-                    })
-                    .catch(() => {
-                        const fallback = [{id:"AETFvQonfV8",title:"हनुमान चालीसा",channel:"भक्ति"},{id:"jdy0GgMbJY0",title:"शिव तांडव",channel:"दिव्य"}];
-                        let vidHtml = `<div class="video-grid">`;
-                        fallback.forEach(item => {
-                            vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div><div class="video-title">${item.title}</div><div class="video-meta">${item.channel}</div></div>`;
-                        });
-                        vidHtml += `</div>`;
-                        area.innerHTML = vidHtml;
-                    });
-            } else if (tab === 'news') {
-                area.innerHTML = renderNews(q);
-            } else if (tab === 'tools') {
-                area.innerHTML = renderTools(q);
-            }
-
-            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
-            const tabs = document.querySelectorAll('.tabs .tab');
-            const tabMap = { 'all':0, 'images':1, 'videos':2, 'news':4, 'tools':6 };
-            const idx = tabMap[tab];
-            if (idx !== undefined && tabs[idx]) tabs[idx].classList.add('active');
-        }
-
-        // ================================================================
-        //  15. SERVICE WORKER
-        // ================================================================
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
@@ -1228,11 +1317,6 @@
             });
         }
 
-        // ================================================================
-        //  16. INIT
-        // ================================================================
-        console.log('🚀 ढूंढो – अल्टीमेट संस्करण लोड! कुल क्वेरीज़:', Object.keys(FULL_DATA).length);
-
         document.addEventListener('click', function(e) {
             const hi = document.getElementById('homeInput');
             const ri = document.getElementById('resultInput');
@@ -1240,8 +1324,11 @@
             const rs = document.getElementById('resultSuggestions');
             if (hi && !hi.contains(e.target)) hs.style.display = 'none';
             if (ri && !ri.contains(e.target) && !e.target.closest('#resultSuggestions')) rs.style.display = 'none';
+            const shopOpt = document.getElementById('shoppingOptions');
+            if (shopOpt && !e.target.closest('.shopping-wrapper')) shopOpt.style.display = 'none';
         });
         document.getElementById('overlay').addEventListener('click', hideDrawer);
+        console.log('🚀 ढूंढो – अल्टीमेट संस्करण लोड!');
     </script>
 </body>
 </html>
