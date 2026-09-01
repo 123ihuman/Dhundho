@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ढूंढो – भारत का सर्च इंजन</title>
     <style>
-        /* ===== BASE (पुराना CSS – सभी पिछले styles) ===== */
+        /* ===== BASE ===== */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
         body { background:#fff; color:#202124; transition:background .3s,color .3s; }
         .dark-mode { background:#202124 !important; color:#e8eaed !important; }
@@ -28,6 +28,7 @@
         .dark-mode .shopping-options { background:#303134 !important; border-color:#5f6368 !important; }
         .dark-mode .context-menu { background:#303134 !important; border-color:#5f6368 !important; color:#e8eaed !important; }
         .dark-mode .context-menu .ctx-item:hover { background:#3c4043; }
+        .dark-mode .tab-container { background:#303134 !important; border-color:#5f6368 !important; }
 
         /* ===== TOP BAR ===== */
         .top-bar { display:flex; align-items:center; justify-content:space-between; padding:5px 10px; border-bottom:1px solid #e0e0e0; background:#fff; position:sticky; top:0; z-index:10; }
@@ -37,6 +38,16 @@
         .avatar-circle { width:28px; height:28px; background:#4285F4; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:bold; cursor:pointer; }
         .three-dots { font-size:20px; font-weight:bold; cursor:pointer; padding-left:5px; }
         .fullscreen-btn { cursor:pointer; font-size:20px; }
+
+        /* ===== TABS ===== */
+        .tab-container { display:flex; background:#fff; border-bottom:1px solid #dfe1e5; padding:0 10px; overflow-x:auto; scrollbar-width:none; }
+        .tab-container::-webkit-scrollbar { display:none; }
+        .tab-btn { padding:8px 14px; cursor:pointer; border-bottom:3px solid transparent; font-size:14px; color:#5f6368; white-space:nowrap; display:flex; align-items:center; gap:6px; }
+        .tab-btn.active { color:#1a73e8; border-bottom-color:#1a73e8; font-weight:bold; }
+        .tab-btn:hover { background:#f1f3f4; }
+        .tab-close { margin-left:6px; font-size:12px; color:#5f6368; cursor:pointer; }
+        .tab-close:hover { color:#202124; }
+        .tab-add { padding:8px 12px; cursor:pointer; font-size:18px; color:#5f6368; border-left:1px solid #dfe1e5; }
 
         /* ===== HOME ===== */
         #home-view { min-height:100vh; display:flex; flex-direction:column; align-items:center; padding-top:40px; position:relative; }
@@ -147,7 +158,7 @@
         .shopping-options a:hover { background:#f1f3f4; }
         .shopping-wrapper { position:relative; display:inline-block; }
 
-        /* ===== CONTEXT MENU (long-press) ===== */
+        /* ===== CONTEXT MENU ===== */
         .context-menu { position:fixed; background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.2); padding:5px 0; z-index:9999; display:none; min-width:150px; }
         .context-menu .ctx-item { padding:8px 16px; cursor:pointer; font-size:14px; display:flex; align-items:center; gap:10px; color:#202124; }
         .context-menu .ctx-item:hover { background:#f1f3f4; }
@@ -205,6 +216,7 @@
             .knowledge-panel img { width:60px; height:60px; }
             .top-bar { flex-wrap:wrap; }
             .address-pill { font-size:10px; }
+            .tab-btn { font-size:12px; padding:6px 10px; }
         }
         @media (max-width:400px) {
             .img-grid { grid-template-columns:repeat(2,1fr); }
@@ -213,7 +225,6 @@
     </style>
 </head>
 <body>
-
     <!-- ===== TOP BAR ===== -->
     <div class="top-bar" id="topBar">
         <div class="top-left">
@@ -227,6 +238,15 @@
             <span class="three-dots" onclick="toggleDrawer()">⋮</span>
             <span class="fullscreen-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</span>
         </div>
+    </div>
+
+    <!-- ===== TAB CONTAINER ===== -->
+    <div class="tab-container" id="tabContainer">
+        <div class="tab-btn active" data-tab="0" onclick="switchTab(0)">
+            <span>🏠</span> Home
+            <span class="tab-close" onclick="event.stopPropagation(); closeTab(0)">×</span>
+        </div>
+        <div class="tab-add" onclick="addNewTab()">➕</div>
     </div>
 
     <!-- ===== HOME VIEW ===== -->
@@ -254,7 +274,7 @@
             <span class="famous-chip" onclick="performSearch('aadhaar')">🆔 Aadhaar</span>
             <span class="famous-chip" onclick="performSearch('sarkari result')">📋 Sarkari Result</span>
         </div>
-        <div style="margin-top:20px;font-size:13px;color:#70757a;">भारत का अपना सर्च इंजन · 5000+ क्वेरीज़</div>
+        <div style="margin-top:20px;font-size:13px;color:#70757a;">भारत का अपना सर्च इंजन · 4000+ क्वेरीज़</div>
     </div>
 
     <!-- ===== RESULTS VIEW ===== -->
@@ -274,7 +294,7 @@
         <div class="action-bar">
             <button class="action-btn" onclick="translatePage()"><i class="fas fa-language"></i> Translate</button>
             <button class="action-btn" onclick="speakPage()"><i class="fas fa-volume-up"></i> Speak</button>
-            <button class="action-btn" onclick="openEmail()"><i class="fas fa-envelope"></i> Email</button>
+            <button class="action-btn" onclick="openEmailCompose()"><i class="fas fa-envelope"></i> Email</button>
             <button class="action-btn" onclick="window.open('https://www.deepseek.com', '_blank')"><i class="fas fa-robot"></i> DeepSeek</button>
             <button class="action-btn" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
             <button class="action-btn" onclick="bookmarkPage()"><i class="fas fa-star"></i> Bookmark</button>
@@ -305,7 +325,7 @@
     <div class="overlay" id="overlay" onclick="toggleDrawer()"></div>
     <div class="drawer" id="drawer">
         <div class="drawer-section">SHORTCUTS</div>
-        <div class="drawer-item" onclick="newTab()"><span class="m-icon">➕</span> New tab</div>
+        <div class="drawer-item" onclick="addNewTab()"><span class="m-icon">➕</span> New tab</div>
         <div class="drawer-item" onclick="newIncognito()"><span class="m-icon">🎭</span> New Incognito tab</div>
         <div class="drawer-section">HISTORY</div>
         <div class="drawer-item" onclick="showHistoryDrawer()"><span class="m-icon">🕒</span> Recent tabs</div>
@@ -319,6 +339,7 @@
         <div class="drawer-item" onclick="toggleFullscreen()"><span class="m-icon">⛶</span> Full screen</div>
         <div class="drawer-item" onclick="zoomPage()"><span class="m-icon">🔍</span> Zoom (toggle)</div>
         <div class="drawer-item" onclick="showPasswordManager()"><span class="m-icon">🔒</span> Password Manager</div>
+        <div class="drawer-item" onclick="addCustomSearch()"><span class="m-icon">🔧</span> Add Search Shortcut</div>
         <div class="drawer-section">MORE</div>
         <div class="drawer-item" onclick="showExitPrompt()"><span class="m-icon">🚪</span> Exit</div>
         <div class="drawer-item" onclick="helpFeedback()"><span class="m-icon">❓</span> Help & feedback</div>
@@ -357,57 +378,583 @@
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <script>
+<script>
         // ================================================================
-        //  1. API KEYS (कृपया अपनी keys यहाँ डालें)
+        //  1. API KEYS
         // ================================================================
         const UNSPLASH_ACCESS_KEY = "jZ3pygrliHcPuw0XjT6Vmzacd-KJvu1F_PQH11a8EmM";
         const GOOGLE_API_KEY = "AIzaSyDcNK-JCsoKl8urj6MdrfzccuAJlv9Nww8";
         const GOOGLE_CX = "e3256aeceec3547ea";
 
         // ================================================================
-        //  2. CACHING – localStorage for images (1 hour expiry)
+        //  2. BASE DATA (Core Database - 250+ core sites, expandable)
         // ================================================================
-        function getCachedImages(query) {
-            const key = 'img_cache_' + query.trim().toLowerCase();
-            const cached = localStorage.getItem(key);
+        const BASE_DATA = {
+            "google": "https://www.google.com",
+            "youtube": "https://www.youtube.com",
+            "instagram": "https://www.instagram.com",
+            "whatsapp": "https://www.whatsapp.com",
+            "facebook": "https://www.facebook.com",
+            "x": "https://x.com",
+            "reddit": "https://www.reddit.com",
+            "linkedin": "https://www.linkedin.com",
+            "pinterest": "https://www.pinterest.com",
+            "telegram": "https://www.telegram.org",
+            "snapchat": "https://www.snapchat.com",
+            "quora": "https://www.quora.com",
+            "tumblr": "https://www.tumblr.com",
+            "discord": "https://www.discord.com",
+            "medium": "https://www.medium.com",
+            "chatgpt": "https://chatgpt.com",
+            "gemini": "https://gemini.google.com",
+            "claude": "https://claude.ai",
+            "bing": "https://www.bing.com",
+            "duckduckgo": "https://duckduckgo.com",
+            "perplexity": "https://www.perplexity.ai",
+            "huggingface": "https://huggingface.co",
+            "copilot": "https://copilot.microsoft.com",
+            "grok": "https://grok.x.ai",
+            "phind": "https://www.phind.com",
+            "amazon": "https://www.amazon.in",
+            "flipkart": "https://www.flipkart.com",
+            "myntra": "https://www.myntra.com",
+            "meesho": "https://www.meesho.com",
+            "ajio": "https://www.ajio.com",
+            "nykaa": "https://www.nykaa.com",
+            "jiomart": "https://www.jiomart.com",
+            "bigbasket": "https://www.bigbasket.com",
+            "blinkit": "https://www.blinkit.com",
+            "zeptonow": "https://www.zeptonow.com",
+            "zomato": "https://www.zomato.com",
+            "swiggy": "https://www.swiggy.com",
+            "decathlon": "https://www.decathlon.in",
+            "sbi": "https://www.sbi.co.in",
+            "hdfcbank": "https://www.hdfcbank.com",
+            "icicibank": "https://www.icicibank.com",
+            "axisbank": "https://www.axisbank.com",
+            "kotak": "https://www.kotak.com",
+            "pnb": "https://www.punjabnationalbank.in",
+            "bankofbaroda": "https://www.bankofbaroda.in",
+            "rbi": "https://www.rbi.org.in",
+            "paytm": "https://www.paytm.com",
+            "phonepe": "https://www.phonepe.com",
+            "gpay": "https://pay.google.com",
+            "cred": "https://www.cred.club",
+            "zerodha": "https://www.zerodha.com",
+            "groww": "https://groww.in",
+            "upstox": "https://upstox.com",
+            "nseindia": "https://www.nseindia.com",
+            "bseindia": "https://www.bseindia.com",
+            "sebi": "https://www.sebi.gov.in",
+            "nabard": "https://www.nabard.org",
+            "india.gov.in": "https://www.india.gov.in",
+            "incometax": "https://www.incometax.gov.in",
+            "eci": "https://www.eci.gov.in",
+            "uidai": "https://uidai.gov.in",
+            "digilocker": "https://www.digilocker.gov.in",
+            "upsc": "https://www.upsc.gov.in",
+            "ssc": "https://ssc.nic.in",
+            "nta": "https://www.nta.ac.in",
+            "passportindia": "https://www.passportindia.gov.in",
+            "irctc": "https://www.irctc.co.in",
+            "indianrail": "https://www.indianrail.gov.in",
+            "parivahan": "https://parivahan.gov.in",
+            "gst": "https://www.gst.gov.in",
+            "epfindia": "https://www.epfindia.gov.in",
+            "esic": "https://www.esic.nic.in",
+            "umang": "https://www.umang.gov.in",
+            "mygov": "https://www.mygov.in",
+            "pmkisan": "https://pmkisan.gov.in",
+            "nrega": "https://nrega.nic.in",
+            "jaljeevan": "https://jaljeevanmission.gov.in",
+            "digitalindia": "https://www.digitalindia.gov.in",
+            "pib": "https://www.pib.gov.in",
+            "sansad": "https://sansad.in",
+            "mea": "https://www.mea.gov.in",
+            "cbic": "https://www.cbic.gov.in",
+            "cbse": "https://www.cbse.gov.in",
+            "jeemain": "https://jeemain.nta.ac.in",
+            "neet": "https://neet.nta.nic.in",
+            "cricbuzz": "https://www.cricbuzz.com",
+            "espncricinfo": "https://www.espncricinfo.com",
+            "iplt20": "https://www.iplt20.com",
+            "bcci": "https://www.bcci.tv",
+            "icc": "https://www.icc-cricket.com",
+            "dream11": "https://www.dream11.com",
+            "my11circle": "https://www.my11circle.com",
+            "sportskeeda": "https://www.sportskeeda.com",
+            "fancode": "https://www.fancode.com",
+            "prokabaddi": "https://www.prokabaddi.com",
+            "islfootball": "https://www.islfootball.com",
+            "olympics": "https://www.olympics.com",
+            "fifa": "https://www.fifa.com",
+            "formula1": "https://www.formula1.com",
+            "goal": "https://www.goal.com",
+            "transfermarkt": "https://www.transfermarkt.co.in",
+            "nba": "https://www.nba.com",
+            "wwe": "https://www.wwe.com",
+            "indiatimes": "https://www.indiatimes.com",
+            "timesofindia": "https://timesofindia.indiatimes.com",
+            "aajtak": "https://www.aajtak.in",
+            "ndtv": "https://www.ndtv.com",
+            "hindustantimes": "https://www.hindustantimes.com",
+            "news18": "https://www.news18.com",
+            "indiatoday": "https://www.indiatoday.in",
+            "indianexpress": "https://indianexpress.com",
+            "thehindu": "https://www.thehindu.com",
+            "bhaskar": "https://www.bhaskar.com",
+            "amarujala": "https://www.amarujala.com",
+            "jagran": "https://www.jagran.com",
+            "zeenews": "https://zeenews.india.com",
+            "abplive": "https://www.abplive.com",
+            "republicworld": "https://www.republicworld.com",
+            "livemint": "https://www.livemint.com",
+            "financialexpress": "https://www.financialexpress.com",
+            "businesstoday": "https://www.businesstoday.in",
+            "cnbctv18": "https://www.cnbctv18.com",
+            "thequint": "https://www.thequint.com",
+            "scroll": "https://scroll.in",
+            "thewire": "https://www.thewire.in",
+            "opindia": "https://www.opindia.com",
+            "swarajyamag": "https://www.swarajyamag.com",
+            "outlookindia": "https://www.outlookindia.com",
+            "telegraphindia": "https://www.telegraphindia.com",
+            "tribuneindia": "https://www.tribuneindia.com",
+            "deccanherald": "https://www.deccanherald.com",
+            "newindianexpress": "https://www.newindianexpress.com",
+            "manoramaonline": "https://www.manoramaonline.com",
+            "mathrubhumi": "https://www.mathrubhumi.com",
+            "dinamalar": "https://www.dinamalar.com",
+            "dailythanthi": "https://www.dailythanthi.com",
+            "eenadu": "https://www.eenadu.net",
+            "sakshi": "https://www.sakshi.com",
+            "loksatta": "https://www.loksatta.com",
+            "esakal": "https://www.esakal.com",
+            "anandabazar": "https://www.anandabazar.com",
+            "eisamay": "https://eisamay.com",
+            "divyabhaskar": "https://www.divyabhaskar.co.in",
+            "kannadaprabha": "https://www.kannadaprabha.com",
+            "vijaykarnataka": "https://www.vijaykarnataka.com",
+            "asianetnews": "https://www.asianetnews.com",
+            "bbchindi": "https://www.bbc.com/hindi",
+            "aljazeera": "https://www.aljazeera.com",
+            "reuters": "https://www.reuters.com",
+            "apnews": "https://apnews.com",
+            "bloomberg": "https://www.bloomberg.com",
+            "forbes": "https://www.forbes.com",
+            "wikipedia": "https://www.wikipedia.org",
+            "wikidata": "https://www.wikidata.org",
+            "wikimedia": "https://www.wikimedia.org",
+            "oxfordlearners": "https://www.oxfordlearnersdictionaries.com",
+            "cambridge": "https://dictionary.cambridge.org",
+            "merriamwebster": "https://www.merriam-webster.com",
+            "translate": "https://translate.google.com",
+            "weather": "https://www.weather.com",
+            "timeanddate": "https://www.timeanddate.com",
+            "imdb": "https://www.imdb.com",
+            "hotstar": "https://www.hotstar.com",
+            "netflix": "https://www.netflix.com",
+            "primevideo": "https://www.primevideo.com",
+            "sonyliv": "https://www.sonyliv.com",
+            "zee5": "https://www.zee5.com",
+            "jiocinema": "https://www.jiocinema.com",
+            "mxplayer": "https://www.mxplayer.in",
+            "voot": "https://www.voot.com",
+            "altbalaji": "https://www.altbalaji.com",
+            "erosnow": "https://www.erosnow.com",
+            "hungama": "https://www.hungama.com",
+            "gaana": "https://gaana.com",
+            "jiosaavn": "https://www.jiosaavn.com",
+            "spotify": "https://open.spotify.com",
+            "wynk": "https://wynk.in",
+            "applemusic": "https://music.apple.com",
+            "soundcloud": "https://soundcloud.com",
+            "bookmyshow": "https://in.bookmyshow.com",
+            "ticketmaster": "https://www.ticketmaster.in",
+            "makemytrip": "https://www.makemytrip.com",
+            "cleartrip": "https://www.cleartrip.com",
+            "goibibo": "https://www.goibibo.com",
+            "yatra": "https://www.yatra.com",
+            "ixigo": "https://www.ixigo.com",
+            "agoda": "https://www.agoda.com",
+            "booking": "https://www.booking.com",
+            "airbnb": "https://www.airbnb.co.in",
+            "oyorooms": "https://www.oyorooms.com",
+            "treebo": "https://www.treebo.com",
+            "fabhotels": "https://www.fabhotels.com",
+            "redbus": "https://www.redbus.in",
+            "abhibus": "https://www.abhibus.com",
+            "uber": "https://www.uber.com",
+            "olacabs": "https://www.olacabs.com",
+            "rapido": "https://www.rapido.bike",
+            "airindia": "https://www.airindia.com",
+            "goindigo": "https://www.goindigo.in",
+            "akasaair": "https://www.akasaair.com",
+            "spicejet": "https://www.spicejet.com",
+            "github": "https://github.com",
+            "gitlab": "https://gitlab.com",
+            "bitbucket": "https://bitbucket.org",
+            "cloudflare": "https://www.cloudflare.com",
+            "aws": "https://aws.amazon.com",
+            "cloudgoogle": "https://cloud.google.com",
+            "azure": "https://azure.microsoft.com",
+            "godaddy": "https://www.godaddy.com",
+            "hostinger": "https://www.hostinger.in",
+            "namecheap": "https://www.namecheap.com",
+            "speedtest": "https://www.speedtest.net",
+            "fast": "https://www.fast.com",
+            "justdial": "https://www.justdial.com",
+            "olx": "https://www.olx.in",
+            "quikr": "https://www.quikr.com",
+            "99acres": "https://www.99acres.com",
+            "magicbricks": "https://www.magicbricks.com",
+            "housing": "https://housing.com",
+            "commonfloor": "https://www.commonfloor.com",
+            "naukri": "https://www.naukri.com",
+            "foundit": "https://www.foundit.in",
+            "shine": "https://www.shine.com",
+            "internshala": "https://internshala.com",
+            "freelancer": "https://www.freelancer.in",
+            "upwork": "https://www.upwork.com"
+                        "google": "https://www.google.com",
+            "youtube": "https://www.youtube.com",
+            "wikipedia": "https://www.wikipedia.org",
+            "microsoft": "https://www.microsoft.com",
+            "apple": "https://www.apple.com",
+            "openai": "https://www.openai.com",
+            "chatgpt": "https://chatgpt.com",
+            "gemini": "https://gemini.google.com",
+            "copilot": "https://copilot.microsoft.com",
+            "claude": "https://claude.ai",
+            "github": "https://www.github.com",
+            "stackoverflow": "https://stackoverflow.com",
+            "mozilla": "https://www.mozilla.org",
+            "cloudflare": "https://www.cloudflare.com",
+            "adobe": "https://www.adobe.com",
+            "oracle": "https://www.oracle.com",
+            "aws": "https://aws.amazon.com",
+            "cloudgoogle": "https://cloud.google.com",
+            "ibm": "https://www.ibm.com",
+            "intel": "https://www.intel.com",
+            "android": "https://www.android.com",
+            "nvidia": "https://www.nvidia.com",
+            "zoom": "https://www.zoom.com",
+            "canva": "https://www.canva.com",
+            "dropbox": "https://www.dropbox.com",
+            "facebook": "https://www.facebook.com",
+            "instagram": "https://www.instagram.com",
+            "whatsapp": "https://www.whatsapp.com",
+            "linkedin": "https://www.linkedin.com",
+            "x": "https://x.com",
+            "reddit": "https://www.reddit.com",
+            "pinterest": "https://www.pinterest.com",
+            "snapchat": "https://www.snapchat.com",
+            "discord": "https://discord.com",
+            "telegram": "https://telegram.org",
+            "quora": "https://www.quora.com",
+            "threads": "https://www.threads.com",
+            "messenger": "https://www.messenger.com",
+            "skype": "https://www.skype.com",
+            "meetgoogle": "https://meet.google.com",
+            "slack": "https://slack.com",
+            "signal": "https://signal.org",
+            "viber": "https://www.viber.com",
+            "tumblr": "https://www.tumblr.com",
+            "medium": "https://www.medium.com",
+            "amazon": "https://www.amazon.in",
+            "flipkart": "https://www.flipkart.com",
+            "meesho": "https://www.meesho.com",
+            "myntra": "https://www.myntra.com",
+            "ajio": "https://www.ajio.com",
+            "nykaa": "https://www.nykaa.com",
+            "jiomart": "https://www.jiomart.com",
+            "tatacliq": "https://www.tatacliq.com",
+            "croma": "https://www.croma.com",
+            "reliancedigital": "https://www.reliancedigital.in",
+            "vijaysales": "https://www.vijaysales.com",
+            "indiamart": "https://www.indiamart.com",
+            "tradeindia": "https://www.tradeindia.com",
+            "olx": "https://www.olx.in",
+            "quikr": "https://www.quikr.com",
+            "firstcry": "https://www.firstcry.com",
+            "lenskart": "https://www.lenskart.com",
+            "decathlon": "https://www.decathlon.in",
+            "bigbasket": "https://www.bigbasket.com",
+            "blinkit": "https://www.blinkit.com",
+            "zepto": "https://www.zepto.com",
+            "swiggy": "https://www.swiggy.com",
+            "zomato": "https://www.zomato.com",
+            "snapdeal": "https://www.snapdeal.com",
+            "shopclues": "https://www.shopclues.com",
+            "rbi": "https://www.rbi.org.in",
+            "sbi": "https://www.sbi.co.in",
+            "onlinesbi": "https://www.onlinesbi.sbi",
+            "hdfcbank": "https://www.hdfcbank.com",
+            "icicibank": "https://www.icicibank.com",
+            "axisbank": "https://www.axisbank.com",
+            "bankofbaroda": "https://www.bankofbaroda.in",
+            "pnbindia": "https://www.pnbindia.in",
+            "canarabank": "https://www.canarabank.com",
+            "unionbankofindia": "https://www.unionbankofindia.co.in",
+            "indianbank": "https://www.indianbank.in",
+            "bankofindia": "https://bankofindia.co.in",
+            "centralbankofindia": "https://www.centralbankofindia.co.in",
+            "iob": "https://www.iob.in",
+            "bankofmaharashtra": "https://bankofmaharashtra.in",
+            "ucobank": "https://www.ucobank.com",
+            "punjabandsindbank": "https://punjabandsindbank.co.in",
+            "npci": "https://www.npci.org.in",
+            "phonepe": "https://www.phonepe.com",
+            "gpay": "https://pay.google.com",
+            "paytm": "https://paytm.com",
+            "zerodha": "https://www.zerodha.com",
+            "groww": "https://groww.in",
+            "nseindia": "https://www.nseindia.com",
+            "bseindia": "https://www.bseindia.com",
+            "indiagov": "https://www.india.gov.in",
+            "mygov": "https://www.mygov.in",
+            "servicesindia": "https://services.india.gov.in",
+            "igod": "https://igod.gov.in",
+            "pmindia": "https://www.pmindia.gov.in",
+                "upgov": "https://up.gov.in",
+            "upbhulekh": "https://upbhulekh.gov.in",
+            "edistrictup": "https://edistrict.up.gov.in",
+            "igrsup": "https://igrsup.gov.in",
+            "panchayat": "https://panchayat.gov.in",
+            "egramswaraj": "https://egramswaraj.gov.in",
+            "rural": "https://rural.gov.in",
+            "nrega": "https://nrega.nic.in",
+            "pmkisan": "https://pmkisan.gov.in",
+            "pmfby": "https://pmfby.gov.in",
+            "agmarknet": "https://agmarknet.gov.in",
+            "agriwelfare": "https://agriwelfare.gov.in",
+            "jaljeevan": "https://jaljeevanmission.gov.in",
+            "swachhbharat": "https://swachhbharatmission.ddws.gov.in",
+            "csc": "https://csc.gov.in",
+            "udyam": "https://udyamregistration.gov.in",
+            "gem": "https://gem.gov.in",
+            "msme": "https://msme.gov.in",
+            "startupindia": "https://startupindia.gov.in",
+            "odop": "https://www.odop.in",
+            "bcci": "https://www.bcci.tv",
+            "iplt20": "https://www.iplt20.com",
+            "icc": "https://www.icc-cricket.com",
+            "cricbuzz": "https://www.cricbuzz.com",
+            "espncricinfo": "https://www.espncricinfo.com",
+            "olympics": "https://olympics.com",
+            "fifa": "https://www.fifa.com",
+            "uefa": "https://www.uefa.com",
+            "prokabaddi": "https://www.prokabaddi.com",
+            "hockeyindia": "https://www.hockeyindia.org",
+            "badmintonindia": "https://www.badmintonindia.org",
+            "sportsauthority": "https://www.sportsauthorityofindia.nic.in",
+            "kheloindia": "https://www.kheloindia.gov.in",
+            "sofascore": "https://www.sofascore.com",
+            "espn": "https://www.espn.com",
+            "sportstar": "https://www.sportstar.thehindu.com",
+            "fanatics": "https://www.fanatics.com",
+            "fiba": "https://www.fiba.basketball",
+            "worldathletics": "https://worldathletics.org",
+            "paralympic": "https://www.paralympic.org",
+            "imdb": "https://www.imdb.com",
+            "bollywoodhungama": "https://www.bollywoodhungama.com",
+            "filmfare": "https://www.filmfare.com",
+            "zee5": "https://www.zee5.com",
+            "netflix": "https://www.netflix.com",
+            "primevideo": "https://www.primevideo.com",
+            "jiocinema": "https://www.jiocinema.com",
+            "sonyliv": "https://www.sonyliv.com",
+            "hotstar": "https://www.hotstar.com",
+            "bookmyshow": "https://www.bookmyshow.com",
+            "tseries": "https://www.tseries.com",
+            "yashraj": "https://www.yashrajfilms.com",
+            "dharma": "https://www.dharma-production.com",
+            "redchillies": "https://www.redchillies.com",
+            "saregama": "https://www.saregama.com",
+            "zee": "https://www.zee.com",
+            "sony": "https://www.sony.co.in",
+            "spotify": "https://www.spotify.com",
+            "jiosaavn": "https://www.jiosaavn.com",
+            "musicyt": "https://music.youtube.com",
+            "ndtv": "https://www.ndtv.com",
+            "indiatoday": "https://www.indiatoday.in",
+            "aajtak": "https://www.aajtak.in",
+            "thehindu": "https://www.thehindu.com",
+            "indianexpress": "https://indianexpress.com",
+            "hindustantimes": "https://www.hindustantimes.com",
+            "timesofindia": "https://timesofindia.indiatimes.com",
+            "news18": "https://www.news18.com",
+            "zeenews": "https://zeenews.india.com",
+            "abplive": "https://www.abplive.com",
+            "bhaskar": "https://www.bhaskar.com",
+            "jagran": "https://www.jagran.com",
+            "amarujala": "https://www.amarujala.com",
+            "livehindustan": "https://www.livehindustan.com",
+            "firstpost": "https://www.firstpost.com",
+            "wionews": "https://www.wionews.com",
+            "moneycontrol": "https://www.moneycontrol.com",
+            "economictimes": "https://economictimes.indiatimes.com",
+            "businessstandard": "https://www.business-standard.com",
+            "financialexpress": "https://www.financialexpress.com",
+            "cbse": "https://www.cbse.gov.in",
+            "nta": "https://www.nta.ac.in",
+            "upsc": "https://upsc.gov.in",
+            "ssc": "https://ssc.gov.in",
+            "ugc": "https://ugc.gov.in",
+            "ncert": "https://ncert.nic.in",
+            "swayam": "https://swayam.gov.in",
+            "ncs": "https://ncs.gov.in",
+            "naukri": "https://www.naukri.com",
+            "indeed": "https://www.indeed.com",
+            "foundit": "https://www.foundit.in",
+            "coursera": "https://www.coursera.org",
+            "udemy": "https://www.udemy.com",
+            "khanacademy": "https://www.khanacademy.org",
+            "unacademy": "https://unacademy.com",
+            "vedantu": "https://www.vedantu.com",
+            "byjus": "https://byjus.com",
+            "iitb": "https://www.iitb.ac.in",
+            "iitd": "https://www.iitd.ac.in",
+            "iisc": "https://www.iisc.ac.in"
+                "irctc": "https://www.irctc.co.in",
+            "indianrailways": "https://indianrailways.gov.in",
+            "makemytrip": "https://www.makemytrip.com",
+            "goibibo": "https://www.goibibo.com",
+            "yatra": "https://www.yatra.com",
+            "cleartrip": "https://www.cleartrip.com",
+            "redbus": "https://www.redbus.in",
+            "goindigo": "https://www.goindigo.in",
+            "airindia": "https://www.airindia.com",
+            "spicejet": "https://www.spicejet.com",
+            "uber": "https://www.uber.com",
+            "booking": "https://www.booking.com",
+            "airbnb": "https://www.airbnb.co.in",
+            "incredibleindia": "https://www.incredibleindia.gov.in",
+            "mohfw": "https://www.mohfw.gov.in",
+            "icmr": "https://www.icmr.gov.in",
+            "aiims": "https://www.aiims.edu",
+            "who": "https://www.who.int",
+            "apollohospitals": "https://www.apollohospitals.com",
+            "fortishealthcare": "https://www.fortishealthcare.com",
+            "medanta": "https://www.medanta.org",
+            "practo": "https://www.practo.com",
+            "tata1mg": "https://www.tata1mg.com",
+            "netmeds": "https://www.netmeds.com",
+            "mayoclinic": "https://www.mayoclinic.org",
+            "justdial": "https://www.justdial.com",
+            "googlemaps": "https://maps.google.com",
+            "mapmyindia": "https://www.mapmyindia.com",
+            "sebi": "https://www.sebi.gov.in",
+            "licindia": "https://www.licindia.in",
+            "policybazaar": "https://www.policybazaar.com",
+            "airtel": "https://www.airtel.in",
+            "jio": "https://www.jio.com",
+            "vi": "https://www.vi.in",
+            "bsnl": "https://www.bsnl.co.in",
+            "indiaresults": "https://www.indiaresults.com",
+            "isro": "https://www.isro.gov.in",
+            "nasa": "https://www.nasa.gov",
+            "drdo": "https://www.drdo.gov.in",
+            "csir": "https://www.csir.res.in",
+            "nature": "https://www.nature.com",
+            "britannica": "https://www.britannica.com",
+            "nationalgeographic": "https://www.nationalgeographic.com",
+            "iskcon": "https://www.iskcon.org",
+            "isha": "https://isha.sadhguru.org",
+            "tirumala": "https://www.tirumala.org",
+            "drikpanchang": "https://www.drikpanchang.com",
+            "sarkariresult": "https://www.sarkariresult.com",
+            "freejobalert": "https://www.freejobalert.com",
+            "w3schools": "https://www.w3schools.com",
+                "dominospizza": "https://www.dominos.co.in",
+            "kfcindia": "https://www.kfc.co.in",
+            "mcdonaldsindia": "https://www.mcdonalds.in",
+            "starbucksindia": "https://www.starbucks.in",
+            "cafecoffeeday": "https://www.cafecoffeeday.com",
+            "tesla": "https://www.tesla.com",
+            "toyotabharat": "https://www.toyotabharat.com",
+            "hondacarindia": "https://www.hondacarindia.com",
+            "bmwindia": "https://www.bmw.in",
+            "mercedesbenzindia": "https://www.mercedes-benz.co.in",
+            "figma": "https://www.figma.com",
+            "notion": "https://www.notion.so",
+            "steam": "https://store.steampowered.com",
+            "epicgames": "https://www.epicgames.com",
+            "twitch": "https://www.twitch.tv",
+            "vimeo": "https://vimeo.com",
+            "blogger": "https://www.blogger.com",
+            "wordpress": "https://wordpress.org",
+            "alibaba": "https://www.alibaba.com",
+            "aliexpress": "https://www.aliexpress.com",
+            "ebay": "https://www.ebay.com",
+            "etsy": "https://www.etsy.com",
+            "walmart": "https://www.walmart.com",
+            "nfl": "https://www.nfl.com",
+            "premierleague": "https://www.premierleague.com",
+            "laliga": "https://www.laliga.com",
+            "ufc": "https://www.ufc.com",
+            "downdetector": "https://downdetector.in",
+            "accuweather": "https://www.accuweather.com",
+            "windy": "https://www.windy.com",
+            "duolingo": "https://www.duolingo.com",
+            "chegg": "https://www.chegg.com",
+            "gutenberg": "https://www.gutenberg.org",
+            "archive": "https://archive.org",
+            "worldometer": "https://www.worldometers.info",
+            "chess": "https://www.chess.com",
+            "lichess": "https://lichess.org",
+            "instructables": "https://www.instructables.com",
+            "binance": "https://www.binance.com",
+            "coinbase": "https://www.coinbase.com",
+            "angelone": "https://www.angelone.in",
+            "flickr": "https://www.flickr.com",
+            "imgur": "https://imgur.com",
+            "bandcamp": "https://bandcamp.com",
+            "letterboxd": "https://letterboxd.com",
+            "roblox": "https://www.roblox.com",
+            "minecraft": "https://www.minecraft.net",
+            "codecademy": "https://www.codecademy.com",
+            "monsterindia": "https://www.monsterindia.com",
+            "spacex": "https://www.spacex.com",
+            "pixabay": "https://pixabay.com",
+                    
+    
+        };
+
+        // ================================================================
+        //  3. EXTRA SITES
+        // ================================================================
+        const EXTRA_SITES = {
+            "reddit": "https://www.reddit.com",
+            "quora": "https://www.quora.com",
+            "linkedin": "https://www.linkedin.com",
+            "airindia": "https://www.airindia.com",
+            "indigo": "https://www.goindigo.in"
+        };
+        Object.assign(BASE_DATA, EXTRA_SITES);
+
+        // ================================================================
+        //  4. CACHING – localStorage for images & web results
+        // ================================================================
+        function getCached(key, type) {
+            const fullKey = type + '_' + key;
+            const cached = localStorage.getItem(fullKey);
             if (!cached) return null;
             try {
                 const data = JSON.parse(cached);
-                if (Date.now() - data.timestamp < 3600000) { // 1 hour
-                    return data.images;
-                }
-                localStorage.removeItem(key);
+                if (Date.now() - data.timestamp < 2592000000) return data.value; // 30 दिनों तक कैश रहेगा
+                localStorage.removeItem(fullKey);
                 return null;
             } catch(e) { return null; }
         }
-
-        function setCachedImages(query, images) {
-            const key = 'img_cache_' + query.trim().toLowerCase();
-            const data = { timestamp: Date.now(), images: images };
-            localStorage.setItem(key, JSON.stringify(data));
+        function setCached(key, value, type) {
+            const fullKey = type + '_' + key;
+            const data = { timestamp: Date.now(), value: value };
+            localStorage.setItem(fullKey, JSON.stringify(data));
         }
 
         // ================================================================
-        //  3. AVATAR / USER NAME
-        // ================================================================
-        function updateAvatar() {
-            const name = localStorage.getItem('dhundho_user') || 'D';
-            const circle = document.getElementById('avatarCircle');
-            circle.textContent = name.charAt(0).toUpperCase();
-        }
-
-        function setUserName() {
-            const newName = prompt('Enter your name (for avatar):', localStorage.getItem('dhundho_user') || 'Divy');
-            if (newName && newName.trim()) {
-                localStorage.setItem('dhundho_user', newName.trim());
-                updateAvatar();
-            }
-        }
-
-        // ================================================================
-        //  4. KNOWLEDGE BASE, WIKIPEDIA, AI (पुराना)
+        //  5. KNOWLEDGE BASE, WIKIPEDIA, AI (same as before)
         // ================================================================
         const knowledgeBase = {
             "capital of india": { title: "New Delhi", image: "https://picsum.photos/seed/delhi/200/200", desc: "भारत की राजधानी", detail: "New Delhi भारत का केंद्र शासित प्रदेश है और यहाँ संसद, राष्ट्रपति भवन और सर्वोच्च न्यायालय स्थित हैं।" },
@@ -446,49 +993,13 @@
                 return null;
             }
         }
-
         // ================================================================
-        //  5. BASE DATA (उदाहरण – पूरा 1500+ entries आपके पास है)
+        //  6. SEARCH FUNCTIONS (Core Logic)
         // ================================================================
-        const BASE_DATA = {
-            "aadhaar": "https://uidai.gov.in",
-            "pan card": "https://www.incometaxindia.gov.in",
-            "sbi": "https://sbi.co.in",
-            "youtube": "https://www.youtube.com",
-            "facebook": "https://www.facebook.com",
-            "instagram": "https://www.instagram.com",
-            "amazon": "https://www.amazon.in",
-            "flipkart": "https://www.flipkart.com",
-            "cricket": "https://www.cricbuzz.com",
-            "sarkari result": "https://www.sarkariresult.com",
-            "google": "https://www.google.com",
-            "wikipedia": "https://www.wikipedia.org",
-            "twitter": "https://www.twitter.com",
-            "whatsapp": "https://www.whatsapp.com"
-        };
-        // आपका पूरा BASE_DATA यहाँ होना चाहिए – हमने सिर्फ उदाहरण दिया है।
-
-        const EXTRA_SITES = {
-            "reddit": "https://www.reddit.com",
-            "quora": "https://www.quora.com",
-            "linkedin": "https://www.linkedin.com",
-            "airindia": "https://www.airindia.com",
-            "indigo": "https://www.goindigo.in"
-        };
-        Object.assign(BASE_DATA, EXTRA_SITES);
-
-        let FULL_DATA = { ...BASE_DATA };
-        let allQueries = Object.keys(FULL_DATA);
-
-        async function enhanceDataAsync() {
-            // ... (generate 5000 entries – पहले से मौजूद)
-        }
-        enhanceDataAsync();
-
         function getSite(query) {
             const q = query.toLowerCase().trim();
-            if (FULL_DATA[q]) return FULL_DATA[q];
-            for (const [key, url] of Object.entries(FULL_DATA)) {
+            if (BASE_DATA[q]) return BASE_DATA[q];
+            for (const [key, url] of Object.entries(BASE_DATA)) {
                 if (q.includes(key) || key.includes(q)) return url;
             }
             return null;
@@ -497,7 +1008,7 @@
         function getRelated(query) {
             const q = query.toLowerCase().trim();
             const results = [];
-            for (const key of Object.keys(FULL_DATA)) {
+            for (const key of Object.keys(BASE_DATA)) {
                 if (key.includes(q) || q.includes(key)) {
                     results.push(key);
                     if (results.length >= 10) break;
@@ -540,7 +1051,7 @@
         }
 
         // ================================================================
-        //  6. FEATURES – Fullscreen, Shopping, Email, Back, Lens, Download, Context Menu
+        //  7. FEATURES – Fullscreen, Shopping, Email, Back, Lens, etc.
         // ================================================================
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
@@ -550,9 +1061,19 @@
             }
         }
 
-        function openEmail() {
-            const subject = document.getElementById('resultInput').value || 'Inquiry';
-            window.location.href = 'mailto:?subject=' + encodeURIComponent(subject);
+        function openEmailCompose() {
+            const q = document.getElementById('resultInput').value || 'Inquiry';
+            const choice = confirm('Gmail पर खोलें? (OK = Gmail, Cancel = Outlook)');
+            if (choice) {
+                window.open('https://mail.google.com/mail/?view=cm&fs=1&su=' + encodeURIComponent(q), '_blank');
+            } else {
+                const choice2 = confirm('Outlook? (OK = Outlook, Cancel = Yahoo)');
+                if (choice2) {
+                    window.open('https://outlook.live.com/owa/?path=/mail/action/compose&subject=' + encodeURIComponent(q), '_blank');
+                } else {
+                    window.open('https://compose.mail.yahoo.com/?subject=' + encodeURIComponent(q), '_blank');
+                }
+            }
         }
 
         function toggleShopping() {
@@ -615,488 +1136,123 @@
 
         function showPasswordManager() {
             hideDrawer();
-            const pwd = prompt('Enter master password to view saved passwords:');
-            if (pwd === 'admin123') {
-                const stored = JSON.parse(localStorage.getItem('dhundho_passwords')) || {};
-                let msg = '🔒 Saved Passwords:\n\n';
-                for (const [site, pass] of Object.entries(stored)) msg += `${site}: ${pass}\n`;
-                alert(msg);
-            } else if (pwd) alert('Incorrect password!');
-        }
-
-        function incognitoMode() {
-            hideDrawer();
-            // Reload with dark mode and no history persistence
-            localStorage.setItem('dhundho_incognito', 'true');
-            location.reload();
-        }
-
-        function newIncognito() {
-            incognitoMode();
-        }
-
-        function newTab() {
-            hideDrawer();
-            location.reload();
-        }
-
-        function showRecentSearches() {
-            hideDrawer();
-            const history = getHistory();
-            if (history.length === 0) { alert('कोई हालिया खोज नहीं।'); return; }
-            let msg = '🕒 हालिया खोजें:\n\n';
-            history.slice(0, 15).forEach((q, i) => msg += `${i+1}. ${q}\n`);
+            const master = prompt('Enter master password to access saved passwords:', '');
+            if (!master) return;
+            const stored = JSON.parse(localStorage.getItem('dhundho_passwords')) || {};
+            const decrypt = (text) => {
+                let result = '';
+                for (let i = 0; i < text.length; i++) {
+                    result += String.fromCharCode(text.charCodeAt(i) ^ master.charCodeAt(i % master.length));
+                }
+                return result;
+            };
+            let msg = '🔒 Saved Passwords:\n\n';
+            for (const [site, enc] of Object.entries(stored)) {
+                const dec = decrypt(enc);
+                msg += `${site}: ${dec}\n`;
+            }
             alert(msg);
         }
 
-        function downloadHistory() {
-            const history = getHistory();
-            if (history.length === 0) { alert('इतिहास खाली है!'); return; }
-            const text = history.join('\n');
-            const blob = new Blob([text], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'dhundho_history.txt';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            hideDrawer();
-        }
-
-        let zoomLevel = 1;
-        function zoomPage() {
-            zoomLevel = zoomLevel === 1 ? 1.5 : zoomLevel === 1.5 ? 0.8 : 1;
-            document.body.style.zoom = zoomLevel;
-            hideDrawer();
-        }
-
-        // ================================================================
-        //  7. CONTEXT MENU (long-press / right-click) – added "Download Image"
-        // ================================================================
-        let contextTarget = null;
-        let longPressTimer = null;
-
-        function showContextMenu(e, target) {
-            e.preventDefault();
-            contextTarget = target;
-            const menu = document.getElementById('contextMenu');
-            menu.style.display = 'block';
-            menu.style.left = (e.clientX || e.pageX) + 'px';
-            menu.style.top = (e.clientY || e.pageY) + 'px';
-        }
-
-        function hideContextMenu() {
-            document.getElementById('contextMenu').style.display = 'none';
-        }
-
-        document.addEventListener('touchstart', function(e) {
-            const target = e.target.closest('a, .title, .snippet, .faq-item, .search-for-item, .news-item, .result-block, .img-card');
-            if (!target) return;
-            longPressTimer = setTimeout(() => {
-                showContextMenu(e, target);
-            }, 600);
-        });
-
-        document.addEventListener('touchmove', function(e) {
-            clearTimeout(longPressTimer);
-        });
-
-        document.addEventListener('touchend', function(e) {
-            clearTimeout(longPressTimer);
-        });
-
-        document.addEventListener('contextmenu', function(e) {
-            const target = e.target.closest('a, .title, .snippet, .faq-item, .search-for-item, .news-item, .result-block, .img-card');
-            if (target) {
-                showContextMenu(e, target);
-            }
-        });
-
-        document.querySelectorAll('.ctx-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const action = this.dataset.action;
-                if (!contextTarget) return;
-                if (action === 'copy') {
-                    const text = contextTarget.innerText || contextTarget.href || '';
-                    navigator.clipboard.writeText(text).then(() => alert('Copied!')).catch(() => alert('Copy failed.'));
-                } else if (action === 'cut') {
-                    const text = contextTarget.innerText || '';
-                    navigator.clipboard.writeText(text).then(() => {
-                        if (contextTarget.tagName === 'A' || contextTarget.tagName === 'INPUT') {
-                            contextTarget.value = '';
-                        } else {
-                            contextTarget.innerText = '';
-                        }
-                        alert('Cut!');
-                    }).catch(() => alert('Cut failed.'));
-                } else if (action === 'paste') {
-                    navigator.clipboard.readText().then(text => {
-                        if (contextTarget.tagName === 'INPUT' || contextTarget.tagName === 'TEXTAREA') {
-                            contextTarget.value = text;
-                        } else {
-                            contextTarget.innerText = text;
-                        }
-                        alert('Pasted!');
-                    }).catch(() => alert('Paste failed.'));
-                } else if (action === 'save') {
-                    bookmarkPage();
-                } else if (action === 'download') {
-                    // Try to download image if contextTarget is an img inside .img-card
-                    const img = contextTarget.querySelector('img');
-                    if (img && img.src) {
-                        const link = document.createElement('a');
-                        link.href = img.src;
-                        link.download = 'dhundho_image.jpg';
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        alert('Image downloaded!');
-                    } else {
-                        alert('No image to download.');
-                    }
-                } else if (action === 'exit') {
-                    showExitPrompt();
+        function savePassword(site, password) {
+            const master = prompt('Enter master password to save:', '');
+            if (!master) return;
+            const stored = JSON.parse(localStorage.getItem('dhundho_passwords')) || {};
+            const encrypt = (text) => {
+                let result = '';
+                for (let i = 0; i < text.length; i++) {
+                    result += String.fromCharCode(text.charCodeAt(i) ^ master.charCodeAt(i % master.length));
                 }
-                hideContextMenu();
-            });
-        });
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.context-menu')) hideContextMenu();
-        });
-
-        // ================================================================
-        //  8. RENDER IMAGES (with caching and fallback)
-        // ================================================================
-        function renderImages(query) {
-            const q = query.trim();
-            const container = document.getElementById('content-area');
-
-            // Check cache first
-            const cached = getCachedImages(q);
-            if (cached && cached.length > 0) {
-                displayImages(cached, q);
-                return;
-            }
-
-            // Show loading placeholders
-            let html = `<div class="img-grid" id="imageGrid">`;
-            for (let i = 0; i < 9; i++) {
-                html += `<div class="img-card" style="background:#eee;display:flex;align-items:center;justify-content:center;font-size:20px;color:#aaa;">⏳</div>`;
-            }
-            html += `</div>`;
-            container.innerHTML = html;
-
-            // Try Unsplash first
-            fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=9&client_id=${UNSPLASH_ACCESS_KEY}`)
-                .then(res => {
-                    if (!res.ok) throw new Error('Unsplash limit');
-                    return res.json();
-                })
-                .then(data => {
-                    if (data.results && data.results.length > 0) {
-                        const images = data.results.map(img => img.urls.small);
-                        setCachedImages(q, images);
-                        displayImages(images, q);
-                    } else {
-                        // No results from Unsplash – try Google CSE
-                        fetchGoogleImages(q);
-                    }
-                })
-                .catch(() => {
-                    // Unsplash failed – try Google CSE
-                    fetchGoogleImages(q);
-                });
-        }
-
-        function fetchGoogleImages(query) {
-            const q = query.trim();
-            const url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(q)}&searchType=image&num=9&key=${GOOGLE_API_KEY}&cx=${GOOGLE_CX}`;
-            fetch(url)
-                .then(res => {
-                    if (!res.ok) throw new Error('Google CSE limit');
-                    return res.json();
-                })
-                .then(data => {
-                    if (data.items && data.items.length > 0) {
-                        const images = data.items.map(item => item.link);
-                        setCachedImages(q, images);
-                        displayImages(images, q);
-                    } else {
-                        // Both failed – fallback to Google Images link
-                        document.getElementById('imageGrid').innerHTML = `<div style="text-align:center;width:100%;padding:20px;">कोई इमेज नहीं मिली। <a href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}" target="_blank">Google Images पर देखें →</a></div>`;
-                    }
-                })
-                .catch(() => {
-                    // Google CSE failed – final fallback
-                    document.getElementById('imageGrid').innerHTML = `<div style="text-align:center;width:100%;padding:20px;">छवि लोड नहीं हुई। <a href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}" target="_blank">Google Images पर देखें →</a></div>`;
-                });
-        }
-
-        function displayImages(images, query) {
-            const grid = document.getElementById('imageGrid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            images.forEach((src, index) => {
-                const card = document.createElement('div');
-                card.className = 'img-card';
-                card.innerHTML = `<img src="${src}" loading="lazy" onclick="window.open('${src}','_blank')" onerror="this.style.display='none';this.parentElement.style.fontSize='40px';this.parentElement.textContent='🖼️';">`;
-                // Add title
-                const title = document.createElement('div');
-                title.className = 'img-title';
-                title.textContent = `${query} #${index+1}`;
-                card.appendChild(title);
-                grid.appendChild(card);
-            });
-        }
-
-        // ================================================================
-        //  9. RENDER ALL RESULTS (including Knowledge, AI, Social, etc.)
-        // ================================================================
-        async function renderAllResults(query) {
-            const q = query.trim();
-            let html = '';
-
-            // Knowledge Panel
-            const knowledge = getKnowledgeAnswer(q);
-            if (knowledge) {
-                html += `
-                    <div class="knowledge-panel">
-                        <img src="${knowledge.image}" alt="${knowledge.title}" onerror="this.style.display='none'">
-                        <div class="info">
-                            <div class="title">${knowledge.title}</div>
-                            <div class="desc">${knowledge.desc}</div>
-                            <div class="detail">${knowledge.detail}</div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            // Wikipedia Summary
-            const wikiData = await fetchWikipediaSummary(q);
-            if (wikiData) {
-                html += `
-                    <div class="knowledge-panel" style="border-left-color:#3366cc;">
-                        <img src="${wikiData.thumbnail || 'https://picsum.photos/seed/wiki/200/200'}" alt="${wikiData.title}" onerror="this.style.display='none'">
-                        <div class="info">
-                            <div class="title">${wikiData.title}</div>
-                            <div class="desc">Wikipedia से</div>
-                            <div class="detail">${wikiData.extract.substring(0, 300)}...</div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            // AI Answer
-            if (!knowledge && !wikiData) {
-                const ai = getAIAnswer(q);
-                if (ai) html += `<div class="ai-answer"><div class="answer">${ai.answer}</div><div class="desc">${ai.desc}</div></div>`;
-            }
-
-            // Direct site
-            const directSite = getSite(q);
-            if (directSite) {
-                const displayName = q.length > 30 ? q.slice(0,30)+'...' : q;
-                html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">🌐</div>${new URL(directSite).hostname}</div><a href="${directSite}" target="_blank" class="title">${displayName}</a><div class="snippet">${q} की आधिकारिक वेबसाइट – सभी जानकारी यहाँ उपलब्ध है।</div></div>`;
-            }
-
-            // Related
-            const related = getRelated(q);
-            const shown = new Set();
-            let count = 0;
-            for (const key of related) {
-                const url = getSite(key);
-                if (url && !shown.has(url) && key.toLowerCase() !== q.toLowerCase()) {
-                    shown.add(url);
-                    const displayName = key.length > 35 ? key.slice(0,35)+'...' : key;
-                    html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#4285F4;color:#fff;">🔗</div>${new URL(url).hostname}</div><a href="${url}" target="_blank" class="title">${displayName}</a><div class="snippet">"${key}" से संबंधित जानकारी – आधिकारिक स्रोत।</div></div>`;
-                    count++;
-                    if (count >= 5) break;
-                }
-            }
-
-            // Social links
-            const socialSites = [
-                { name: "Facebook", icon: "f", color: "#1877F2", url: "https://www.facebook.com/search/top/?q="+encodeURIComponent(q) },
-                { name: "Instagram", icon: "I", color: "#E1306C", url: "https://www.instagram.com/explore/search/keyword/?q="+encodeURIComponent(q) },
-                { name: "Snapchat", icon: "S", color: "#FFFC00", url: "https://www.snapchat.com/search?q="+encodeURIComponent(q) },
-                { name: "Quora", icon: "Q", color: "#B92B27", url: "https://www.quora.com/search?q="+encodeURIComponent(q) },
-                { name: "Wikipedia", icon: "W", color: "#000000", url: "https://www.wikipedia.org/w/index.php?search="+encodeURIComponent(q) },
-                { name: "Reddit", icon: "R", color: "#FF4500", url: "https://www.reddit.com/search/?q="+encodeURIComponent(q) },
-                { name: "X (Twitter)", icon: "🐦", color: "#000000", url: "https://x.com/search?q="+encodeURIComponent(q) },
-                { name: "LinkedIn", icon: "in", color: "#0A66C2", url: "https://www.linkedin.com/search/results/all/?keywords="+encodeURIComponent(q) }
-            ];
-            html += `<div class="box-title">🌐 सोशल और जानकारी</div>`;
-            for (const site of socialSites) {
-                if (!shown.has(site.url)) {
-                    const title = getCreativeTitle(site.name, q);
-                    html += `<div class="result-block"><div class="url"><div class="favicon" style="background:${site.color};color:#fff;">${site.icon}</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${title}</a><div class="snippet">${site.name} पर "${q}" से संबंधित सामग्री।</div></div>`;
-                }
-            }
-
-            // Extra sites
-            const extraMap = {
-                'india': ['india.gov.in', 'britanica.com', 'indiapost.gov.in', 'worldbank.org', 'nationalgeographic.com', 'globaledge.msu.edu'],
-                'cricket': ['cricinfo.com', 'icc-cricket.com', 'olympics.com', 'usacricket.org'],
-                'flight': ['airindia.com', 'goindigo.in', 'spicejet.com', 'airvistara.com']
+                return result;
             };
-            let extraUrls = [];
-            if (q.includes('india')) extraUrls = extraUrls.concat(extraMap['india']);
-            if (q.includes('cricket')) extraUrls = extraUrls.concat(extraMap['cricket']);
-            if (q.includes('flight') || q.includes('air') || q.includes('plane')) extraUrls = extraUrls.concat(extraMap['flight']);
-            for (const [key, url] of Object.entries(EXTRA_SITES)) {
-                if (q.includes(key) && !shown.has(url) && !extraUrls.includes(url)) extraUrls.push(url);
+            stored[site] = encrypt(password);
+            localStorage.setItem('dhundho_passwords', JSON.stringify(stored));
+            alert('Password saved!');
+        }
+
+        // ================================================================
+        //  8. TABS SYSTEM
+        // ================================================================
+        let tabs = [{ id: 0, query: '', dark: false }];
+        let activeTab = 0;
+
+        function renderTabs() {
+            const container = document.getElementById('tabContainer');
+            const addBtn = container.querySelector('.tab-add');
+            container.innerHTML = '';
+            tabs.forEach((tab, index) => {
+                const btn = document.createElement('div');
+                btn.className = 'tab-btn' + (index === activeTab ? ' active' : '');
+                btn.dataset.tab = index;
+                btn.innerHTML = `<span>${tab.dark ? '🌙' : '🏠'}</span> Tab ${index+1} <span class="tab-close" onclick="event.stopPropagation(); closeTab(${index})">×</span>`;
+                btn.onclick = () => switchTab(index);
+                container.appendChild(btn);
+            });
+            container.appendChild(addBtn);
+        }
+
+        function addNewTab(dark = false) {
+            const newId = tabs.length ? Math.max(...tabs.map(t => t.id)) + 1 : 0;
+            tabs.push({ id: newId, query: '', dark: dark });
+            activeTab = tabs.length - 1;
+            renderTabs();
+            goHome();
+            if (dark) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('dhundho_dark', 'true');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('dhundho_dark', 'false');
             }
-            if (extraUrls.length > 0) {
-                html += `<div class="box-title">📌 संबंधित आधिकारिक साइटें</div>`;
-                for (const url of extraUrls.slice(0, 6)) {
-                    const host = new URL(url).hostname;
-                    html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#0D47A1;color:#fff;">🏛</div>${host}</div><a href="${url}" target="_blank" class="title">${host.replace('www.','')}</a><div class="snippet">${host} – आधिकारिक जानकारी और सेवाएँ।</div></div>`;
+        }
+
+        function switchTab(index) {
+            if (index >= 0 && index < tabs.length) {
+                activeTab = index;
+                renderTabs();
+                const tab = tabs[index];
+                if (tab.query) {
+                    performSearch(tab.query);
+                } else {
+                    goHome();
+                }
+                if (tab.dark) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
                 }
             }
+        }
 
-            // Google fallback
-            if (!directSite && count === 0) {
-                html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#000;color:#fff;">G</div>www.google.com</div><a href="https://www.google.com/search?q=${encodeURIComponent(q)}" target="_blank" class="title">${q} – Google पर खोजें</a><div class="snippet">"${q}" के लिए Google पर अधिक परिणाम देखें।</div></div>`;
-            }
+        function closeTab(index) {
+            if (tabs.length <= 1) return;
+            tabs.splice(index, 1);
+            if (activeTab >= tabs.length) activeTab = tabs.length - 1;
+            renderTabs();
+            switchTab(activeTab);
+        }
 
-            // FAQ, People also search, Random sites
-            html += `<div class="box-title">लोग यह भी पूछते हैं</div>`;
-            const faqs = [`${q} क्या है?`, `${q} का अर्थ क्या है?`, `${q} कैसे करें?`, `${q} की उपयोगिता?`, `${q} से जुड़े फायदे?`];
-            faqs.forEach(f => html += `<div class="faq-item" onclick="performSearch('${f}')"><span>${f}</span><span class="arrow">⌄</span></div>`);
-
-            html += `<div class="box-title">लोग यह भी खोजते हैं</div>`;
-            const relatedSearches = getRelated(q).slice(0, 6);
-            relatedSearches.forEach(s => {
-                if (s.toLowerCase() !== q.toLowerCase()) html += `<div class="search-for-item" onclick="performSearch('${s}')"><span style="color:#1a73e8;">🔍</span> ${s}</div>`;
-            });
-
-            const randomKeys = Object.keys(FULL_DATA).sort(() => Math.random() - 0.5).slice(0, 7);
-            if (randomKeys.length > 0) {
-                html += `<div class="box-title">🎲 यादृच्छिक वेबसाइटें</div>`;
-                randomKeys.forEach(key => {
-                    const url = FULL_DATA[key];
-                    if (url && !shown.has(url)) {
-                        html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#673AB7;color:#fff;">🌀</div>${new URL(url).hostname}</div><a href="${url}" target="_blank" class="title">${key}</a><div class="snippet">"${key}" से संबंधित यादृच्छिक वेबसाइट।</div></div>`;
-                    }
-                });
-            }
-            return html;
+        function newIncognito() {
+            addNewTab(true);
         }
 
         // ================================================================
-        //  10. VIDEOS, NEWS, MORE (unchanged)
+        //  9. CUSTOM SEARCH SHORTCUTS (extension-like)
         // ================================================================
-        function renderVideos(q) {
-            return `<div id="video-loading" style="text-align:center;padding:20px;">⏳ वीडियो लोड हो रहे हैं...</div>`;
+        let customShortcuts = JSON.parse(localStorage.getItem('dhundho_shortcuts')) || {};
+
+        function addCustomSearch() {
+            hideDrawer();
+            const name = prompt('Enter shortcut name (e.g., "wiki"):');
+            if (!name) return;
+            const urlTemplate = prompt('Enter URL template (use {q} for query, e.g., https://en.wikipedia.org/wiki/{q}):');
+            if (!urlTemplate) return;
+            customShortcuts[name] = urlTemplate;
+            localStorage.setItem('dhundho_shortcuts', JSON.stringify(customShortcuts));
+            alert('Shortcut added! Type !' + name + ' query to use.');
         }
-
-        function renderNews(q) {
-            const headlines = [
-                { title: `भारत ने ${q} में बड़ी उपलब्धि हासिल की`, src: "आज तक", url: "https://www.aajtak.in", color: "#D32F2F" },
-                { title: `${q} से जुड़ा ताज़ा अपडेट, पढ़ें पूरी खबर`, src: "TV9 भारतवर्ष", url: "https://www.tv9bharatvarsh.com", color: "#C62828" },
-                { title: `${q} पर विशेष रिपोर्ट – जानें क्या है नया`, src: "रिपब्लिक भारत", url: "https://www.republicbharat.com", color: "#1565C0" },
-                { title: `${q} ने दुनिया को चौंकाया, देखें वीडियो`, src: "ABP न्यूज़", url: "https://www.abplive.com/hindi", color: "#E65100" },
-                { title: `${q} की बड़ी बहस – किसका पक्ष मजबूत?`, src: "ज़ी न्यूज़", url: "https://zeenews.india.com/hindi/", color: "#4527A0" },
-                { title: `${q} में बदलाव – जानिए 5 बड़ी बातें`, src: "News18 इंडिया", url: "https://www.news18.com/hindi/", color: "#2E7D32" },
-                { title: `${q} के नए आयाम – एक्सपर्ट की राय`, src: "इंडिया टीवी", url: "https://www.indiatv.in", color: "#B71C1C" },
-                { title: `विश्व बाजार में ${q} का क्रेज, जानें पूरी कहानी`, src: "बीबीसी हिंदी", url: "https://www.bbc.com/hindi", color: "#0D47A1" },
-                { title: `${q} पर सोशल मीडिया पर तूफान, ट्रेंडिंग में`, src: "हिंदुस्तान टाइम्स", url: "https://www.hindustantimes.com", color: "#1A237E" },
-                { title: `${q} से जुड़ी अनोखी घटना – लोग हैरान`, src: "दैनिक भास्कर", url: "https://www.bhaskar.com", color: "#4A148C" }
-            ];
-            const shuffled = headlines.sort(() => Math.random() - 0.5).slice(0, 5);
-            let html = `<div class="box-title">📰 ताज़ा खबरें</div>`;
-            shuffled.forEach(n => {
-                html += `<div class="news-item" onclick="window.open('${n.url}')"><div class="news-icon" style="background:${n.color}">${n.src[0]}</div><div><div class="news-title">${n.title}</div><div class="news-src">${n.src}</div></div></div>`;
-            });
-            return html;
-        }
-
-        function renderMore(q) {
-            const flightSites = [
-                { name: "Air India", url: "https://www.airindia.com", icon: "✈️" },
-                { name: "IndiGo", url: "https://www.goindigo.in", icon: "✈️" },
-                { name: "SpiceJet", url: "https://www.spicejet.com", icon: "✈️" },
-                { name: "Vistara", url: "https://www.airvistara.com", icon: "✈️" },
-                { name: "GoAir", url: "https://www.goair.in", icon: "✈️" }
-            ];
-            let html = `<div class="box-title">✈️ उड़ान वेबसाइटें</div>`;
-            flightSites.forEach(site => {
-                html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">✈</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${site.name}</a><div class="snippet">${site.name} – उड़ान बुक करें, ऑनलाइन चेक-इन करें।</div></div>`;
-            });
-            const extra = [
-                { name: "IRCTC", url: "https://www.irctc.co.in", icon: "🚆" },
-                { name: "MakeMyTrip", url: "https://www.makemytrip.com", icon: "🏨" },
-                { name: "ClearTrip", url: "https://www.cleartrip.com", icon: "🏨" }
-            ];
-            html += `<div class="box-title">🌐 अन्य सेवाएँ</div>`;
-            extra.forEach(site => {
-                html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#0D47A1;color:#fff;">${site.icon}</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${site.name}</a><div class="snippet">${site.name} – यात्रा, टिकट, होटल।</div></div>`;
-            });
-            return html;
-        }
-
-        // ================================================================
-        //  11. TAB SWITCHING
-        // ================================================================
-        function showTab(tab) {
-            const q = document.getElementById('resultInput').value.trim() || 'भारत';
-            const area = document.getElementById('content-area');
-
-            if (tab === 'all') {
-                renderAllResults(q).then(html => area.innerHTML = html);
-            } else if (tab === 'images') {
-                renderImages(q);
-            } else if (tab === 'videos') {
-                area.innerHTML = renderVideos(q);
-                const API_KEY = "AIzaSyCggxsKMnuCCyFuw0p3LjG9LD213VCBRx8";
-                fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(q)}&key=${API_KEY}&maxResults=8`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.items && data.items.length > 0) {
-                            let vidHtml = `<div class="video-grid">`;
-                            data.items.forEach(item => {
-                                const vidId = item.id.videoId;
-                                vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${vidId}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${vidId}/hqdefault.jpg"></div><div class="video-title">${item.snippet.title}</div><div class="video-meta">${item.snippet.channelTitle}</div></div>`;
-                            });
-                            vidHtml += `</div>`;
-                            area.innerHTML = vidHtml;
-                        } else {
-                            const fallback = [{id:"AETFvQonfV8",title:"हनुमान चालीसा",channel:"भक्ति"},{id:"jdy0GgMbJY0",title:"शिव तांडव",channel:"दिव्य"}];
-                            let vidHtml = `<div class="video-grid">`;
-                            fallback.forEach(item => {
-                                vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div><div class="video-title">${item.title}</div><div class="video-meta">${item.channel}</div></div>`;
-                            });
-                            vidHtml += `</div>`;
-                            area.innerHTML = vidHtml;
-                        }
-                    })
-                    .catch(() => {
-                        const fallback = [{id:"AETFvQonfV8",title:"हनुमान चालीसा",channel:"भक्ति"},{id:"jdy0GgMbJY0",title:"शिव तांडव",channel:"दिव्य"}];
-                        let vidHtml = `<div class="video-grid">`;
-                        fallback.forEach(item => {
-                            vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div><div class="video-title">${item.title}</div><div class="video-meta">${item.channel}</div></div>`;
-                        });
-                        vidHtml += `</div>`;
-                        area.innerHTML = vidHtml;
-                    });
-            } else if (tab === 'news') {
-                area.innerHTML = renderNews(q);
-            } else if (tab === 'more') {
-                area.innerHTML = renderMore(q);
-            }
-
-            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
-            const tabs = document.querySelectorAll('.tabs .tab');
-            const tabMap = { 'all':0, 'images':1, 'videos':2, 'news':4, 'more':6 };
-            const idx = tabMap[tab];
-            if (idx !== undefined && tabs[idx]) tabs[idx].classList.add('active');
-        }
-
-        // ================================================================
-        //  12. HISTORY, DARK MODE, UI
+            // ================================================================
+        //  10. HISTORY, DARK MODE, UI (continued)
         // ================================================================
         let searchHistory = JSON.parse(localStorage.getItem('dhundho_history')) || [];
         function saveHistory() { localStorage.setItem('dhundho_history', JSON.stringify(searchHistory)); }
@@ -1119,13 +1275,6 @@
         }
         applyDarkMode();
 
-        // Check for incognito flag
-        if (localStorage.getItem('dhundho_incognito') === 'true') {
-            darkMode = true;
-            applyDarkMode();
-            localStorage.removeItem('dhundho_incognito');
-        }
-
         function goHome() {
             document.getElementById('home-view').style.display = 'flex';
             document.getElementById('results-view').style.display = 'none';
@@ -1146,7 +1295,7 @@
             document.getElementById('overlay').style.display = 'none';
             document.getElementById('drawer').classList.remove('open');
         }
-        function newTab() { hideDrawer(); location.reload(); }
+        function newTab() { hideDrawer(); addNewTab(); }
         function exitApp() { hideExitPrompt(); hideDrawer(); window.close(); if (window.location.href !== 'about:blank') alert('बाहर निकलने के लिए इस टैब को मैन्युअल रूप से बंद करें।'); }
         function showExitPrompt() { hideDrawer(); document.getElementById('exitOverlay').style.display = 'flex'; }
         function hideExitPrompt() { document.getElementById('exitOverlay').style.display = 'none'; }
@@ -1170,14 +1319,35 @@
                 alert('इतिहास साफ़ कर दिया गया!');
             }
         }
+        function downloadHistory() {
+            const history = getHistory();
+            if (history.length === 0) { alert('इतिहास खाली है!'); return; }
+            const text = history.join('\n');
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dhundho_history.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            hideDrawer();
+        }
         function clearResultInput() {
             document.getElementById('resultInput').value = '';
             document.getElementById('resultSuggestions').style.display = 'none';
             document.getElementById('resultInput').focus();
         }
+        let zoomLevel = 1;
+        function zoomPage() {
+            zoomLevel = zoomLevel === 1 ? 1.5 : zoomLevel === 1.5 ? 0.8 : 1;
+            document.body.style.zoom = zoomLevel;
+            hideDrawer();
+        }
 
         // ================================================================
-        //  13. VOICE SEARCH
+        //  11. VOICE SEARCH
         // ================================================================
         function voiceSearchHome() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert('वॉयस सर्च समर्थित नहीं है।'); return; }
@@ -1218,8 +1388,10 @@
         }
 
         // ================================================================
-        //  14. SUGGESTIONS
+        //  12. SUGGESTIONS
         // ================================================================
+        const allQueries = Object.keys(BASE_DATA);
+
         function showHomeSuggestions() { filterHomeSuggestions(document.getElementById('homeInput').value); }
         function filterHomeSuggestions(val) {
             const container = document.getElementById('homeSuggestions');
@@ -1248,13 +1420,26 @@
         }
 
         // ================================================================
-        //  15. PERFORM SEARCH
+        //  13. PERFORM SEARCH (with shortcuts and caching)
         // ================================================================
         function performSearch(query) {
             if (!query) return;
             query = query.trim();
             if (!query) return;
+
+            if (query.startsWith('!')) {
+                const parts = query.slice(1).split(' ');
+                const short = parts[0];
+                const rest = parts.slice(1).join(' ');
+                if (customShortcuts[short]) {
+                    const url = customShortcuts[short].replace('{q}', encodeURIComponent(rest));
+                    window.open(url, '_blank');
+                    return;
+                }
+            }
+
             addToHistory(query);
+            if (tabs[activeTab]) tabs[activeTab].query = query;
             window.location.hash = encodeURIComponent(query);
 
             document.getElementById('home-view').style.display = 'none';
@@ -1280,33 +1465,302 @@
                 if (site) { window.open(site, '_blank'); return; }
                 window.open('https://www.google.com/search?q=' + encodeURIComponent(q), '_blank');
             } else {
-                const randoms = Object.keys(FULL_DATA).sort(() => Math.random() - 0.5).slice(0, 5);
+                const randoms = Object.keys(BASE_DATA).sort(() => Math.random() - 0.5).slice(0, 5);
                 if (randoms.length > 0) {
                     const pick = randoms[Math.floor(Math.random() * randoms.length)];
-                    window.open(FULL_DATA[pick], '_blank');
+                    window.open(BASE_DATA[pick], '_blank');
                 }
             }
         }
+            // ================================================================
+        //  14. CONTEXT MENU
+        // ================================================================
+        let contextTarget = null;
+        let longPressTimer = null;
+
+        function showContextMenu(e, target) {
+            e.preventDefault();
+            contextTarget = target;
+            const menu = document.getElementById('contextMenu');
+            menu.style.display = 'block';
+            menu.style.left = (e.clientX || e.pageX) + 'px';
+            menu.style.top = (e.clientY || e.pageY) + 'px';
+        }
+
+        function hideContextMenu() {
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+
+        document.addEventListener('touchstart', function(e) {
+            const target = e.target.closest('a, .title, .snippet, .faq-item, .search-for-item, .news-item, .result-block, .img-card');
+            if (!target) return;
+            longPressTimer = setTimeout(() => { showContextMenu(e, target); }, 600);
+        });
+
+        document.addEventListener('touchmove', function(e) { clearTimeout(longPressTimer); });
+        document.addEventListener('touchend', function(e) { clearTimeout(longPressTimer); });
+
+        document.addEventListener('contextmenu', function(e) {
+            const target = e.target.closest('a, .title, .snippet, .faq-item, .search-for-item, .news-item, .result-block, .img-card');
+            if (target) showContextMenu(e, target);
+        });
+
+        document.querySelectorAll('.ctx-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const action = this.dataset.action;
+                if (!contextTarget) return;
+                if (action === 'copy') {
+                    const text = contextTarget.innerText || contextTarget.href || '';
+                    navigator.clipboard.writeText(text).then(() => alert('Copied!')).catch(() => alert('Copy failed.'));
+                } else if (action === 'cut') {
+                    const text = contextTarget.innerText || '';
+                    navigator.clipboard.writeText(text).then(() => {
+                        if (contextTarget.tagName === 'A' || contextTarget.tagName === 'INPUT') contextTarget.value = '';
+                        else contextTarget.innerText = '';
+                        alert('Cut!');
+                    }).catch(() => alert('Cut failed.'));
+                } else if (action === 'paste') {
+                    navigator.clipboard.readText().then(text => {
+                        if (contextTarget.tagName === 'INPUT' || contextTarget.tagName === 'TEXTAREA') contextTarget.value = text;
+                        else contextTarget.innerText = text;
+                        alert('Pasted!');
+                    }).catch(() => alert('Paste failed.'));
+                } else if (action === 'save') bookmarkPage();
+                else if (action === 'download') {
+                    const img = contextTarget.querySelector('img');
+                    if (img && img.src) {
+                        const link = document.createElement('a');
+                        link.href = img.src; link.download = 'dhundho_image.jpg';
+                        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                        alert('Image downloaded!');
+                    } else alert('No image to download.');
+                } else if (action === 'exit') showExitPrompt();
+                hideContextMenu();
+            });
+        });
+
+        document.addEventListener('click', function(e) { if (!e.target.closest('.context-menu')) hideContextMenu(); });
 
         // ================================================================
-        //  16. INIT
+        // ================================================================
+        //  15. RENDER FUNCTIONS (All, Images, Videos, News, More)
+        // ================================================================
+        async function fetchGoogleResults(query) {
+            const cached = getCached(query, 'google');
+            if (cached) return cached;
+
+            const url = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${GOOGLE_CX}&q=${encodeURIComponent(query)}`;
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.items && data.items.length > 0) {
+                    const html = data.items.map(item => `<div class="result-block"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">🔗</div>${new URL(item.link).hostname}</div><a href="${item.link}" target="_blank" class="title">${item.title}</a><div class="snippet">${item.snippet}</div></div>`).join('');
+                    setCached(query, html, 'google');
+                    return html;
+                }
+            } catch (e) { return ''; }
+            return '';
+        }
+
+        async function renderAllResults(query) {
+            const q = query.trim();
+            let html = '';
+            const knowledge = getKnowledgeAnswer(q);
+            if (knowledge) html += `<div class="knowledge-panel"><img src="${knowledge.image}" alt="${knowledge.title}" onerror="this.style.display='none'"><div class="info"><div class="title">${knowledge.title}</div><div class="desc">${knowledge.desc}</div><div class="detail">${knowledge.detail}</div></div></div>`;
+            
+            const wikiData = await fetchWikipediaSummary(q);
+            if (wikiData) html += `<div class="knowledge-panel" style="border-left-color:#3366cc;"><img src="${wikiData.thumbnail || 'https://picsum.photos/seed/wiki/200/200'}" alt="${wikiData.title}" onerror="this.style.display='none'"><div class="info"><div class="title">${wikiData.title}</div><div class="desc">Wikipedia से</div><div class="detail">${wikiData.extract.substring(0, 300)}...</div></div></div>`;
+
+            if (!knowledge && !wikiData) {
+                const ai = getAIAnswer(q);
+                if (ai) html += `<div class="ai-answer"><div class="answer">${ai.answer}</div><div class="desc">${ai.desc}</div></div>`;
+            }
+
+            // असली Google के नीले रिजल्ट्स (सिर्फ एक बार कॉल होगा!)
+            const googleHtml = await fetchGoogleResults(q);
+            if (googleHtml) html += googleHtml;
+
+            const directSite = getSite(q);
+            if (directSite) {
+                const displayName = q.length > 30 ? q.slice(0,30)+'...' : q;
+                html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">🌐</div>${new URL(directSite).hostname}</div><a href="${directSite}" target="_blank" class="title">${displayName}</a><div class="snippet">${q} की आधिकारिक वेबसाइट – सभी जानकारी यहाँ उपलब्ध है।</div></div>`;
+            }
+
+            const related = getRelated(q);
+            const shown = new Set();
+            let count = 0;
+            for (const key of related) {
+                const url = getSite(key);
+                if (url && !shown.has(url) && key.toLowerCase() !== q.toLowerCase()) {
+                    shown.add(url);
+                    const displayName = key.length > 35 ? key.slice(0,35)+'...' : key;
+                    html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#4285F4;color:#fff;">🔗</div>${new URL(url).hostname}</div><a href="${url}" target="_blank" class="title">${displayName}</a><div class="snippet">"${key}" से संबंधित जानकारी – आधिकारिक स्रोत।</div></div>`;
+                    count++;
+                    if (count >= 5) break;
+                }
+            }
+
+            const socialSites = [
+                { name: "Facebook", icon: "f", color: "#1877F2", url: "https://www.facebook.com/search/top/?q="+encodeURIComponent(q) },
+                { name: "Instagram", icon: "I", color: "#E1306C", url: "https://www.instagram.com/explore/search/keyword/?q="+encodeURIComponent(q) },
+                { name: "Snapchat", icon: "S", color: "#FFFC00", url: "https://www.snapchat.com/search?q="+encodeURIComponent(q) },
+                { name: "Quora", icon: "Q", color: "#B92B27", url: "https://www.quora.com/search?q="+encodeURIComponent(q) },
+                { name: "Wikipedia", icon: "W", color: "#000000", url: "https://www.wikipedia.org/w/index.php?search="+encodeURIComponent(q) },
+                { name: "Reddit", icon: "R", color: "#FF4500", url: "https://www.reddit.com/search/?q="+encodeURIComponent(q) },
+                { name: "X (Twitter)", icon: "🐦", color: "#000000", url: "https://x.com/search?q="+encodeURIComponent(q) },
+                { name: "LinkedIn", icon: "in", color: "#0A66C2", url: "https://www.linkedin.com/search/results/all/?keywords="+encodeURIComponent(q) }
+            ];
+            html += `<div class="box-title">🌐 सोशल और जानकारी</div>`;
+            for (const site of socialSites) {
+                if (!shown.has(site.url)) {
+                    const title = getCreativeTitle(site.name, q);
+                    html += `<div class="result-block"><div class="url"><div class="favicon" style="background:${site.color};color:#fff;">${site.icon}</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${title}</a><div class="snippet">${site.name} पर "${q}" से संबंधित सामग्री।</div></div>`;
+                }
+            }
+
+            const extraMap = { 'india': ['india.gov.in', 'britannica.com', 'indiapost.gov.in', 'worldbank.org', 'nationalgeographic.com', 'globaledge.msu.edu'], 'cricket': ['cricinfo.com', 'icc-cricket.com', 'olympics.com', 'usacricket.org'], 'flight': ['airindia.com', 'goindigo.in', 'spicejet.com', 'airvistara.com'] };
+            let extraUrls = [];
+            if (q.includes('india')) extraUrls = extraUrls.concat(extraMap['india']);
+            if (q.includes('cricket')) extraUrls = extraUrls.concat(extraMap['cricket']);
+            if (q.includes('flight') || q.includes('air') || q.includes('plane')) extraUrls = extraUrls.concat(extraMap['flight']);
+            for (const [key, url] of Object.entries(EXTRA_SITES)) if (q.includes(key) && !shown.has(url) && !extraUrls.includes(url)) extraUrls.push(url);
+            if (extraUrls.length > 0) {
+                html += `<div class="box-title">📌 संबंधित आधिकारिक साइटें</div>`;
+                for (const url of extraUrls.slice(0, 6)) {
+                    const host = new URL(url).hostname;
+                    html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#0D47A1;color:#fff;">🏛</div>${host}</div><a href="${url}" target="_blank" class="title">${host.replace('www.','')}</a><div class="snippet">${host} – आधिकारिक जानकारी और सेवाएँ।</div></div>`;
+                }
+            }
+
+            html += `<div class="box-title">लोग यह भी पूछते हैं</div>`;
+            const faqs = [`${q} क्या है?`, `${q} का अर्थ क्या है?`, `${q} कैसे करें?`, `${q} की उपयोगिता?`, `${q} से जुड़े फायदे?`];
+            faqs.forEach(f => html += `<div class="faq-item" onclick="performSearch('${f}')"><span>${f}</span><span class="arrow">⌄</span></div>`);
+
+            html += `<div class="box-title">लोग यह भी खोजते हैं</div>`;
+            getRelated(q).slice(0, 6).forEach(s => { if (s.toLowerCase() !== q.toLowerCase()) html += `<div class="search-for-item" onclick="performSearch('${s}')"><span style="color:#1a73e8;">🔍</span> ${s}</div>`; });
+
+            const randomKeys = Object.keys(BASE_DATA).sort(() => Math.random() - 0.5).slice(0, 7);
+            if (randomKeys.length > 0) {
+                html += `<div class="box-title">🎲 यादृच्छिक वेबसाइटें</div>`;
+                randomKeys.forEach(key => {
+                    const url = BASE_DATA[key];
+                    if (url && !shown.has(url)) html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#673AB7;color:#fff;">🌀</div>${new URL(url).hostname}</div><a href="${url}" target="_blank" class="title">${key}</a><div class="snippet">"${key}" से संबंधित यादृच्छिक वेबसाइट।</div></div>`;
+                });
+            }
+
+            if (!directSite && count === 0) html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#000;color:#fff;">G</div>www.google.com</div><a href="https://www.google.com/search?q=${encodeURIComponent(q)}" target="_blank" class="title">${q} – Google पर खोजें</a><div class="snippet">"${q}" के लिए Google पर अधिक परिणाम देखें।</div></div>`;
+            return html;
+        }
+
+        // renderImages, renderVideos, renderNews, renderMore के फंक्शन अभी आपके पास सही हैं
+             function renderImages(q) {
+            const area = document.getElementById('content-area');
+            const cached = getCached(q, 'images');
+            if (cached) { area.innerHTML = cached; return; } // पहले से सेव है, API हिट नहीं होगी
+
+            area.innerHTML = `<div style="text-align:center;padding:20px;">🖼️ तस्वीरें लोड हो रही हैं...</div>`;
+            const imgUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=9&client_id=${UNSPLASH_ACCESS_KEY}`;
+            fetch(imgUrl).then(res => res.json()).then(data => {
+                let html = `<div class="img-grid">`;
+                if (data.results && data.results.length > 0) data.results.forEach(img => { html += `<div class="img-card" onclick="window.open('${img.links.html}')"><img src="${img.urls.small}" alt="${img.alt_description}"><div class="img-title">${img.alt_description || q}</div></div>`; });
+                else for(let i=0;i<9;i++) html += `<div class="img-card"><img src="https://picsum.photos/seed/${q}${i}/400/300"></div>`;
+                html += `</div>`; area.innerHTML = html;
+                setCached(q, html, 'images'); // सेव करें
+            }).catch(() => { let html = `<div class="img-grid">`; for(let i=0;i<9;i++) html += `<div class="img-card"><img src="https://picsum.photos/seed/${q}${i}/400/300"></div>`; html += `</div>`; area.innerHTML = html; setCached(q, html, 'images'); });
+        }
+
+        function renderVideos(q) {
+            const area = document.getElementById('content-area');
+            const cached = getCached(q, 'videos');
+            if (cached) { area.innerHTML = cached; return; } // पहले से सेव है, API हिट नहीं होगी
+
+            area.innerHTML = `<div id="video-loading" style="text-align:center;padding:20px;">⏳ वीडियो लोड हो रहे हैं...</div>`;
+            const API_KEY = "AIzaSyCggxsKMnuCCyFuw0p3LjG9LD213VCBRx8";
+            fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(q)}&key=${API_KEY}&maxResults=8`)
+                .then(res => res.json()).then(data => {
+                    let vidHtml = `<div class="video-grid">`;
+                    if (data.items && data.items.length > 0) data.items.forEach(item => { const vidId = item.id.videoId; vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${vidId}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${vidId}/hqdefault.jpg"></div><div class="video-title">${item.snippet.title}</div><div class="video-meta">${item.snippet.channelTitle}</div></div>`; });
+                    else { const fallback = [{id:"AETFvQonfV8",title:"हनुमान चालीसा",channel:"भक्ति"},{id:"jdy0GgMbJY0",title:"शिव तांडव",channel:"दिव्य"}]; fallback.forEach(item => { vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div><div class="video-title">${item.title}</div><div class="video-meta">${item.channel}</div></div>`; }); }
+                    vidHtml += `</div>`; area.innerHTML = vidHtml;
+                    setCached(q, vidHtml, 'videos'); // सेव करें
+                }).catch(() => { let vidHtml = `<div class="video-grid">`; const fallback = [{id:"AETFvQonfV8",title:"हनुमान चालीसा",channel:"भक्ति"},{id:"jdy0GgMbJY0",title:"शिव तांडव",channel:"दिव्य"}]; fallback.forEach(item => { vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div><div class="video-title">${item.title}</div><div class="video-meta">${item.channel}</div></div>`; }); vidHtml += `</div>`; area.innerHTML = vidHtml; setCached(q, vidHtml, 'videos'); });
+        }  
+    function renderNews(q) {
+            const area = document.getElementById('content-area');
+            area.innerHTML = `<div style="text-align:center;padding:20px;">📰 न्यूज़ लोड हो रही है...</div>`;
+            fetch('https://news.google.com/rss/search?q=' + encodeURIComponent(q) + '&hl=en-IN&gl=IN&ceid=IN:en')
+                .then(r => r.text()).then(str => {
+                    const parser = new DOMParser(); const xml = parser.parseFromString(str, "text/xml");
+                    const items = xml.querySelectorAll("item"); let html = '';
+                    items.forEach((item, i) => { if(i < 6) { const title = item.querySelector("title").textContent; const link = item.querySelector("link").textContent; const date = item.querySelector("pubDate").textContent; html += `<div class="news-item" onclick="window.open('${link}')"><div class="news-icon" style="background:#4285F4;">📰</div><div><div class="news-title">${title}</div><div class="news-src">Google News · ${date.substring(0, 16)}</div></div></div>`; }});
+                    area.innerHTML = html || `<p>न्यूज़ उपलब्ध नहीं है।</p>`;
+                }).catch(() => { area.innerHTML = `<p>न्यूज़ उपलब्ध नहीं है।</p>`; });
+        }
+
+        function renderMore(q) {
+            const flightSites = [{ name: "Air India", url: "https://www.airindia.com", icon: "✈️" }, { name: "IndiGo", url: "https://www.goindigo.in", icon: "✈️" }, { name: "SpiceJet", url: "https://www.spicejet.com", icon: "✈️" }, { name: "Vistara", url: "https://www.airvistara.com", icon: "✈️" }];
+            let html = `<div class="box-title">✈️ उड़ान वेबसाइटें</div>`;
+            flightSites.forEach(site => html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">✈</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${site.name}</a><div class="snippet">${site.name} – उड़ान बुक करें, ऑनलाइन चेक-इन करें।</div></div>`);
+            const extra = [{ name: "IRCTC", url: "https://www.irctc.co.in", icon: "🚆" }, { name: "MakeMyTrip", url: "https://www.makemytrip.com", icon: "🏨" }, { name: "ClearTrip", url: "https://www.cleartrip.com", icon: "🏨" }];
+            html += `<div class="box-title">🌐 अन्य सेवाएँ</div>`;
+            extra.forEach(site => html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#0D47A1;color:#fff;">${site.icon}</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${site.name}</a><div class="snippet">${site.name} – यात्रा, टिकट, होटल।</div></div>`);
+            return html;
+        }
+
+        // ================================================================
+        //  16. TAB SWITCHING (All, Images, Videos, News, More)
+        // ================================================================
+        function showTab(tab) {
+            const q = document.getElementById('resultInput').value.trim() || 'भारत';
+            const area = document.getElementById('content-area');
+            if (tab === 'all') renderAllResults(q).then(html => area.innerHTML = html);
+            else if (tab === 'images') renderImages(q);
+            else if (tab === 'videos') renderVideos(q);
+            else if (tab === 'news') renderNews(q);
+            else if (tab === 'more') area.innerHTML = renderMore(q);
+
+            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+            const tabs = document.querySelectorAll('.tabs .tab');
+            const tabMap = { 'all':0, 'images':1, 'videos':2, 'news':4, 'more':6 };
+            const idx = tabMap[tab];
+            if (idx !== undefined && tabs[idx]) tabs[idx].classList.add('active');
+        }
+
+        // ================================================================
+        //  17. AVATAR / USER NAME
+        // ================================================================
+        function updateAvatar() {
+            const name = localStorage.getItem('dhundho_user') || 'D';
+            const circle = document.getElementById('avatarCircle');
+            if (circle) circle.textContent = name.charAt(0).toUpperCase();
+        }
+
+        function setUserName() {
+            const newName = prompt('Enter your name (for avatar):', localStorage.getItem('dhundho_user') || 'Divy');
+            if (newName && newName.trim()) {
+                localStorage.setItem('dhundho_user', newName.trim());
+                updateAvatar();
+            }
+        }
+            // ================================================================
+        //  18. INIT (Load everything on start)
         // ================================================================
         window.addEventListener('DOMContentLoaded', function() {
             updateAvatar();
-
-            // Check incognito flag
-            if (localStorage.getItem('dhundho_incognito') === 'true') {
-                darkMode = true;
-                applyDarkMode();
-                localStorage.removeItem('dhundho_incognito');
-            }
-
+            renderTabs();
             const hash = decodeURIComponent(window.location.hash.replace('#', ''));
             if (hash) {
                 performSearch(hash);
             }
+            if (localStorage.getItem('dhundho_incognito') === 'true') {
+                addNewTab(true);
+                localStorage.removeItem('dhundho_incognito');
+            }
         });
 
+        // ================================================================
+        //  19. SERVICE WORKER (for offline caching, if available)
+        // ================================================================
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
@@ -1315,18 +1769,28 @@
             });
         }
 
+        // ================================================================
+        //  20. GLOBAL CLICK HANDLER (Close Suggestions and Shopping)
+        // ================================================================
         document.addEventListener('click', function(e) {
             const hi = document.getElementById('homeInput');
             const ri = document.getElementById('resultInput');
             const hs = document.getElementById('homeSuggestions');
             const rs = document.getElementById('resultSuggestions');
+            const shopOpt = document.getElementById('shoppingOptions');
             if (hi && !hi.contains(e.target)) hs.style.display = 'none';
             if (ri && !ri.contains(e.target) && !e.target.closest('#resultSuggestions')) rs.style.display = 'none';
-            const shopOpt = document.getElementById('shoppingOptions');
             if (shopOpt && !e.target.closest('.shopping-wrapper')) shopOpt.style.display = 'none';
         });
+
+        // Overlay click to close drawer
         document.getElementById('overlay').addEventListener('click', hideDrawer);
-        console.log('🚀 ढूंढो – अल्टीमेट संस्करण लोड!');
+
+        // ================================================================
+        //  21. FINAL CONSOLE LOGS
+        // ================================================================
+        console.log('🚀 ढूंढो – अल्टीमेट संस्करण (Part 1) लोड!');
+        console.log('🚀 Part 3 loaded successfully!');
     </script>
 </body>
 </html>
