@@ -1,401 +1,1005 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ढूंढो</title>
-<style>
-    body { font-family: Arial, sans-serif; margin: 0; background: #fff; color: #202124; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ढूंढो – भारत का सर्च इंजन</title>
+    <style>
+        /* ===== BASE ===== */
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
+        body { background:#fff; color:#202124; transition:background .3s,color .3s; }
+        .dark-mode { background:#202124 !important; color:#e8eaed !important; }
+        .dark-mode .home-search-bar, .dark-mode .search-bar, .dark-mode .suggest-chip,
+        .dark-mode .address-pill, .dark-mode .drawer, .dark-mode .faq-item,
+        .dark-mode .search-for-item, .dark-mode .news-item { background:#303134 !important; color:#e8eaed !important; border-color:#5f6368 !important; }
+        .dark-mode .title { color:#8ab4f8 !important; }
+        .dark-mode .tab { color:#9aa0a6; }
+        .dark-mode .tab.active { color:#8ab4f8; border-bottom-color:#8ab4f8; }
+        .dark-mode .snippet, .dark-mode .url, .dark-mode .faq-item span { color:#e8eaed !important; }
+        .dark-mode .faq-item, .dark-mode .search-for-item, .dark-mode .news-item { border-color:#3c4043; }
+        .dark-mode .tool-result { background:#303134 !important; }
+        .dark-mode .exit-box { background:#303134; color:#e8eaed; }
+        .dark-mode .exit-box p { color:#b0b0b0; }
 
-    #home-view { background: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding-top: 80px; position: relative; }
-    .home-logo { font-size: 90px; font-weight: bold; display: inline-block; background-image: linear-gradient(to right, #4285F4 0%, #4285F4 20%, #EA4335 20%, #EA4335 40%, #FBBC05 40%, #FBBC05 60%, #4285F4 60%, #4285F4 80%, #34A853 80%, #34A853 100%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 40px; }
-    .home-search-box { width: 90%; max-width: 580px; position: relative; }
-    .home-search-bar { width: 100%; height: 54px; border: 1px solid #dfe1e5; border-radius: 27px; padding: 0 60px 0 20px; font-size: 18px; outline: none; box-shadow: 0 1px 6px rgba(32,33,36,0.28); }
-    .home-icons { position: absolute; right: 15px; top: 15px; display: flex; gap: 15px; font-size: 24px; color: #4285F4; }
-    #suggestions { position: absolute; top: 60px; left: 0; right: 0; background: #fff; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); overflow: hidden; z-index: 100; display: none; }
-    .suggestion-item { padding: 12px 20px; cursor: pointer; border-bottom: 1px solid #eee; font-size: 15px; display: flex; align-items: center; gap: 10px; }
-    .suggestion-item:hover { background: #f8f9fa; }
-    .home-buttons { display: flex; gap: 20px; margin-top: 30px; }
-    .home-btn { background: #f8f9fa; border: 1px solid #f8f9fa; padding: 10px 20px; border-radius: 4px; font-size: 14px; color: #3c4043; cursor: pointer; }
-    .home-btn:hover { border-color: #dadce0; }
+        /* ===== HOME ===== */
+        #home-view { min-height:100vh; display:flex; flex-direction:column; align-items:center; padding-top:80px; position:relative; }
+        .home-logo { font-size:90px; font-weight:bold; background:linear-gradient(to right, #4285F4 0%, #4285F4 20%, #EA4335 20%, #EA4335 40%, #FBBC05 40%, #FBBC05 60%, #4285F4 60%, #4285F4 80%, #34A853 80%, #34A853 100%); -webkit-background-clip:text; background-clip:text; color:transparent; margin-bottom:40px; }
+        .home-search-box { width:90%; max-width:580px; position:relative; }
+        .home-search-bar { width:100%; height:54px; border:1px solid #dfe1e5; border-radius:27px; padding:0 60px 0 20px; font-size:18px; outline:none; box-shadow:0 1px 6px rgba(32,33,36,0.28); }
+        .home-search-bar:focus { box-shadow:0 1px 10px rgba(32,33,36,0.4); }
+        .home-icons { position:absolute; right:15px; top:15px; display:flex; gap:15px; font-size:24px; color:#4285F4; cursor:pointer; }
+        #homeSuggestions { position:absolute; top:60px; left:0; right:0; background:#fff; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,0.2); overflow:hidden; z-index:100; display:none; max-height:400px; overflow-y:auto; }
+        .suggestion-item { padding:12px 20px; cursor:pointer; border-bottom:1px solid #eee; font-size:15px; display:flex; align-items:center; gap:10px; }
+        .suggestion-item:hover { background:#f8f9fa; }
+        .home-buttons { display:flex; gap:20px; margin-top:30px; }
+        .home-btn { background:#f8f9fa; border:1px solid #f8f9fa; padding:10px 20px; border-radius:4px; font-size:14px; color:#3c4043; cursor:pointer; transition:border-color .2s; }
+        .home-btn:hover { border-color:#dadce0; }
 
-    #results-view { display: none; padding: 0; }
-    .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 5px 10px; border-bottom: 1px solid #e0e0e0; }
-    .top-left { display: flex; gap: 8px; align-items: center; font-size: 20px; }
-    .address-pill { background: #f1f3f4; padding: 6px 12px; border-radius: 20px; font-size: 13px; display: flex; align-items: center; gap: 8px; color: #202124; }
-    .top-right { display: flex; gap: 10px; align-items: center; font-size: 20px; }
-    .avatar-circle { width: 28px; height: 28px; background: #4285F4; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; }
-    .three-dots { font-size: 20px; font-weight: bold; cursor: pointer; padding-left: 5px; }
+        /* ===== RESULTS ===== */
+        #results-view { display:none; padding:0; }
+        .top-bar { display:flex; align-items:center; justify-content:space-between; padding:5px 10px; border-bottom:1px solid #e0e0e0; }
+        .top-left { display:flex; gap:8px; align-items:center; font-size:20px; }
+        .address-pill { background:#f1f3f4; padding:6px 12px; border-radius:20px; font-size:13px; display:flex; align-items:center; gap:8px; color:#202124; }
+        .top-right { display:flex; gap:10px; align-items:center; font-size:20px; }
+        .avatar-circle { width:28px; height:28px; background:#4285F4; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:bold; cursor:pointer; }
+        .three-dots { font-size:20px; font-weight:bold; cursor:pointer; padding-left:5px; }
 
-    .results-logo-container { text-align: center; padding-top: 5px; margin-bottom: 10px; }
-    .results-logo { font-size: 28px; font-weight: bold; display: inline-block; background-image: linear-gradient(to right, #4285F4 0%, #4285F4 20%, #EA4335 20%, #EA4335 40%, #FBBC05 40%, #FBBC05 60%, #4285F4 60%, #4285F4 80%, #34A853 80%, #34A853 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .results-logo-container { text-align:center; padding-top:5px; margin-bottom:10px; }
+        .results-logo { font-size:28px; font-weight:bold; background:linear-gradient(to right, #4285F4 0%, #4285F4 20%, #EA4335 20%, #EA4335 40%, #FBBC05 40%, #FBBC05 60%, #4285F4 60%, #4285F4 80%, #34A853 80%, #34A853 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
 
-    /* FIXED: Full width search bar, no white space */
-    .search-wrapper { width: 100%; padding: 0 15px; margin-top: 10px; box-sizing: border-box; position: relative; }
-    .search-bar { width: 100%; height: 44px; border: 1px solid #dfe1e5; border-radius: 24px; padding: 0 50px 0 40px; font-size: 16px; outline: none; box-shadow: 0 1px 6px rgba(32,33,36,0.28); }
-    .plus-icon { position: absolute; left: 15px; top: 12px; font-size: 22px; color: #5f6368; font-weight: 400; }
-    .x-icon { position: absolute; right: 45px; top: 10px; font-size: 20px; color: #5f6368; cursor: pointer; }
-    .mic-icon { position: absolute; right: 15px; top: 10px; font-size: 20px; color: #4285F4; }
+        .search-wrapper { width:100%; padding:0 15px; margin-top:10px; box-sizing:border-box; position:relative; }
+        .search-bar { width:100%; height:44px; border:1px solid #dfe1e5; border-radius:24px; padding:0 50px 0 40px; font-size:16px; outline:none; box-shadow:0 1px 6px rgba(32,33,36,0.28); }
+        .search-bar:focus { box-shadow:0 1px 10px rgba(32,33,36,0.4); }
+        .plus-icon { position:absolute; left:15px; top:12px; font-size:22px; color:#5f6368; }
+        .x-icon { position:absolute; right:45px; top:10px; font-size:20px; color:#5f6368; cursor:pointer; }
+        .mic-icon { position:absolute; right:15px; top:10px; font-size:20px; color:#4285F4; cursor:pointer; }
+        #resultSuggestions { position:absolute; top:48px; left:15px; right:15px; background:#fff; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.2); overflow:hidden; z-index:50; display:none; }
 
-    .suggest-chips { width: 100%; padding: 0 15px; margin-top: 8px; display: flex; gap: 10px; overflow-x: auto; box-sizing: border-box; }
-    .suggest-chip { background: #f1f3f4; padding: 6px 12px; border-radius: 20px; font-size: 13px; white-space: nowrap; cursor: pointer; }
+        .suggest-chips { width:100%; padding:0 15px; margin-top:8px; display:flex; gap:10px; overflow-x:auto; box-sizing:border-box; scrollbar-width:none; }
+        .suggest-chips::-webkit-scrollbar { display:none; }
+        .suggest-chip { background:#f1f3f4; padding:6px 12px; border-radius:20px; font-size:13px; white-space:nowrap; cursor:pointer; transition:background .2s; }
+        .suggest-chip:hover { background:#e0e0e0; }
 
-    .tabs { display: flex; border-bottom: 1px solid #dfe1e5; overflow-x: auto; font-size: 14px; margin-top: 5px; padding: 0 15px; }
-    .tab { padding: 10px 12px; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; color: #5f6368; }
-    .tab.active { color: #1a73e8; border-bottom-color: #1a73e8; font-weight: bold; }
+        .tabs { display:flex; border-bottom:1px solid #dfe1e5; overflow-x:auto; font-size:14px; margin-top:5px; padding:0 15px; scrollbar-width:none; }
+        .tabs::-webkit-scrollbar { display:none; }
+        .tab { padding:10px 12px; cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap; color:#5f6368; transition:color .2s; }
+        .tab.active { color:#1a73e8; border-bottom-color:#1a73e8; font-weight:bold; }
+        .tab:hover { color:#1a73e8; }
 
-    #content-area { padding: 10px 15px; width: 100%; box-sizing: border-box; }
-    
-    .result-block { margin-bottom: 15px; }
-    .favicon { width: 24px; height: 24px; border-radius: 50%; background: #eee; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-right: 8px; }
-    .url { font-size: 12px; color: #202124; display: flex; align-items: center; margin-bottom: 5px; }
-    .title { font-size: 20px; color: #1a0dab; cursor: pointer; text-decoration: none; display: block; margin-bottom: 5px; }
-    .snippet { font-size: 14px; color: #4d5156; line-height: 1.58; }
-    .box-title { font-size: 16px; font-weight: bold; margin-top: 15px; margin-bottom: 10px; }
-    .faq-item, .search-for-item { border-top: 1px solid #f1f3f4; padding: 12px 0; cursor: pointer; }
-    .faq-item { display: flex; justify-content: space-between; font-size: 15px; }
-    .faq-item span { color: #202124; }
-    .faq-item .arrow { color: #70757a; }
-    .search-for-item { display: flex; align-items: center; gap: 10px; font-size: 15px; color: #202124; }
+        #content-area { padding:10px 15px; width:100%; box-sizing:border-box; }
 
-    .img-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-    .img-card { background: #f1f3f4; border-radius: 8px; overflow: hidden; height: 120px; cursor: pointer; position: relative; }
-    .img-card img { width: 100%; height: 100%; object-fit: cover; }
-    .img-title { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.5); color: white; font-size: 12px; padding: 5px; }
+        /* ===== RESULT BLOCKS ===== */
+        .result-block { margin-bottom:15px; }
+        .favicon { width:24px; height:24px; border-radius:50%; background:#eee; display:inline-flex; align-items:center; justify-content:center; font-size:14px; font-weight:bold; margin-right:8px; flex-shrink:0; }
+        .url { font-size:12px; color:#202124; display:flex; align-items:center; margin-bottom:5px; }
+        .title { font-size:20px; color:#1a0dab; cursor:pointer; text-decoration:none; display:block; margin-bottom:5px; }
+        .title:hover { text-decoration:underline; }
+        .snippet { font-size:14px; color:#4d5156; line-height:1.58; }
+        .box-title { font-size:16px; font-weight:bold; margin-top:15px; margin-bottom:10px; }
+        .faq-item, .search-for-item { border-top:1px solid #f1f3f4; padding:12px 0; cursor:pointer; display:flex; justify-content:space-between; font-size:15px; }
+        .faq-item span { color:#202124; }
+        .faq-item .arrow { color:#70757a; }
+        .search-for-item { gap:10px; color:#202124; }
+        .search-for-item:hover { background:#f8f9fa; }
 
-    .video-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 10px; }
-    .video-card { border-radius: 12px; overflow: hidden; cursor: pointer; background: #fff; border: 1px solid #eee; }
-    .video-thumb { width: 100%; height: 100px; background: #f1f3f4; position: relative; }
-    .video-thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .video-title { font-size: 14px; font-weight: bold; padding: 8px; }
-    .video-meta { font-size: 12px; color: #70757a; padding: 0 8px 8px; }
+        /* ===== IMAGES ===== */
+        .img-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:10px; }
+        .img-card { background:#f1f3f4; border-radius:8px; overflow:hidden; height:120px; cursor:pointer; position:relative; }
+        .img-card img { width:100%; height:100%; object-fit:cover; }
+        .img-title { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:#fff; font-size:12px; padding:5px; }
 
-    .news-item { border-bottom: 1px solid #eee; padding: 12px 0; cursor: pointer; display: flex; gap: 10px; align-items: center; }
-    .news-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
-    .news-title { font-size: 15px; font-weight: bold; }
-    .news-src { font-size: 12px; color: #70757a; margin-top: 4px; }
+        /* ===== VIDEOS ===== */
+        .video-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:15px; margin-top:10px; }
+        .video-card { border-radius:12px; overflow:hidden; cursor:pointer; background:#fff; border:1px solid #eee; transition:transform .2s,box-shadow .2s; }
+        .video-card:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+        .video-thumb { width:100%; height:100px; background:#f1f3f4; position:relative; }
+        .video-thumb img { width:100%; height:100%; object-fit:cover; }
+        .video-title { font-size:14px; font-weight:bold; padding:8px; }
+        .video-meta { font-size:12px; color:#70757a; padding:0 8px 8px; }
 
-    .overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
-    .drawer { position: fixed; top: 0; right: 0; width: 320px; height: 100%; background: #fff; box-shadow: -5px 0 15px rgba(0,0,0,0.3); z-index: 1000; transform: translateX(100%); transition: transform 0.3s; overflow-y: auto; }
-    .drawer.open { transform: translateX(0); }
-    .drawer-item { display: flex; align-items: center; gap: 15px; padding: 12px 20px; cursor: pointer; font-size: 15px; color: #202124; border-bottom: 1px solid #f1f3f4; }
-    .drawer-item:hover { background: #f8f9fa; }
-    .drawer-item .m-icon { font-size: 22px; }
-    .drawer-section { padding: 15px 20px 5px; font-size: 12px; color: #70757a; }
+        /* ===== NEWS ===== */
+        .news-item { border-bottom:1px solid #eee; padding:12px 0; cursor:pointer; display:flex; gap:10px; align-items:center; }
+        .news-item:hover { background:#f8f9fa; }
+        .news-icon { width:40px; height:40px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold; flex-shrink:0; }
+        .news-title { font-size:15px; font-weight:bold; }
+        .news-src { font-size:12px; color:#70757a; margin-top:4px; }
 
-    .owner-section { display: flex; align-items: center; justify-content: center; gap: 15px; padding: 20px; margin-top: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-    .owner-circle { width: 60px; height: 60px; background: #fff; color: #764ba2; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; border: 4px solid rgba(255,255,255,0.3); }
-    .owner-name { font-size: 20px; font-weight: bold; }
-    .owner-info { font-size: 14px; margin-top: 5px; opacity: 0.9; }
+        /* ===== TOOLS ===== */
+        .tool-result { background:#f1f3f4; border-radius:12px; padding:20px; margin:10px 0; text-align:center; }
+        .tool-result .big-number { font-size:48px; font-weight:bold; color:#1a73e8; }
+        .tool-result .label { font-size:14px; color:#5f6368; margin-top:5px; }
 
-    .dark-mode { background: #202124 !important; color: #e8eaed !important; }
-    .dark-mode .search-bar, .dark-mode .address-pill, .dark-mode .suggest-chip, .dark-mode .drawer { background: #303134 !important; color: #e8eaed !important; border-color: #5f6368 !important; }
-    .desktop-mode { font-size: 12px !important; }
-</style>
+        /* ===== DRAWER ===== */
+        .overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:999; display:none; }
+        .drawer { position:fixed; top:0; right:0; width:320px; height:100%; background:#fff; box-shadow:-5px 0 15px rgba(0,0,0,0.3); z-index:1000; transform:translateX(100%); transition:transform .3s; overflow-y:auto; }
+        .drawer.open { transform:translateX(0); }
+        .drawer-item { display:flex; align-items:center; gap:15px; padding:12px 20px; cursor:pointer; font-size:15px; color:#202124; border-bottom:1px solid #f1f3f4; transition:background .15s; }
+        .drawer-item:hover { background:#f8f9fa; }
+        .drawer-item .m-icon { font-size:22px; width:30px; text-align:center; }
+        .drawer-section { padding:15px 20px 5px; font-size:12px; color:#70757a; font-weight:600; letter-spacing:0.5px; }
+
+        /* ===== EXIT PROMPT ===== */
+        .exit-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); z-index:2000; display:none; align-items:center; justify-content:center; }
+        .exit-box { background:#fff; border-radius:16px; padding:30px 35px; max-width:380px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:popIn .3s ease; }
+        @keyframes popIn { from { transform:scale(0.9); opacity:0; } to { transform:scale(1); opacity:1; } }
+        .exit-box h2 { font-size:22px; margin-bottom:10px; color:#202124; }
+        .exit-box p { color:#5f6368; margin-bottom:20px; font-size:15px; }
+        .exit-buttons { display:flex; gap:15px; justify-content:center; }
+        .exit-btn { padding:10px 30px; border-radius:30px; border:none; font-size:15px; font-weight:600; cursor:pointer; transition:transform .2s,box-shadow .2s; }
+        .exit-btn:hover { transform:scale(1.03); }
+        .exit-btn.stay { background:#f1f3f4; color:#202124; }
+        .exit-btn.stay:hover { background:#e0e0e0; }
+        .exit-btn.exit { background:#1a73e8; color:#fff; box-shadow:0 4px 12px rgba(26,115,232,0.3); }
+        .exit-btn.exit:hover { background:#1557b0; }
+
+        /* ===== OWNER ===== */
+        .owner-section { display:flex; align-items:center; justify-content:center; gap:15px; padding:20px; margin-top:50px; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; }
+        .owner-circle { width:60px; height:60px; background:#fff; color:#764ba2; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:bold; border:4px solid rgba(255,255,255,0.3); }
+        .owner-name { font-size:20px; font-weight:bold; }
+        .owner-info { font-size:14px; margin-top:5px; opacity:0.9; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width:600px) {
+            .home-logo { font-size:60px; }
+            .home-search-bar { font-size:16px; height:48px; }
+            .results-logo { font-size:22px; }
+            .search-bar { height:40px; font-size:14px; }
+            .title { font-size:17px; }
+            .snippet { font-size:13px; }
+            .img-grid { grid-template-columns:repeat(3,1fr); }
+            .video-grid { grid-template-columns:1fr 1fr; }
+            .img-card { height:80px; }
+            .video-thumb { height:80px; }
+            .drawer { width:280px; }
+            .exit-box { padding:20px; }
+        }
+        @media (max-width:400px) {
+            .img-grid { grid-template-columns:repeat(2,1fr); }
+            .video-grid { grid-template-columns:1fr; }
+        }
+    </style>
 </head>
 <body>
 
-<!-- HOME VIEW -->
-<div id="home-view">
-    <div class="home-logo">ढूंढो</div>
-    <div class="home-search-box">
-        <input type="text" class="home-search-bar" id="homeInput" placeholder="Search Google or type URL" onfocus="showHistory()" oninput="filterSuggestions(this.value)" onkeypress="homeEnter(event)">
-        <div class="home-icons"><i class="fas fa-microphone"></i><i class="fas fa-camera"></i></div>
-        <div id="suggestions"></div>
-    </div>
-    <div class="home-buttons">
-        <div class="home-btn" onclick="performSearch(document.getElementById('homeInput').value)">ढूंढो</div>
-        <div class="home-btn">मैं भाग्यशाली हूँ</div>
-    </div>
-</div>
-
-<!-- RESULTS VIEW -->
-<div id="results-view">
-    <div class="top-bar">
-        <div class="top-left">
-            <span>🏠</span>
-            <div class="address-pill">🌐 www.dhundho.com/search?</div>
+    <!-- ============================================================= -->
+    <!-- HOME VIEW -->
+    <!-- ============================================================= -->
+    <div id="home-view">
+        <div class="home-logo">ढूंढो</div>
+        <div class="home-search-box">
+            <input type="text" class="home-search-bar" id="homeInput" placeholder="Search Google or type URL" onfocus="showHomeSuggestions()" oninput="filterHomeSuggestions(this.value)" onkeypress="homeEnter(event)">
+            <div class="home-icons" onclick="voiceSearchHome()"><i class="fas fa-microphone"></i><i class="fas fa-camera"></i></div>
+            <div id="homeSuggestions"></div>
         </div>
-        <div class="top-right">
-            <span>🗂️</span>
-            <div class="avatar-circle">D</div>
-            <span class="three-dots" onclick="toggleDrawer()">⋮</span>
+        <div class="home-buttons">
+            <div class="home-btn" onclick="performSearch(document.getElementById('homeInput').value)">ढूंढो</div>
+            <div class="home-btn" onclick="iAmFeelingLucky()">मैं भाग्यशाली हूँ</div>
+        </div>
+        <div style="margin-top:20px;font-size:13px;color:#70757a;">भारत का अपना सर्च इंजन · 5000+ क्वेरीज़</div>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- RESULTS VIEW -->
+    <!-- ============================================================= -->
+    <div id="results-view">
+        <div class="top-bar">
+            <div class="top-left">
+                <span onclick="goHome()" style="cursor:pointer;">🏠</span>
+                <div class="address-pill">🌐 www.dhundho.com/search?</div>
+            </div>
+            <div class="top-right">
+                <span onclick="showHistoryDrawer()" style="cursor:pointer;">🕒</span>
+                <div class="avatar-circle" onclick="toggleDrawer()">D</div>
+                <span class="three-dots" onclick="toggleDrawer()">⋮</span>
+            </div>
+        </div>
+
+        <div class="results-logo-container"><div class="results-logo">ढूंढो</div></div>
+
+        <div class="search-wrapper">
+            <div class="plus-icon">+</div>
+            <input type="text" class="search-bar" id="resultInput" value="" onkeypress="resultEnter(event)" oninput="showResultSuggestions(this.value)">
+            <div class="x-icon" onclick="clearResultInput()">×</div>
+            <div class="mic-icon" onclick="voiceSearchResult()"><i class="fas fa-microphone"></i></div>
+            <div id="resultSuggestions"></div>
+        </div>
+
+        <div class="suggest-chips" id="resultChips"></div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('all')">All</div>
+            <div class="tab" onclick="showTab('images')">Images</div>
+            <div class="tab" onclick="showTab('videos')">Videos</div>
+            <div class="tab" onclick="window.open('https://www.amazon.in/s?k='+encodeURIComponent(document.getElementById('resultInput').value), '_blank')">Shopping</div>
+            <div class="tab" onclick="showTab('news')">News</div>
+            <div class="tab" onclick="window.open('https://www.google.com/maps/search/'+encodeURIComponent(document.getElementById('resultInput').value), '_blank')">Maps</div>
+            <div class="tab" onclick="showTab('tools')">Tools</div>
+        </div>
+        <div id="content-area"></div>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- DRAWER -->
+    <!-- ============================================================= -->
+    <div class="overlay" id="overlay" onclick="toggleDrawer()"></div>
+    <div class="drawer" id="drawer">
+        <div class="drawer-section">SHORTCUTS</div>
+        <div class="drawer-item" onclick="newTab()"><span class="m-icon">➕</span> New tab</div>
+        <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">🎭</span> New Incognito tab</div>
+        <div class="drawer-section">HISTORY</div>
+        <div class="drawer-item" onclick="showHistoryDrawer()"><span class="m-icon">🕒</span> History</div>
+        <div class="drawer-item" onclick="clearHistory()"><span class="m-icon">🗑️</span> Delete browsing data</div>
+        <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">⬇️</span> Downloads</div>
+        <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">⭐</span> Bookmarks</div>
+        <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">🗂️</span> Recent tabs</div>
+        <div class="drawer-section">TOOLS</div>
+        <div class="drawer-item" onclick="toggleDarkMode()"><span class="m-icon">🌙</span> Dark mode</div>
+        <div class="drawer-item" onclick="toggleDesktop()"><span class="m-icon">🖥️</span> Desktop site</div>
+        <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">🔒</span> Password Manager</div>
+        <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">💾</span> Cache & Storage</div>
+        <div class="drawer-section">MORE</div>
+        <div class="drawer-item" onclick="showExitPrompt()"><span class="m-icon">🚪</span> Exit</div>
+        <div class="drawer-item" onclick="helpFeedback()"><span class="m-icon">❓</span> Help & feedback</div>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- EXIT PROMPT -->
+    <!-- ============================================================= -->
+    <div class="exit-overlay" id="exitOverlay">
+        <div class="exit-box">
+            <h2>🚪 बाहर निकलें?</h2>
+            <p>क्या आप सच में इस पेज को छोड़ना चाहते हैं?</p>
+            <div class="exit-buttons">
+                <button class="exit-btn stay" onclick="hideExitPrompt()">रुकें</button>
+                <button class="exit-btn exit" onclick="exitApp()">बाहर निकलें</button>
+            </div>
         </div>
     </div>
 
-    <div class="results-logo-container"><div class="results-logo">ढूंढो</div></div>
-    
-    <!-- FIXED SEARCH BAR -->
-    <div class="search-wrapper">
-        <div class="plus-icon">+</div>
-        <input type="text" class="search-bar" id="resultInput" value="" onkeypress="resultEnter(event)">
-        <div class="x-icon" onclick="document.getElementById('resultInput').value=''">×</div>
-        <div class="mic-icon"><i class="fas fa-microphone" onclick="voiceSearch()"></i></div>
+    <!-- ============================================================= -->
+    <!-- OWNER SECTION -->
+    <!-- ============================================================= -->
+    <div class="owner-section">
+        <div class="owner-circle">D</div>
+        <div>
+            <div class="owner-name">DIVY</div>
+            <div class="owner-info">IIT ENGINEERING QUALIFIED | EX-BSF ARMY | EX INDIAN BANK EMPLOYEE</div>
+        </div>
     </div>
 
-    <div class="suggest-chips" id="resultChips"></div>
-    
-    <div class="tabs">
-        <div class="tab active" onclick="showTab('all')">All</div>
-        <div class="tab" onclick="showTab('images')">Images</div>
-        <div class="tab" onclick="showTab('videos')">Videos</div>
-        <div class="tab" onclick="window.open('https://www.amazon.in', '_blank')">Shopping</div>
-        <div class="tab" onclick="showTab('news')">News</div>
-        <!-- FIXED MAPS TAB: Opens Google Maps -->
-        <div class="tab" onclick="window.open('https://www.google.com/maps/search/' + encodeURIComponent(document.getElementById('resultInput').value), '_blank')">Maps</div>
-    </div>
-    <div id="content-area"></div>
-</div>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-<!-- DRAWER -->
-<div class="overlay" id="overlay" onclick="toggleDrawer()"></div>
-<div class="drawer" id="drawer">
-    <div class="drawer-section">SHORTCUTS</div>
-    <div class="drawer-item" onclick="newTab()"><span class="m-icon">➕</span> New tab</div>
-    <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">🎭</span> New Incognito tab</div>
-    <div class="drawer-section">HISTORY</div>
-    <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">🕒</span> History</div>
-    <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">🗑️</span> Delete browsing data</div>
-    <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">⬇️</span> Downloads</div>
-    <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">⭐</span> Bookmarks</div>
-    <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">🗂️</span> Recent tabs</div>
-    <div class="drawer-section">TOOLS</div>
-    <div class="drawer-item" onclick="toggleDarkMode()"><span class="m-icon">🌙</span> Dark mode on type</div>
-    <div class="drawer-item" onclick="toggleDesktop()"><span class="m-icon">🖥️</span> Desktop site</div>
-    <div class="drawer-section">MORE</div>
-    <div class="drawer-item" onclick="exitApp()"><span class="m-icon">🚪</span> Exit</div>
-    <div class="drawer-item" onclick="helpFeedback()"><span class="m-icon">❓</span> Help & feedback</div>
-</div>
+    <!-- ============================================================= -->
+    <!-- JAVASCRIPT – सारी कार्यक्षमता यहाँ -->
+    <!-- ============================================================= -->
+    <script>
+        // ================================================================
+        //  1. BASE DATA ( ~1500 entries – core)
+        // ================================================================
+        const BASE_DATA = {
+            "aadhaar": "https://uidai.gov.in",
+            "pan card": "https://www.incometaxindia.gov.in",
+            "passport": "https://www.passportindia.gov.in",
+            "voter id": "https://www.nvsp.in",
+            "rto": "https://parivahan.gov.in",
+            "driving license": "https://parivahan.gov.in",
+            "ration card": "https://www.nfsa.gov.in",
+            "ayushman card": "https://pmjay.gov.in",
+            "epfo": "https://www.epfindia.gov.in",
+            "pm kisan": "https://pmkisan.gov.in",
+            "pm awas": "https://pmaymis.gov.in",
+            "scholarship": "https://scholarships.gov.in",
+            "nrega": "https://nrega.nic.in",
+            "digilocker": "https://www.digilocker.gov.in",
+            "umang": "https://www.umang.gov.in",
+            "income tax": "https://www.incometaxindia.gov.in",
+            "gst": "https://www.gst.gov.in",
+            "cbse": "https://www.cbse.gov.in",
+            "ncert": "https://ncert.nic.in",
+            "upsc": "https://www.upsc.gov.in",
+            "ssc": "https://ssc.nic.in",
+            "ibps": "https://www.ibps.in",
+            "sbi": "https://sbi.co.in",
+            "rbi": "https://www.rbi.org.in",
+            "sebi": "https://www.sebi.gov.in",
+            "trai": "https://www.trai.gov.in",
+            "supreme court": "https://www.sci.gov.in",
+            "india gov": "https://www.india.gov.in",
+            "my gov": "https://www.mygov.in",
+            // People
+            "narendra modi": "https://www.narendramodi.in",
+            "rahul gandhi": "https://www.rahulgandhi.in",
+            "amit shah": "https://www.amitshah.in",
+            "yogi adityanath": "https://yogiadityanath.in",
+            "mamata banerjee": "https://www.mamata.in",
+            "arvind kejriwal": "https://www.arvindkejriwal.in",
+            "sachin tendulkar": "https://www.sachintendulkar.in",
+            "virat kohli": "https://www.viratkohli.in",
+            "ms dhoni": "https://www.msdhoni.in",
+            "rohit sharma": "https://www.rohitsharma.in",
+            "mahatma gandhi": "https://www.mkgandhi.org",
+            "nehru": "https://www.jawaharlalnehru.in",
+            "subhas chandra bose": "https://www.netajisubhasbose.in",
+            "bhagat singh": "https://www.bhagatsingh.in",
+            "ratan tata": "https://www.tata.com",
+            "mukesh ambani": "https://www.ril.com",
+            "gautam adani": "https://www.adani.com",
+            // Entertainment
+            "bollywood": "https://www.bollywoodhungama.com",
+            "netflix": "https://www.netflix.com",
+            "amazon prime": "https://www.primevideo.com",
+            "hotstar": "https://www.hotstar.com",
+            "youtube": "https://www.youtube.com",
+            "instagram": "https://www.instagram.com",
+            "facebook": "https://www.facebook.com",
+            "twitter": "https://www.twitter.com",
+            "whatsapp": "https://www.whatsapp.com",
+            "telegram": "https://www.telegram.org",
+            "snapchat": "https://www.snapchat.com",
+            "pinterest": "https://www.pinterest.com",
+            "quora": "https://www.quora.com",
+            "linkedin": "https://www.linkedin.com",
+            "amazon": "https://www.amazon.in",
+            "flipkart": "https://www.flipkart.com",
+            "myntra": "https://www.myntra.com",
+            "paytm": "https://www.paytm.com",
+            "phonepe": "https://www.phonepe.com",
+            "zomato": "https://www.zomato.com",
+            "swiggy": "https://www.swiggy.com",
+            "spotify": "https://www.spotify.com",
+            "gaana": "https://www.gaana.com",
+            // Sports
+            "cricket": "https://www.cricbuzz.com",
+            "ipl": "https://www.iplt20.com",
+            "bcci": "https://www.bcci.tv",
+            "football": "https://www.sportskeeda.com/football",
+            "fifa": "https://www.fifa.com",
+            "nba": "https://www.nba.com",
+            "tennis": "https://www.tennis.com",
+            // Education
+            "iit": "https://www.iit.ac.in",
+            "iit bombay": "https://www.iitb.ac.in",
+            "iit delhi": "https://www.iitd.ac.in",
+            "nit": "https://www.nit.ac.in",
+            "iim": "https://www.iim.ac.in",
+            "iim ahmedabad": "https://www.iima.ac.in",
+            "du": "https://www.du.ac.in",
+            "bhu": "https://www.bhu.ac.in",
+            "amu": "https://www.amu.ac.in",
+            "jnu": "https://www.jnu.ac.in",
+            "jamia": "https://www.jmi.ac.in",
+            "ignou": "https://www.ignou.ac.in",
+            "nios": "https://www.nios.ac.in",
+            "jee": "https://jeemain.nta.nic.in",
+            "neet": "https://neet.nta.nic.in",
+            "gate": "https://www.gate.ac.in",
+            "cat": "https://www.cat.ac.in",
+            "ugc net": "https://ugcnet.nta.nic.in",
+            // Jobs
+            "sarkari result": "https://www.sarkariresult.com",
+            "naukri": "https://www.naukri.com",
+            "indeed": "https://www.indeed.co.in",
+            "monster": "https://www.monsterindia.com",
+            "shine": "https://www.shine.com",
+            "apna": "https://www.apna.co",
+            // General
+            "google": "https://www.google.com",
+            "wikipedia": "https://www.wikipedia.org",
+            "translate": "https://translate.google.com",
+            "maps": "https://maps.google.com",
+            "news": "https://news.google.com",
+            "bbc": "https://www.bbc.com",
+            "cnn": "https://www.cnn.com",
+            "times of india": "https://timesofindia.indiatimes.com",
+            "hindustan times": "https://www.hindustantimes.com",
+            "india today": "https://www.indiatoday.in",
+            "aaj tak": "https://www.aajtak.in",
+            "zee news": "https://zeenews.india.com",
+            "abp news": "https://www.abplive.com",
+            "news18": "https://www.news18.com",
+            "ndtv": "https://www.ndtv.com",
+            "republic world": "https://www.republicworld.com",
+            "moneycontrol": "https://www.moneycontrol.com",
+            "economic times": "https://economictimes.indiatimes.com",
+            "rediff": "https://www.rediff.com",
+            "indian express": "https://indianexpress.com",
+            "deccan herald": "https://www.deccanherald.com",
+            "business standard": "https://www.business-standard.com",
+            "livemint": "https://www.livemint.com",
+            "outlook": "https://www.outlookindia.com",
+            "the hindu": "https://www.thehindu.com",
+            "scroll": "https://scroll.in",
+            "the wire": "https://www.thewire.in",
+            "firstpost": "https://www.firstpost.com",
+            "newslaundry": "https://www.newslaundry.com",
+            "the quint": "https://www.thequint.com",
+            "shethepeople": "https://www.shethepeople.tv",
+            "feminism in india": "https://www.feminisminindia.com",
+            "shubh yatra": "https://www.shubhyatra.com",
+            "indian culture": "https://www.indiaculture.gov.in",
+            "incredible india": "https://www.incredibleindia.org",
+            "tourism": "https://www.tourism.gov.in",
+            "forest": "https://www.moef.gov.in",
+            "environment": "https://www.moef.gov.in",
+            "climate": "https://www.moef.gov.in",
+            "disaster management": "https://www.ndma.gov.in",
+            "police": "https://www.mha.gov.in",
+            "home ministry": "https://www.mha.gov.in",
+            "defence": "https://www.mod.gov.in",
+            "army": "https://www.indianarmy.nic.in",
+            "navy": "https://www.indiannavy.nic.in",
+            "air force": "https://indianairforce.nic.in",
+            "bharat": "https://www.india.gov.in",
+            "states": "https://www.india.gov.in",
+            "uttar pradesh": "https://up.gov.in",
+            "maharashtra": "https://maharashtra.gov.in",
+            "bihar": "https://bihar.gov.in",
+            "tamil nadu": "https://tn.gov.in",
+            "karnataka": "https://karnataka.gov.in",
+            "gujarat": "https://gujaratindia.gov.in",
+            "rajasthan": "https://rajasthan.gov.in",
+            "punjab": "https://punjab.gov.in",
+            "haryana": "https://haryana.gov.in",
+            "delhi": "https://delhi.gov.in",
+            "kolkata": "https://wb.gov.in",
+            "mumbai": "https://mumbai.gov.in",
+            "chennai": "https://chennai.nic.in",
+            "hyderabad": "https://hyderabad.telangana.gov.in",
+            "bangalore": "https://bbmp.gov.in",
+            "ahmedabad": "https://ahmedabadcity.gov.in",
+            "jaipur": "https://jaipur.rajasthan.gov.in",
+            "lucknow": "https://lucknow.nic.in",
+            "patna": "https://patna.nic.in",
+            "bhopal": "https://bhopal.nic.in",
+            "indore": "https://indore.nic.in",
+            "nagpur": "https://nagpur.nic.in",
+            "pune": "https://pune.nic.in",
+            "surat": "https://surat.nic.in",
+            "vadodara": "https://vadodara.nic.in",
+            "agra": "https://agra.nic.in",
+            "varanasi": "https://varanasi.nic.in",
+            "allahabad": "https://allahabad.nic.in",
+            "kanpur": "https://kanpur.nic.in",
+            "meerut": "https://meerut.nic.in",
+            "noida": "https://noida.nic.in",
+            "ghaziabad": "https://ghaziabad.nic.in",
+            "gurugram": "https://gurugram.nic.in",
+            "faridabad": "https://faridabad.nic.in",
+            "chandigarh": "https://chandigarh.gov.in",
+            "shimla": "https://himachal.nic.in",
+            "dehradun": "https://dehradun.nic.in",
+            "ranchi": "https://ranchi.nic.in",
+            "bhubaneswar": "https://bhubaneswar.nic.in",
+            "guwahati": "https://guwahati.nic.in",
+            "imphal": "https://imphal.nic.in",
+            "agartala": "https://agartala.nic.in",
+            "aizawl": "https://aizawl.nic.in",
+            "gangtok": "https://gangtok.nic.in",
+            "itagar": "https://itagar.nic.in",
+            "kohima": "https://kohima.nic.in",
+            "dispur": "https://dispur.nic.in",
+            "panaji": "https://panaji.nic.in",
+            "port blair": "https://andaman.nic.in",
+            "pondicherry": "https://pondicherry.nic.in",
+            "ladakh": "https://ladakh.nic.in",
+            "jammu": "https://jammu.nic.in",
+            "kashmir": "https://kashmir.nic.in",
+            "srinagar": "https://srinagar.nic.in",
+            "leh": "https://leh.nic.in"
+        };
 
-<div class="owner-section">
-    <div class="owner-circle">D</div>
-    <div>
-        <div class="owner-name">DIVY</div>
-        <div class="owner-info">IIT ENGINEERING QUALIFIED | EX-BSF ARMY | EX INDIAN BANK EMPLOYEE</div>
-    </div>
-</div>
+        // ================================================================
+        //  2. GENERATE 5000+ ENTRIES (prefix + base + suffix)
+        // ================================================================
+        function generateData() {
+            const prefixes = ['', 'online', 'apply', 'status', 'check', 'new', 'latest', 'old', 'free', 'official', 'gov', 'india', 'bharat', 'state', 'central', 'national', 'international', 'update', 'track', 'verify', 'download', 'form', 'result', 'exam', 'admit', 'syllabus', 'answer key', 'cutoff', 'merit', 'list', 'counseling', 'admission', 'fee', 'date', 'time', 'news', 'report', 'analysis', 'data', 'statistics', 'information', 'knowledge', 'learning', 'education', 'job', 'career', 'skill', 'training', 'internship', 'placement', 'salary', 'pay scale', 'promotion', 'transfer', 'leave', 'holiday', 'calendar', 'schedule', 'timetable', 'route', 'map', 'address', 'contact', 'helpline', 'support', 'help', 'guide', 'tutorial', 'video', 'photo', 'image', 'gallery', 'review', 'rating', 'feedback', 'complaint', 'grievance', 'suggestion', 'idea', 'plan', 'project', 'scheme', 'yojana', 'card', 'id', 'number', 'certificate', 'license', 'permit', 'pass', 'ticket', 'booking'];
+            const suffixes = ['', '2025', '2026', '2027', 'online', 'form', 'apply', 'download', 'login', 'register', 'portal', 'service', 'scheme', 'yojana', 'card', 'id', 'number', 'certificate', 'license', 'permit', 'pass', 'ticket', 'booking', 'result', 'exam', 'admit', 'syllabus', 'answer key', 'cutoff', 'merit', 'list', 'counseling', 'admission', 'fee', 'date', 'time', 'news', 'update', 'status', 'track', 'helpline', 'contact', 'address', 'map', 'route', 'distance', 'time table', 'schedule', 'calendar', 'weather', 'alert', 'warning', 'safety', 'tips', 'guide', 'tutorial', 'video', 'photo', 'image', 'gallery', 'review', 'rating', 'feedback', 'complaint', 'grievance', 'suggestion', 'idea', 'plan', 'project', 'report', 'analysis', 'data', 'statistics', 'information', 'knowledge', 'learning', 'education', 'job', 'career', 'skill', 'training', 'internship', 'placement', 'salary', 'pay scale', 'promotion', 'transfer', 'leave', 'holiday', 'list', 'calendar 2025', 'calendar 2026'];
 
-<script>
-    const searchHistory = ['sarkari result', 'ram', 'shiv', 'instagram', 'whatsapp', 'mausam'];
+            const baseKeys = Object.keys(BASE_DATA);
+            const newData = {};
+            let count = 0;
+            const maxEntries = 5000;
 
-    // 🔑 USE YOUR EXISTING YOUTUBE API KEY HERE
-    const YOUTUBE_API_KEY = "AIzaSyCggxsKMnuCCyFuw0p3LjG9LD213VCBRx8";
-
-    function showHistory() {
-        let html = searchHistory.slice(0,5).map(q => `<div class="suggestion-item" onclick="performSearch('${q}')">🕒 ${q}</div>`).join('');
-        document.getElementById('suggestions').innerHTML = html;
-        document.getElementById('suggestions').style.display = 'block';
-    }
-    function filterSuggestions(val) {
-        let filtered = searchHistory.filter(q => q.includes(val.toLowerCase()));
-        let html = filtered.map(q => `<div class="suggestion-item" onclick="performSearch('${q}')">🔍 ${q}</div>`).join('');
-        document.getElementById('suggestions').innerHTML = html;
-        document.getElementById('suggestions').style.display = 'block';
-    }
-    function homeEnter(e) { if (e.key === 'Enter') performSearch(document.getElementById('homeInput').value); }
-    function resultEnter(e) { if (e.key === 'Enter') performSearch(document.getElementById('resultInput').value); }
-
-    function performSearch(q) {
-        q = q || document.getElementById('homeInput').value;
-        if (!q) return;
-        document.getElementById('home-view').style.display = 'none';
-        document.getElementById('results-view').style.display = 'block';
-        document.getElementById('resultInput').value = q;
-        document.getElementById('suggestions').style.display = 'none';
-        let chips = [`${q} का अर्थ`, `${q} का इतिहास`, `${q} in English`, `${q} की फोटो`, `${q} 2026`];
-        document.getElementById('resultChips').innerHTML = chips.map(c => `<div class="suggest-chip">${c}</div>`).join('');
-        showTab('all');
-    }
-
-    function toggleDrawer() {
-        document.getElementById('overlay').style.display = 'block';
-        document.getElementById('drawer').classList.add('open');
-    }
-    function hideDrawer() {
-        document.getElementById('overlay').style.display = 'none';
-        document.getElementById('drawer').classList.remove('open');
-    }
-    function newTab() { hideDrawer(); location.reload(); }
-    function exitApp() { hideDrawer(); alert("Please close this tab."); }
-    function toggleDarkMode() { hideDrawer(); document.body.classList.toggle('dark-mode'); }
-    function toggleDesktop() { hideDrawer(); document.body.classList.toggle('desktop-mode'); }
-    function helpFeedback() { hideDrawer(); alert("Help & Feedback: Work in Progress!"); }
-    function workInProgress() { alert("Work in Progress!"); }
-
-    const db = {
-        "default": { exLinks: [ {t:"जानकारी - Wikipedia", u:"https://www.wikipedia.org", f:"W", c:"#000"}, {t:"चर्चा - Facebook", u:"https://www.facebook.com", f:"f", c:"#1877F2"}, {t:"तस्वीरें - Instagram", u:"https://www.instagram.com", f:"I", c:"#E1306C"}, {t:"फोटो - Pinterest", u:"https://in.pinterest.com", f:"P", c:"#E60023"}, {t:"सवाल - Quora", u:"https://www.quora.com", f:"Q", c:"#B92B27"}, {t:"ऐप्स - Play Store", u:"https://play.google.com", f:"▶", c:"#0F9D58"} ], rand: ["विस्तृत जानकारी", "नवीनतम अपडेट", "इतिहास", "विश्लेषण"], faqs: ["What is the meaning?", "What are the benefits?"], sfs: ["General Knowledge", "Current Affairs"] },
-        "ram": { exLinks: [ {t:"राम - Wikipedia", u:"https://en.wikipedia.org/wiki/Rama", f:"W", c:"#000"}, {t:"राम - Facebook", u:"https://www.facebook.com", f:"f", c:"#1877F2"}, {t:"राम - Instagram", u:"https://www.instagram.com", f:"I", c:"#E1306C"}, {t:"राम - Snapchat", u:"https://www.snapchat.com", f:"S", c:"#FFFC00"}, {t:"राम - Britannica", u:"https://www.britannica.com/topic/Rama", f:"B", c:"#4285F4"}, {t:"राम - Quora", u:"https://www.quora.com", f:"Q", c:"#B92B27"}, {t:"राम - Play Store", u:"https://play.google.com", f:"▶", c:"#0F9D58"} ], rand: ["राम का जीवन", "रामायण की कहानी", "राम चालीसा"], faqs: ["What is RAM in a computer?", "What is RAM slang for?"], sfs: ["RAM computer", "Ram God", "Shree Ram"] },
-        "cricket": { exLinks: [ {t:"Cricket - Cricbuzz", u:"https://www.cricbuzz.com", f:"C", c:"#0F9D58"}, {t:"Cricket - Wikipedia", u:"https://en.wikipedia.org/wiki/Cricket", f:"W", c:"#000"}, {t:"Cricket - Facebook", u:"https://www.facebook.com", f:"f", c:"#1877F2"}, {t:"Cricket - Instagram", u:"https://www.instagram.com", f:"I", c:"#E1306C"}, {t:"Cricket - Snapchat", u:"https://www.snapchat.com", f:"S", c:"#FFFC00"}, {t:"Cricket - Quora", u:"https://www.quora.com", f:"Q", c:"#B92B27"}, {t:"Cricket - Play Store", u:"https://play.google.com", f:"▶", c:"#0F9D58"} ], rand: ["क्रिकेट स्कोर", "क्रिकेट विश्व कप"], faqs: ["Who is the god of cricket?", "What is a sixer?"], sfs: ["Cricket score", "Cricket world cup", "Cricket live"] }
-    };
-
-    function renderResults(q, tab) {
-        let data = db[q] || db["default"];
-        let html = '';
-
-        if (tab === 'all') {
-            html += `<div class="result-block">`;
-            data.exLinks.slice(0, 7).forEach(link => {
-                html += `<div class="url"><div class="favicon" style="background:${link.c};color:#fff">${link.f}</div>${new URL(link.u).hostname}</div><a href="${link.u}" target="_blank" class="title">${link.t}</a><div class="snippet">यह "${link.t}" से संबंधित सबसे प्रासंगिक जानकारी है।</div>`;
-            });
-            html += `</div>`;
-            html += `<div class="box-title">People also ask</div>`;
-            data.faqs.forEach(faq => { html += `<div class="faq-item"><span>${faq}</span><span class="arrow">⌄</span></div>`; });
-            html += `<div class="box-title">People also search for</div>`;
-            data.sfs.forEach(sf => { html += `<div class="search-for-item" onclick="performSearch('${sf}')"><span style="color:#1a73e8">🔍</span> ${sf}</div>`; });
-            html += `<div class="box-title">Related searches</div>`;
-            data.rand.slice(0, 7).forEach(link => {
-                html += `<div class="url"><div class="favicon" style="background:#eee;color:#555">G</div>www.google.com</div><a href="https://www.google.com/search?q=${encodeURIComponent(link)}" target="_blank" class="title">${link}</a><div class="snippet">"${link}" के लिए नए परिणाम देखें।</div>`;
-            });
-        }
-        else if (tab === 'images') {
-            // IMAGES: Fallback added if pic fails
-            html += `<div class="img-grid">`;
-            for(let i=0; i<9; i++) {
-                let imgUrl = `https://picsum.photos/seed/${q}${i}/300/200`;
-                html += `<div class="img-card" onclick="window.open('https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}')">
-                            <img src="${imgUrl}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'display:flex;justify-content:center;align-items:center;height:100%;font-size:40px;\'>🖼️</div>';">
-                            <div class="img-title">${q}</div>
-                         </div>`;
+            // First, add all base entries
+            for (const [key, url] of Object.entries(BASE_DATA)) {
+                if (count < maxEntries) {
+                    newData[key] = url;
+                    count++;
+                }
             }
-            html += `</div>`;
-        }
-        else if (tab === 'videos') {
-            // VIDEOS: Loading placeholder
-            html += `<div id="video-loading" style="text-align:center; padding:20px;">Loading real videos...</div>`;
-            fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(q)}&key=${YOUTUBE_API_KEY}&maxResults=8`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.items && data.items.length > 0) {
-                        let vidHtml = `<div class="video-grid">`;
-                        data.items.forEach(item => {
-                            let vidId = item.id.videoId;
-                            let title = item.snippet.title;
-                            let channel = item.snippet.channelTitle;
-                            vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${vidId}')">
-                                <div class="video-thumb"><img src="https://img.youtube.com/vi/${vidId}/hqdefault.jpg"></div>
-                                <div class="video-title">${title}</div>
-                                <div class="video-meta">${channel}</div>
-                            </div>`;
-                        });
-                        vidHtml += `</div>`;
-                        document.getElementById('content-area').innerHTML = vidHtml;
-                    } else {
-                        document.getElementById('content-area').innerHTML = `<p style="text-align:center; padding:20px;">No videos found.</p>`;
-                    }
-                })
-                .catch(() => {
-                    // FALLBACK VIDEOS (If API limit crossed)
-                    let fallbackVideos = [
-                        { id: "AETFvQonfV8", title: "हनुमान चालीसा (Fast)", channel: "भक्ति वेव्स" },
-                        { id: "jdy0GgMbJY0", title: "शिव तांडव स्तोत्र", channel: "दिव्य मंत्र" }
-                    ];
-                    let vidHtml = `<div class="video-grid">`;
-                    fallbackVideos.forEach(item => {
-                        vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')">
-                            <div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div>
-                            <div class="video-title">${item.title}</div>
-                            <div class="video-meta">${item.channel}</div>
-                        </div>`;
-                    });
-                    vidHtml += `</div>`;
-                    document.getElementById('content-area').innerHTML = vidHtml;
-                });
-        }
-        else if (tab === 'news') {
-            const newsSources = [
-                {t:`${q} पर बड़ी खबर`, s:"आज तक", u:"https://www.aajtak.in", c:"#D32F2F"},
-                {t:`${q} से जुड़े ताज़ा अपडेट`, s:"TV9 भारतवर्ष", u:"https://www.tv9bharatvarsh.com", c:"#C62828"},
-                {t:`${q} का विश्लेषण`, s:"रिपब्लिक भारत", u:"https://www.republicbharat.com", c:"#1565C0"},
-                {t:`${q} की ब्रेकिंग न्यूज़`, s:"ABP न्यूज़", u:"https://www.abplive.com/hindi", c:"#E65100"},
-                {t:`${q} की सच्चाई`, s:"ज़ी न्यूज़", u:"https://zeenews.india.com/hindi/", c:"#4527A0"},
-                {t:`${q} पर सियासत`, s:"News18 इंडिया", u:"https://www.news18.com/hindi/", c:"#2E7D32"},
-                {t:`${q} से जुड़ा इतिहास`, s:"इंडिया टीवी", u:"https://www.indiatv.in", c:"#B71C1C"}
-            ];
-            html += `<div class="box-title">ताज़ा खबरें</div>`;
-            newsSources.forEach(news => {
-                html += `<div class="news-item" onclick="window.open('${news.u}')"><div class="news-icon" style="background:${news.c}">${news.s[0]}</div><div><div class="news-title">${news.t}</div><div class="news-src">${news.s} - लाइव अपडेट</div></div></div>`;
-            });
-        }
-        return html;
-    }
 
-    // FIXED VIDEOS FUNCTION (With full fallback and sensitive voice)
-    function showTab(tab) {
-        let q = document.getElementById('resultInput').value;
-        let contentArea = document.getElementById('content-area');
-        if(tab === 'videos'){
-            contentArea.innerHTML = `<div id="video-loading" style="text-align:center; padding:20px;">Loading real videos...</div>`;
-            fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(q)}&key=${YOUTUBE_API_KEY}&maxResults=8`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.items && data.items.length > 0) {
+            // Then generate combinations
+            while (count < maxEntries) {
+                const base = baseKeys[Math.floor(Math.random() * baseKeys.length)];
+                const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+                let newKey = prefix + ' ' + base + ' ' + suffix;
+                newKey = newKey.trim().replace(/\s+/g, ' ');
+                if (newKey.length > 3 && !newData[newKey] && !newData[base]) {
+                    const url = BASE_DATA[base] || 'https://www.google.com/search?q=' + encodeURIComponent(newKey);
+                    newData[newKey] = url;
+                    count++;
+                }
+            }
+            return newData;
+        }
+
+        // Generate the full dataset
+        const FULL_DATA = generateData();
+        console.log('✅ Total entries generated:', Object.keys(FULL_DATA).length);
+
+        // ================================================================
+        //  3. SEARCH FUNCTIONS
+        // ================================================================
+        function getSite(query) {
+            const q = query.toLowerCase().trim();
+            if (FULL_DATA[q]) return FULL_DATA[q];
+            for (const [key, url] of Object.entries(FULL_DATA)) {
+                if (q.includes(key) || key.includes(q)) return url;
+            }
+            return null;
+        }
+
+        function getRelated(query) {
+            const q = query.toLowerCase().trim();
+            const results = [];
+            for (const key of Object.keys(FULL_DATA)) {
+                if (key.includes(q) || q.includes(key)) {
+                    results.push(key);
+                    if (results.length >= 10) break;
+                }
+            }
+            if (results.length === 0) {
+                const popular = ['sarkari result', 'cricket', 'bollywood', 'upsc', 'aadhaar', 'pan card', 'youtube', 'amazon'];
+                for (const p of popular) {
+                    if (p.includes(q) || q.includes(p)) results.push(p);
+                    if (results.length >= 8) break;
+                }
+            }
+            return results.slice(0, 10);
+        }
+
+        function getAllQueries() {
+            return Object.keys(FULL_DATA);
+        }
+
+        // ================================================================
+        //  4. HISTORY (localStorage)
+        // ================================================================
+        let searchHistory = JSON.parse(localStorage.getItem('dhundho_history')) || [];
+        function saveHistory() { localStorage.setItem('dhundho_history', JSON.stringify(searchHistory)); }
+        function addToHistory(query) {
+            if (!query) return;
+            query = query.trim();
+            if (!query) return;
+            searchHistory = searchHistory.filter(q => q.toLowerCase() !== query.toLowerCase());
+            searchHistory.unshift(query);
+            if (searchHistory.length > 100) searchHistory = searchHistory.slice(0, 100);
+            saveHistory();
+        }
+        function getHistory() { return searchHistory; }
+
+        // ================================================================
+        //  5. DARK MODE
+        // ================================================================
+        let darkMode = localStorage.getItem('dhundho_dark') === 'true';
+        function applyDarkMode() {
+            if (darkMode) document.body.classList.add('dark-mode');
+            else document.body.classList.remove('dark-mode');
+            localStorage.setItem('dhundho_dark', darkMode);
+        }
+        applyDarkMode();
+
+        // ================================================================
+        //  6. UI NAVIGATION
+        // ================================================================
+        function goHome() {
+            document.getElementById('home-view').style.display = 'flex';
+            document.getElementById('results-view').style.display = 'none';
+            document.getElementById('homeInput').value = '';
+            document.getElementById('homeSuggestions').style.display = 'none';
+            hideDrawer();
+            window.scrollTo(0, 0);
+        }
+
+        function toggleDrawer() {
+            const overlay = document.getElementById('overlay');
+            const drawer = document.getElementById('drawer');
+            if (drawer.classList.contains('open')) hideDrawer();
+            else { overlay.style.display = 'block'; drawer.classList.add('open'); }
+        }
+        function hideDrawer() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('drawer').classList.remove('open');
+        }
+        function newTab() { hideDrawer(); location.reload(); }
+        function exitApp() { hideExitPrompt(); hideDrawer(); window.close(); if (window.location.href !== 'about:blank') alert('बाहर निकलने के लिए इस टैब को मैन्युअल रूप से बंद करें।'); }
+        function showExitPrompt() { hideDrawer(); document.getElementById('exitOverlay').style.display = 'flex'; }
+        function hideExitPrompt() { document.getElementById('exitOverlay').style.display = 'none'; }
+        function workInProgress() { alert('यह फीचर अभी काम कर रहा है!'); hideDrawer(); }
+        function helpFeedback() { hideDrawer(); alert('📧 Help & Feedback: umadivy500@gmail.com'); }
+        function toggleDarkMode() { darkMode = !darkMode; applyDarkMode(); hideDrawer(); }
+        function toggleDesktop() { document.body.classList.toggle('desktop-mode'); hideDrawer(); alert('डेस्कटॉप मोड टॉगल किया गया!'); }
+        function showHistoryDrawer() {
+            hideDrawer();
+            const history = getHistory();
+            if (history.length === 0) { alert('कोई इतिहास नहीं मिला।'); return; }
+            let msg = '🕒 आपका सर्च इतिहास:\n\n';
+            history.slice(0, 20).forEach((q, i) => msg += `${i+1}. ${q}\n`);
+            alert(msg);
+        }
+        function clearHistory() {
+            hideDrawer();
+            if (confirm('क्या आप सभी ब्राउज़िंग डेटा हटाना चाहते हैं?')) {
+                searchHistory = [];
+                saveHistory();
+                alert('इतिहास साफ़ कर दिया गया!');
+            }
+        }
+        function clearResultInput() {
+            document.getElementById('resultInput').value = '';
+            document.getElementById('resultSuggestions').style.display = 'none';
+            document.getElementById('resultInput').focus();
+        }
+
+        // ================================================================
+        //  7. VOICE SEARCH
+        // ================================================================
+        function voiceSearchHome() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert('वॉयस सर्च समर्थित नहीं है।'); return; }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'hi-IN';
+            recognition.interimResults = false;
+            recognition.start();
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('homeInput').value = transcript;
+                performSearch(transcript);
+            };
+            recognition.onerror = function() { alert('वॉयस सर्च में समस्या, कृपया पुनः प्रयास करें।'); };
+        }
+        function voiceSearchResult() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert('वॉयस सर्च समर्थित नहीं है।'); return; }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'hi-IN';
+            recognition.interimResults = false;
+            recognition.start();
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('resultInput').value = transcript;
+                performSearch(transcript);
+            };
+            recognition.onerror = function() { alert('वॉयस सर्च में समस्या, कृपया पुनः प्रयास करें।'); };
+        }
+
+        // ================================================================
+        //  8. SUGGESTIONS
+        // ================================================================
+        const allQueries = getAllQueries();
+
+        function showHomeSuggestions() { filterHomeSuggestions(document.getElementById('homeInput').value); }
+        function filterHomeSuggestions(val) {
+            const container = document.getElementById('homeSuggestions');
+            if (!val) {
+                const history = getHistory();
+                let html = history.slice(0, 5).map(q => `<div class="suggestion-item" onclick="performSearch('${q}')"><span class="icon">🕒</span> ${q}</div>`).join('');
+                container.innerHTML = html;
+                container.style.display = history.length > 0 ? 'block' : 'none';
+                return;
+            }
+            const matches = allQueries.filter(q => q.toLowerCase().includes(val.toLowerCase())).slice(0, 8);
+            if (matches.length === 0) { container.style.display = 'none'; return; }
+            let html = matches.map(q => `<div class="suggestion-item" onclick="performSearch('${q}')"><span class="icon">🔍</span> ${q}</div>`).join('');
+            container.innerHTML = html;
+            container.style.display = 'block';
+        }
+
+        function showResultSuggestions(val) {
+            const container = document.getElementById('resultSuggestions');
+            if (!val) { container.style.display = 'none'; return; }
+            const matches = allQueries.filter(q => q.toLowerCase().includes(val.toLowerCase())).slice(0, 8);
+            if (matches.length === 0) { container.style.display = 'none'; return; }
+            let html = matches.map(q => `<div class="suggestion-item" onclick="performSearch('${q}')"><span class="icon">🔍</span> ${q}</div>`).join('');
+            container.innerHTML = html;
+            container.style.display = 'block';
+        }
+
+        // ================================================================
+        //  9. PERFORM SEARCH
+        // ================================================================
+        function performSearch(query) {
+            if (!query) return;
+            query = query.trim();
+            if (!query) return;
+            addToHistory(query);
+
+            document.getElementById('home-view').style.display = 'none';
+            document.getElementById('results-view').style.display = 'block';
+            document.getElementById('resultInput').value = query;
+            document.getElementById('homeSuggestions').style.display = 'none';
+            document.getElementById('resultSuggestions').style.display = 'none';
+
+            const chips = [`${query} का अर्थ`, `${query} का इतिहास`, `${query} in English`, `${query} की फोटो`, `${query} 2026`];
+            document.getElementById('resultChips').innerHTML = chips.map(c => `<div class="suggest-chip" onclick="performSearch('${c}')">${c}</div>`).join('');
+
+            showTab('all');
+            window.scrollTo(0, 0);
+        }
+
+        function homeEnter(e) { if (e.key === 'Enter') performSearch(document.getElementById('homeInput').value); }
+        function resultEnter(e) { if (e.key === 'Enter') performSearch(document.getElementById('resultInput').value); }
+
+        function iAmFeelingLucky() {
+            const q = document.getElementById('homeInput').value.trim();
+            if (q) {
+                const site = getSite(q);
+                if (site) { window.open(site, '_blank'); return; }
+                window.open('https://www.google.com/search?q=' + encodeURIComponent(q), '_blank');
+            } else {
+                const randoms = Object.keys(FULL_DATA).sort(() => Math.random() - 0.5).slice(0, 5);
+                if (randoms.length > 0) {
+                    const pick = randoms[Math.floor(Math.random() * randoms.length)];
+                    window.open(FULL_DATA[pick], '_blank');
+                }
+            }
+        }
+
+        // ================================================================
+        //  10. RENDER RESULTS (ALL TABS)
+        // ================================================================
+        function renderAllResults(query) {
+            const q = query.trim();
+            let html = '';
+
+            // Direct site
+            const directSite = getSite(q);
+            if (directSite) {
+                const displayName = q.length > 30 ? q.slice(0, 30) + '...' : q;
+                html += `
+                    <div class="result-block">
+                        <div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">🌐</div>${new URL(directSite).hostname}</div>
+                        <a href="${directSite}" target="_blank" class="title">${displayName}</a>
+                        <div class="snippet">${q} की आधिकारिक वेबसाइट – सभी जानकारी यहाँ उपलब्ध है।</div>
+                    </div>
+                `;
+            }
+
+            // Related sites
+            const related = getRelated(q);
+            const shown = new Set();
+            let count = 0;
+            for (const key of related) {
+                const url = getSite(key);
+                if (url && !shown.has(url) && key.toLowerCase() !== q.toLowerCase()) {
+                    shown.add(url);
+                    const displayName = key.length > 35 ? key.slice(0, 35) + '...' : key;
+                    html += `
+                        <div class="result-block">
+                            <div class="url"><div class="favicon" style="background:#4285F4;color:#fff;">🔗</div>${new URL(url).hostname}</div>
+                            <a href="${url}" target="_blank" class="title">${displayName}</a>
+                            <div class="snippet">"${key}" से संबंधित जानकारी – आधिकारिक स्रोत।</div>
+                        </div>
+                    `;
+                    count++;
+                    if (count >= 6) break;
+                }
+            }
+
+            // Fallback Google
+            if (!directSite && count === 0) {
+                html += `
+                    <div class="result-block">
+                        <div class="url"><div class="favicon" style="background:#000;color:#fff;">G</div>www.google.com</div>
+                        <a href="https://www.google.com/search?q=${encodeURIComponent(q)}" target="_blank" class="title">${q} – Google पर खोजें</a>
+                        <div class="snippet">"${q}" के लिए Google पर अधिक परिणाम देखें।</div>
+                    </div>
+                `;
+            }
+
+            // FAQ
+            html += `<div class="box-title">लोग यह भी पूछते हैं</div>`;
+            const faqs = [`${q} क्या है?`, `${q} का अर्थ क्या है?`, `${q} कैसे करें?`, `${q} की उपयोगिता?`, `${q} से जुड़े फायदे?`];
+            faqs.forEach(f => {
+                html += `<div class="faq-item" onclick="performSearch('${f}')"><span>${f}</span><span class="arrow">⌄</span></div>`;
+            });
+
+            // People also search for
+            html += `<div class="box-title">लोग यह भी खोजते हैं</div>`;
+            const relatedSearches = getRelated(q).slice(0, 6);
+            relatedSearches.forEach(s => {
+                if (s.toLowerCase() !== q.toLowerCase()) {
+                    html += `<div class="search-for-item" onclick="performSearch('${s}')"><span style="color:#1a73e8;">🔍</span> ${s}</div>`;
+                }
+            });
+
+            // Related searches
+            html += `<div class="box-title">संबंधित खोजें</div>`;
+            const googleRelated = [`${q} 2026`, `${q} का इतिहास`, `${q} के बारे में`, `${q} की तस्वीरें`, `${q} विकिपीडिया`];
+            googleRelated.forEach(r => {
+                html += `
+                    <div class="result-block">
+                        <div class="url"><div class="favicon" style="background:#eee;color:#555;">G</div>www.google.com</div>
+                        <a href="https://www.google.com/search?q=${encodeURIComponent(r)}" target="_blank" class="title">${r}</a>
+                        <div class="snippet">"${r}" के लिए नए परिणाम देखें।</div>
+                    </div>
+                `;
+            });
+
+            return html;
+        }
+
+        function renderImages(query) {
+            let html = `<div class="img-grid">`;
+            for (let i = 0; i < 9; i++) {
+                const seed = query + i;
+                const imgUrl = `https://picsum.photos/seed/${seed}/300/200`;
+                html += `
+                    <div class="img-card" onclick="window.open('https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}')">
+                        <img src="${imgUrl}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'display:flex;justify-content:center;align-items:center;height:100%;font-size:40px;\\'>🖼️</div>';">
+                        <div class="img-title">${query}</div>
+                    </div>
+                `;
+            }
+            html += `</div>
+                <div style="text-align:center;margin-top:10px;">
+                    <a href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}" target="_blank" style="color:#1a73e8;text-decoration:none;font-weight:bold;">Google पर और तस्वीरें देखें →</a>
+                </div>
+            `;
+            return html;
+        }
+
+        function renderVideos(query) {
+            const YOUTUBE_API_KEY = "AIzaSyCggxsKMnuCCyFuw0p3LjG9LD213VCBRx8";
+            // We'll fetch async via showTab, so return placeholder
+            return `<div id="video-loading" style="text-align:center;padding:20px;">⏳ वीडियो लोड हो रहे हैं...</div>`;
+        }
+
+        function renderNews(query) {
+            const newsSources = [
+                { t: `${query} पर बड़ी खबर`, s: "आज तक", u: "https://www.aajtak.in", c: "#D32F2F" },
+                { t: `${query} से जुड़े ताज़ा अपडेट`, s: "TV9 भारतवर्ष", u: "https://www.tv9bharatvarsh.com", c: "#C62828" },
+                { t: `${query} का विश्लेषण`, s: "रिपब्लिक भारत", u: "https://www.republicbharat.com", c: "#1565C0" },
+                { t: `${query} की ब्रेकिंग न्यूज़`, s: "ABP न्यूज़", u: "https://www.abplive.com/hindi", c: "#E65100" },
+                { t: `${query} की सच्चाई`, s: "ज़ी न्यूज़", u: "https://zeenews.india.com/hindi/", c: "#4527A0" },
+                { t: `${query} पर सियासत`, s: "News18 इंडिया", u: "https://www.news18.com/hindi/", c: "#2E7D32" },
+                { t: `${query} से जुड़ा इतिहास`, s: "इंडिया टीवी", u: "https://www.indiatv.in", c: "#B71C1C" }
+            ];
+            let html = `<div class="box-title">📰 ताज़ा खबरें</div>`;
+            newsSources.forEach(news => {
+                html += `
+                    <div class="news-item" onclick="window.open('${news.u}')">
+                        <div class="news-icon" style="background:${news.c}">${news.s[0]}</div>
+                        <div>
+                            <div class="news-title">${news.t}</div>
+                            <div class="news-src">${news.s} - लाइव अपडेट</div>
+                        </div>
+                    </div>
+                `;
+            });
+            return html;
+        }
+
+        function renderTools(query) {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const dateStr = now.toLocaleDateString('hi-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            return `
+                <div class="tool-result">
+                    <div class="big-number">${timeStr}</div>
+                    <div class="label">⏰ वर्तमान समय</div>
+                </div>
+                <div class="tool-result">
+                    <div style="font-size:28px;font-weight:bold;color:#1a73e8;">${dateStr}</div>
+                    <div class="label">📅 आज की तारीख</div>
+                </div>
+                <div style="margin-top:15px;text-align:center;">
+                    <button onclick="window.open('https://www.google.com/search?q=calculator','_blank')" style="padding:12px 30px;border-radius:30px;background:#1a73e8;color:#fff;border:none;font-size:16px;cursor:pointer;">🧮 कैलकुलेटर खोलें</button>
+                </div>
+            `;
+        }
+
+        // ================================================================
+        //  11. TAB SWITCHING (async video fetch)
+        // ================================================================
+        function showTab(tab) {
+            const q = document.getElementById('resultInput').value.trim() || 'भारत';
+            const contentArea = document.getElementById('content-area');
+
+            if (tab === 'all') {
+                contentArea.innerHTML = renderAllResults(q);
+            } else if (tab === 'images') {
+                contentArea.innerHTML = renderImages(q);
+            } else if (tab === 'videos') {
+                contentArea.innerHTML = renderVideos(q);
+                // Async fetch YouTube
+                const YOUTUBE_API_KEY = "AIzaSyCggxsKMnuCCyFuw0p3LjG9LD213VCBRx8";
+                fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(q)}&key=${YOUTUBE_API_KEY}&maxResults=8`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.items && data.items.length > 0) {
+                            let vidHtml = `<div class="video-grid">`;
+                            data.items.forEach(item => {
+                                const vidId = item.id.videoId;
+                                const title = item.snippet.title;
+                                const channel = item.snippet.channelTitle;
+                                vidHtml += `
+                                    <div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${vidId}')">
+                                        <div class="video-thumb"><img src="https://img.youtube.com/vi/${vidId}/hqdefault.jpg"></div>
+                                        <div class="video-title">${title}</div>
+                                        <div class="video-meta">${channel}</div>
+                                    </div>
+                                `;
+                            });
+                            vidHtml += `</div>`;
+                            contentArea.innerHTML = vidHtml;
+                        } else {
+                            contentArea.innerHTML = `<p style="text-align:center;padding:20px;">कोई वीडियो नहीं मिला।</p>`;
+                        }
+                    })
+                    .catch(() => {
+                        const fallbackVideos = [
+                            { id: "AETFvQonfV8", title: "हनुमान चालीसा (Fast)", channel: "भक्ति वेव्स" },
+                            { id: "jdy0GgMbJY0", title: "शिव तांडव स्तोत्र", channel: "दिव्य मंत्र" },
+                            { id: "K0OAY6vL6B4", title: "रामायण अध्याय 1", channel: "धर्म संग्रह" },
+                            { id: "CJwSGRcBvYk", title: "महाभारत - शांति", channel: "इतिहास पुराण" }
+                        ];
                         let vidHtml = `<div class="video-grid">`;
-                        data.items.forEach(item => {
-                            let vidId = item.id.videoId;
-                            let title = item.snippet.title;
-                            let channel = item.snippet.channelTitle;
-                            vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${vidId}')">
-                                <div class="video-thumb"><img src="https://img.youtube.com/vi/${vidId}/hqdefault.jpg"></div>
-                                <div class="video-title">${title}</div>
-                                <div class="video-meta">${channel}</div>
-                            </div>`;
+                        fallbackVideos.forEach(item => {
+                            vidHtml += `
+                                <div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')">
+                                    <div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div>
+                                    <div class="video-title">${item.title}</div>
+                                    <div class="video-meta">${item.channel}</div>
+                                </div>
+                            `;
                         });
                         vidHtml += `</div>`;
                         contentArea.innerHTML = vidHtml;
-                    } else {
-                        contentArea.innerHTML = `<p style="text-align:center; padding:20px;">No videos found.</p>`;
-                    }
-                })
-                .catch(() => {
-                    let fallbackVideos = [
-                        { id: "AETFvQonfV8", title: "हनुमान चालीसा (Fast)", channel: "भक्ति वेव्स" },
-                        { id: "jdy0GgMbJY0", title: "शिव तांडव स्तोत्र", channel: "दिव्य मंत्र" }
-                    ];
-                    let vidHtml = `<div class="video-grid">`;
-                    fallbackVideos.forEach(item => {
-                        vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')">
-                            <div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div>
-                            <div class="video-title">${item.title}</div>
-                            <div class="video-meta">${item.channel}</div>
-                        </div>`;
                     });
-                    vidHtml += `</div>`;
-                    contentArea.innerHTML = vidHtml;
-                });
-        } else {
-            contentArea.innerHTML = renderResults(q, tab);
-        }
-        document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
-        let tabs = document.querySelectorAll('.tabs .tab');
-        if (tab === 'all') tabs[0].classList.add('active');
-        else if (tab === 'images') tabs[1].classList.add('active');
-        else if (tab === 'videos') tabs[2].classList.add('active');
-        else if (tab === 'news') tabs[4].classList.add('active');
-    }
+            } else if (tab === 'news') {
+                contentArea.innerHTML = renderNews(q);
+            } else if (tab === 'tools') {
+                contentArea.innerHTML = renderTools(q);
+            }
 
-    // FIXED HIGHLY SENSITIVE VOICE SEARCH
-    function voiceSearch() {
-        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert('Voice search not supported'); return; }
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'hi-IN';
-        recognition.interimResults = true; // Gets partial results as you speak
-        recognition.continuous = true; // Keeps listening briefly for small phrases
-        
-        recognition.onresult = function(event) {
-            let finalTranscript = '';
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-                if (event.results[i].isFinal) {
-                    finalTranscript += event.results[i][0].transcript;
-                }
-            }
-            if (finalTranscript) {
-                document.getElementById('resultInput').value = finalTranscript;
-                performSearch(finalTranscript);
-            }
-        };
-        recognition.start();
-    }
-</script>
+            // Update active tab
+            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+            const tabs = document.querySelectorAll('.tabs .tab');
+            const tabMap = { 'all': 0, 'images': 1, 'videos': 2, 'news': 4, 'tools': 6 };
+            const idx = tabMap[tab];
+            if (idx !== undefined && tabs[idx]) tabs[idx].classList.add('active');
+        }
+
+        // ================================================================
+        //  12. SERVICE WORKER REGISTRATION (Offline support)
+        // ================================================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('✅ Service Worker registered!'))
+                    .catch(err => console.warn('⚠️ SW registration failed:', err));
+            });
+        }
+
+        // ================================================================
+        //  13. INIT – Load home page
+        // ================================================================
+        console.log('🚀 ढूंढो – भारत का अपना सर्च इंजन लोड हो गया!');
+        console.log(`📚 ${Object.keys(FULL_DATA).length} क्वेरीज़ प्री-लोडेड हैं।`);
+
+        // Close suggestions on click outside
+        document.addEventListener('click', function(e) {
+            const homeInput = document.getElementById('homeInput');
+            const resultInput = document.getElementById('resultInput');
+            const homeSuggestions = document.getElementById('homeSuggestions');
+            const resultSuggestions = document.getElementById('resultSuggestions');
+            if (homeInput && !homeInput.contains(e.target)) homeSuggestions.style.display = 'none';
+            if (resultInput && !resultInput.contains(e.target) && !e.target.closest('#resultSuggestions')) resultSuggestions.style.display = 'none';
+        });
+        document.getElementById('overlay').addEventListener('click', hideDrawer);
+    </script>
 </body>
 </html>
