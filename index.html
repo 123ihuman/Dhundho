@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ढूंढो – भारत का सर्च इंजन</title>
     <style>
-        /* ===== BASE (पुराना CSS – कुछ जोड़) ===== */
+        /* ===== BASE ===== */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Arial,sans-serif; }
         body { background:#fff; color:#202124; transition:background .3s,color .3s; }
         .dark-mode { background:#202124 !important; color:#e8eaed !important; }
@@ -23,6 +23,8 @@
         .dark-mode .famous-chip { background:#303134; color:#e8eaed; }
         .dark-mode .famous-chip:hover { background:#3c4043; }
         .dark-mode .action-btn { background:#303134 !important; color:#e8eaed !important; border-color:#5f6368 !important; }
+        .dark-mode .ai-answer, .dark-mode .knowledge-panel { background:#303134 !important; }
+        .dark-mode .ai-answer .desc, .dark-mode .knowledge-panel .detail { color:#b0b0b0; }
 
         /* ===== HOME ===== */
         #home-view { min-height:100vh; display:flex; flex-direction:column; align-items:center; padding-top:80px; position:relative; }
@@ -31,6 +33,7 @@
         .home-search-bar { width:100%; height:54px; border:1px solid #dfe1e5; border-radius:27px; padding:0 60px 0 20px; font-size:18px; outline:none; box-shadow:0 1px 6px rgba(32,33,36,0.28); }
         .home-search-bar:focus { box-shadow:0 1px 10px rgba(32,33,36,0.4); }
         .home-icons { position:absolute; right:15px; top:15px; display:flex; gap:15px; font-size:24px; color:#4285F4; cursor:pointer; }
+        .home-icons .camera-icon { cursor:pointer; }
         #homeSuggestions { position:absolute; top:60px; left:0; right:0; background:#fff; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,0.2); overflow:hidden; z-index:100; display:none; max-height:400px; overflow-y:auto; }
         .suggestion-item { padding:12px 20px; cursor:pointer; border-bottom:1px solid #eee; font-size:15px; display:flex; align-items:center; gap:10px; }
         .suggestion-item:hover { background:#f8f9fa; }
@@ -51,7 +54,6 @@
         .avatar-circle { width:28px; height:28px; background:#4285F4; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:bold; cursor:pointer; }
         .three-dots { font-size:20px; font-weight:bold; cursor:pointer; padding-left:5px; }
 
-        /* ===== रिजल्ट लोगो – अब रंगीन ===== */
         .results-logo-container { text-align:center; padding-top:5px; margin-bottom:10px; }
         .results-logo { font-size:28px; font-weight:bold; background:linear-gradient(to right, #4285F4 0%, #4285F4 20%, #EA4335 20%, #EA4335 40%, #FBBC05 40%, #FBBC05 60%, #4285F4 60%, #4285F4 80%, #34A853 80%, #34A853 100%); -webkit-background-clip:text; background-clip:text; color:transparent; display:inline-block; }
 
@@ -90,6 +92,14 @@
         .search-for-item { gap:10px; color:#202124; }
         .search-for-item:hover { background:#f8f9fa; }
 
+        /* ===== KNOWLEDGE PANEL ===== */
+        .knowledge-panel { background:#f1f3f4; border-radius:12px; padding:16px; margin:10px 0; display:flex; gap:16px; align-items:center; flex-wrap:wrap; border-left:4px solid #1a73e8; }
+        .knowledge-panel img { width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+        .knowledge-panel .info { flex:1; }
+        .knowledge-panel .info .title { font-size:22px; font-weight:bold; color:#202124; margin-bottom:4px; }
+        .knowledge-panel .info .desc { font-size:15px; color:#4d5156; }
+        .knowledge-panel .info .detail { font-size:14px; color:#5f6368; margin-top:6px; }
+
         /* ===== IMAGES ===== */
         .img-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:10px; }
         .img-card { background:#f1f3f4; border-radius:8px; overflow:hidden; height:120px; cursor:pointer; position:relative; }
@@ -116,8 +126,11 @@
         .tool-result { background:#f1f3f4; border-radius:12px; padding:20px; margin:10px 0; text-align:center; }
         .tool-result .big-number { font-size:48px; font-weight:bold; color:#1a73e8; }
         .tool-result .label { font-size:14px; color:#5f6368; margin-top:5px; }
+        .ai-answer { background:#e8f0fe; border-radius:12px; padding:15px; margin:10px 0; border-left:4px solid #1a73e8; }
+        .ai-answer .answer { font-size:18px; font-weight:bold; color:#1a73e8; }
+        .ai-answer .desc { font-size:14px; color:#4d5156; margin-top:5px; }
 
-        /* ===== ACTION BUTTONS (Translate, TTS, Gmail, etc.) ===== */
+        /* ===== ACTION BUTTONS ===== */
         .action-bar { display:flex; flex-wrap:wrap; gap:10px; margin:10px 0; justify-content:center; }
         .action-btn { background:#f1f3f4; border:1px solid #dfe1e5; padding:6px 14px; border-radius:30px; font-size:13px; cursor:pointer; transition:background .2s; display:inline-flex; align-items:center; gap:5px; color:#202124; }
         .action-btn:hover { background:#e0e0e0; }
@@ -131,6 +144,10 @@
         .drawer-item:hover { background:#f8f9fa; }
         .drawer-item .m-icon { font-size:22px; width:30px; text-align:center; }
         .drawer-section { padding:15px 20px 5px; font-size:12px; color:#70757a; font-weight:600; letter-spacing:0.5px; }
+
+        .password-box { padding:10px 20px; }
+        .password-box input { width:100%; padding:8px; border:1px solid #dfe1e5; border-radius:20px; outline:none; }
+        .password-box .hidden-content { display:none; margin-top:10px; background:#f1f3f4; padding:10px; border-radius:8px; }
 
         /* ===== EXIT PROMPT ===== */
         .exit-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); z-index:2000; display:none; align-items:center; justify-content:center; }
@@ -149,7 +166,6 @@
         /* ===== OWNER ===== */
         .owner-section { display:flex; align-items:center; justify-content:center; gap:15px; padding:20px; margin-top:50px; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; }
         .owner-img { width:60px; height:60px; border-radius:50%; border:3px solid #fff; object-fit:cover; }
-        .owner-circle { width:60px; height:60px; background:#fff; color:#764ba2; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:bold; border:4px solid rgba(255,255,255,0.3); }
         .owner-name { font-size:20px; font-weight:bold; }
         .owner-info { font-size:14px; margin-top:5px; opacity:0.9; }
 
@@ -168,6 +184,8 @@
             .drawer { width:280px; }
             .exit-box { padding:20px; }
             .action-btn { font-size:12px; padding:4px 10px; }
+            .knowledge-panel { flex-direction:column; text-align:center; }
+            .knowledge-panel img { width:60px; height:60px; }
         }
         @media (max-width:400px) {
             .img-grid { grid-template-columns:repeat(2,1fr); }
@@ -182,23 +200,25 @@
         <div class="home-logo">ढूंढो</div>
         <div class="home-search-box">
             <input type="text" class="home-search-bar" id="homeInput" placeholder="Search Google or type URL" onfocus="showHomeSuggestions()" oninput="filterHomeSuggestions(this.value)" onkeypress="homeEnter(event)">
-            <div class="home-icons" onclick="voiceSearchHome()"><i class="fas fa-microphone"></i><i class="fas fa-camera"></i></div>
+            <div class="home-icons">
+                <i class="fas fa-microphone" onclick="voiceSearchHome()"></i>
+                <i class="fas fa-camera camera-icon" onclick="openLens()"></i>
+            </div>
             <div id="homeSuggestions"></div>
         </div>
         <div class="home-buttons">
             <div class="home-btn" onclick="performSearch(document.getElementById('homeInput').value)">ढूंढो</div>
-            <div class="home-btn" onclick="iAmFeelingLucky()">मैं भाग्यशाली हूँ</div>
+            <div class="home-btn" onclick="iAmFeelingLucky()">🎵 गाने और फिल्में</div>
         </div>
-        <!-- Famous searches -->
         <div class="famous-chips">
             <span class="famous-chip" onclick="performSearch('cricket')">🏏 Cricket</span>
             <span class="famous-chip" onclick="performSearch('politics')">🏛️ Politics</span>
             <span class="famous-chip" onclick="performSearch('job')">💼 Job</span>
             <span class="famous-chip" onclick="performSearch('weather')">🌤️ Weather</span>
-            <span class="famous-chip" onclick="performSearch('bollywood')">🎬 Bollywood</span>
+            <span class="famous-chip" onclick="performSearch('songs')">🎵 Songs</span>
+            <span class="famous-chip" onclick="performSearch('movies')">🎬 Movies</span>
             <span class="famous-chip" onclick="performSearch('aadhaar')">🆔 Aadhaar</span>
             <span class="famous-chip" onclick="performSearch('sarkari result')">📋 Sarkari Result</span>
-            <span class="famous-chip" onclick="performSearch('youtube')">▶️ YouTube</span>
         </div>
         <div style="margin-top:20px;font-size:13px;color:#70757a;">भारत का अपना सर्च इंजन · 5000+ क्वेरीज़</div>
     </div>
@@ -217,7 +237,6 @@
             </div>
         </div>
 
-        <!-- रंगीन लोगो -->
         <div class="results-logo-container"><span class="results-logo">ढूंढो</span></div>
 
         <div class="search-wrapper">
@@ -230,21 +249,21 @@
 
         <div class="suggest-chips" id="resultChips"></div>
 
-        <!-- ===== ACTION BUTTONS (Translate, TTS, Gmail, etc.) ===== -->
         <div class="action-bar">
-            <button class="action-btn" onclick="window.open('https://translate.google.com/?sl=auto&tl=hi&text='+encodeURIComponent(document.getElementById('resultInput').value), '_blank')"><i class="fas fa-language"></i> Translate</button>
+            <button class="action-btn" onclick="translatePage()"><i class="fas fa-language"></i> Translate</button>
             <button class="action-btn" onclick="speakPage()"><i class="fas fa-volume-up"></i> Speak</button>
             <button class="action-btn" onclick="window.open('https://mail.google.com', '_blank')"><i class="fas fa-envelope"></i> Gmail</button>
-            <button class="action-btn" onclick="window.open('https://www.deepseek.com', '_blank')"><i class="fas fa-robot"></i> DeepSeek AI</button>
+            <button class="action-btn" onclick="window.open('https://www.deepseek.com', '_blank')"><i class="fas fa-robot"></i> DeepSeek</button>
             <button class="action-btn" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
             <button class="action-btn" onclick="bookmarkPage()"><i class="fas fa-star"></i> Bookmark</button>
+            <button class="action-btn" onclick="openShopping()"><i class="fas fa-shopping-cart"></i> Shop</button>
         </div>
 
         <div class="tabs">
             <div class="tab active" onclick="showTab('all')">All</div>
             <div class="tab" onclick="showTab('images')">Images</div>
             <div class="tab" onclick="showTab('videos')">Videos</div>
-            <div class="tab" onclick="window.open('https://www.amazon.in/s?k='+encodeURIComponent(document.getElementById('resultInput').value), '_blank')">Shopping</div>
+            <div class="tab" onclick="openShopping()">Shopping</div>
             <div class="tab" onclick="showTab('news')">News</div>
             <div class="tab" onclick="window.open('https://www.google.com/maps/search/'+encodeURIComponent(document.getElementById('resultInput').value), '_blank')">Maps</div>
             <div class="tab" onclick="showTab('tools')">Tools</div>
@@ -257,19 +276,19 @@
     <div class="drawer" id="drawer">
         <div class="drawer-section">SHORTCUTS</div>
         <div class="drawer-item" onclick="newTab()"><span class="m-icon">➕</span> New tab</div>
-        <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">🎭</span> New Incognito tab</div>
+        <div class="drawer-item" onclick="incognitoMode()"><span class="m-icon">🎭</span> New Incognito tab</div>
         <div class="drawer-section">HISTORY</div>
-        <div class="drawer-item" onclick="showHistoryDrawer()"><span class="m-icon">🕒</span> History</div>
+        <div class="drawer-item" onclick="showHistoryDrawer()"><span class="m-icon">🕒</span> Recent tabs</div>
         <div class="drawer-item" onclick="clearHistory()"><span class="m-icon">🗑️</span> Delete browsing data</div>
         <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">⬇️</span> Downloads</div>
         <div class="drawer-item" onclick="showBookmarks()"><span class="m-icon">⭐</span> Bookmarks</div>
-        <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">🗂️</span> Recent tabs</div>
+        <div class="drawer-item" onclick="showRecentSearches()"><span class="m-icon">🕒</span> Recent searches</div>
         <div class="drawer-section">TOOLS</div>
         <div class="drawer-item" onclick="toggleDarkMode()"><span class="m-icon">🌙</span> Dark mode</div>
         <div class="drawer-item" onclick="toggleDesktop()"><span class="m-icon">🖥️</span> Desktop site</div>
-        <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">🔒</span> Password Manager</div>
-        <div class="drawer-item" onclick="workInProgress()"><span class="m-icon">💾</span> Cache & Storage</div>
+        <div class="drawer-item" onclick="toggleFullscreen()"><span class="m-icon">⛶</span> Full screen</div>
         <div class="drawer-item" onclick="zoomPage()"><span class="m-icon">🔍</span> Zoom (toggle)</div>
+        <div class="drawer-item" onclick="showPasswordManager()"><span class="m-icon">🔒</span> Password Manager</div>
         <div class="drawer-section">MORE</div>
         <div class="drawer-item" onclick="showExitPrompt()"><span class="m-icon">🚪</span> Exit</div>
         <div class="drawer-item" onclick="helpFeedback()"><span class="m-icon">❓</span> Help & feedback</div>
@@ -287,7 +306,7 @@
         </div>
     </div>
 
-    <!-- ===== OWNER SECTION with owner.jpg ===== -->
+    <!-- ===== OWNER SECTION ===== -->
     <div class="owner-section">
         <img src="owner.jpg" class="owner-img" onerror="this.style.display='none'" alt="Owner">
         <div>
@@ -296,12 +315,109 @@
         </div>
     </div>
 
-    <!-- Font Awesome Icons -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <script>
         // ================================================================
-        //  1. BASE DATA (1500+ हार्डकोडेड entries – तुरंत काम करेंगी)
+        //  1. KNOWLEDGE BASE – प्री-लोडेड फैक्ट्स (Knowledge Panel)
+        // ================================================================
+        const knowledgeBase = {
+            // ---- स्थान ----
+            "capital of india": {
+                title: "New Delhi",
+                image: "https://picsum.photos/seed/delhi/200/200",
+                desc: "भारत की राजधानी",
+                detail: "New Delhi भारत का केंद्र शासित प्रदेश है और यहाँ संसद, राष्ट्रपति भवन और सर्वोच्च न्यायालय स्थित हैं।"
+            },
+            "india capital": {
+                title: "New Delhi",
+                image: "https://picsum.photos/seed/delhi/200/200",
+                desc: "भारत की राजधानी",
+                detail: "New Delhi भारत का केंद्र शासित प्रदेश है और यहाँ संसद, राष्ट्रपति भवन और सर्वोच्च न्यायालय स्थित हैं।"
+            },
+            // ---- व्यक्ति ----
+            "prime minister of india": {
+                title: "Narendra Modi",
+                image: "https://picsum.photos/seed/modi/200/200",
+                desc: "भारत के 14वें प्रधानमंत्री",
+                detail: "जन्म: 17 सितंबर 1950 · पार्टी: BJP · 2014 से प्रधानमंत्री।"
+            },
+            "who is prime minister of india": {
+                title: "Narendra Modi",
+                image: "https://picsum.photos/seed/modi/200/200",
+                desc: "भारत के 14वें प्रधानमंत्री",
+                detail: "जन्म: 17 सितंबर 1950 · पार्टी: BJP · 2014 से प्रधानमंत्री।"
+            },
+            "cm of uttar pradesh": {
+                title: "Yogi Adityanath",
+                image: "https://picsum.photos/seed/yogi/200/200",
+                desc: "उत्तर प्रदेश के 22वें मुख्यमंत्री",
+                detail: "जन्म: 5 जून 1972 · पार्टी: BJP · 2017 से मुख्यमंत्री।"
+            },
+            "chief minister of uttar pradesh": {
+                title: "Yogi Adityanath",
+                image: "https://picsum.photos/seed/yogi/200/200",
+                desc: "उत्तर प्रदेश के 22वें मुख्यमंत्री",
+                detail: "जन्म: 5 जून 1972 · पार्टी: BJP · 2017 से मुख्यमंत्री।"
+            },
+            "when india got independence": {
+                title: "15 August 1947",
+                image: "https://picsum.photos/seed/independence/200/200",
+                desc: "भारत की स्वतंत्रता तिथि",
+                detail: "भारत को 15 अगस्त 1947 को ब्रिटिश शासन से स्वतंत्रता मिली।"
+            },
+            "india independence day": {
+                title: "15 August 1947",
+                image: "https://picsum.photos/seed/independence/200/200",
+                desc: "भारत की स्वतंत्रता तिथि",
+                detail: "भारत को 15 अगस्त 1947 को ब्रिटिश शासन से स्वतंत्रता मिली।"
+            },
+            // ---- फिल्मी हस्तियाँ ----
+            "amitabh bachchan": {
+                title: "Amitabh Bachchan",
+                image: "https://picsum.photos/seed/amitabh/200/200",
+                desc: "महान अभिनेता",
+                detail: "जन्म: 11 अक्टूबर 1942 · फिल्में: शोले, दीवार, पिंक · पद्मश्री, पद्मभूषण।"
+            },
+            "amitabh": {
+                title: "Amitabh Bachchan",
+                image: "https://picsum.photos/seed/amitabh/200/200",
+                desc: "महान अभिनेता",
+                detail: "जन्म: 11 अक्टूबर 1942 · फिल्में: शोले, दीवार, पिंक · पद्मश्री, पद्मभूषण।"
+            },
+            "sachin tendulkar": {
+                title: "Sachin Tendulkar",
+                image: "https://picsum.photos/seed/sachin/200/200",
+                desc: "क्रिकेट के भगवान",
+                detail: "जन्म: 24 अप्रैल 1973 · 100+ शतक · भारत रत्न से सम्मानित।"
+            },
+            "virat kohli": {
+                title: "Virat Kohli",
+                image: "https://picsum.photos/seed/virat/200/200",
+                desc: "भारतीय क्रिकेट टीम के पूर्व कप्तान",
+                detail: "जन्म: 5 नवंबर 1988 · 70+ शतक · ICC प्लेयर ऑफ द ईयर।"
+            },
+            "ms dhoni": {
+                title: "M.S. Dhoni",
+                image: "https://picsum.photos/seed/dhoni/200/200",
+                desc: "भारत के पूर्व कप्तान, विकेटकीपर",
+                detail: "जन्म: 7 जुलाई 1981 · 2011 विश्व कप जीत · पद्मश्री, पद्मभूषण।"
+            }
+        };
+
+        // ---- Knowledge Panel Renderer ----
+        function getKnowledgeAnswer(query) {
+            const q = query.trim().toLowerCase();
+            if (knowledgeBase[q]) return knowledgeBase[q];
+            for (const [key, value] of Object.entries(knowledgeBase)) {
+                if (q.includes(key) || key.includes(q)) return value;
+            }
+            return null;
+        }
+
+        // ================================================================
+        //  2. BASE DATA (1500+ entries – हार्डकोडेड)
         // ================================================================
         const BASE_DATA = {
             "aadhaar": "https://uidai.gov.in",
@@ -510,23 +626,43 @@
         };
 
         // ================================================================
-        //  2. FULL_DATA को तुरंत BASE_DATA से भरें (इंस्टेंट सर्च)
+        //  3. EXTRA SITES
+        // ================================================================
+        const EXTRA_SITES = {
+            "wikipedia": "https://www.wikipedia.org",
+            "reddit": "https://www.reddit.com",
+            "x": "https://www.twitter.com",
+            "imdb": "https://www.imdb.com",
+            "prime video": "https://www.primevideo.com",
+            "indeed": "https://www.indeed.co.in",
+            "naukri": "https://www.naukri.com",
+            "apna": "https://www.apna.co",
+            "unstop": "https://unstop.com",
+            "cricinfo": "https://www.espncricinfo.com",
+            "icc": "https://www.icc-cricket.com",
+            "olympics": "https://www.olympics.com",
+            "usacricket": "https://www.usacricket.org",
+            "britanica": "https://www.britannica.com",
+            "indiapost": "https://www.indiapost.gov.in",
+            "worldbank": "https://www.worldbank.org",
+            "nationalgeographic": "https://www.nationalgeographic.com",
+            "globaledge": "https://globaledge.msu.edu"
+        };
+        Object.assign(BASE_DATA, EXTRA_SITES);
+
+        // ================================================================
+        //  4. FULL_DATA और ENHANCER
         // ================================================================
         let FULL_DATA = { ...BASE_DATA };
         let allQueries = Object.keys(FULL_DATA);
 
-        // ================================================================
-        //  3. ASYNC ENHANCER – बैकग्राउंड में 5000 तक जोड़ें
-        // ================================================================
         async function enhanceDataAsync() {
             const prefixes = ['', 'online', 'apply', 'status', 'check', 'new', 'latest', 'old', 'free', 'official', 'gov', 'india', 'bharat', 'state', 'central', 'national', 'international', 'update', 'track', 'verify', 'download', 'form', 'result', 'exam', 'admit', 'syllabus', 'answer key', 'cutoff', 'merit', 'list', 'counseling', 'admission', 'fee', 'date', 'time', 'news', 'report', 'analysis', 'data', 'statistics', 'information', 'knowledge', 'learning', 'education', 'job', 'career', 'skill', 'training', 'internship', 'placement', 'salary', 'pay scale', 'promotion', 'transfer', 'leave', 'holiday', 'calendar', 'schedule', 'timetable', 'route', 'map', 'address', 'contact', 'helpline', 'support', 'help', 'guide', 'tutorial', 'video', 'photo', 'image', 'gallery', 'review', 'rating', 'feedback', 'complaint', 'grievance', 'suggestion', 'idea', 'plan', 'project', 'scheme', 'yojana', 'card', 'id', 'number', 'certificate', 'license', 'permit', 'pass', 'ticket', 'booking'];
             const suffixes = ['', '2025', '2026', '2027', 'online', 'form', 'apply', 'download', 'login', 'register', 'portal', 'service', 'scheme', 'yojana', 'card', 'id', 'number', 'certificate', 'license', 'permit', 'pass', 'ticket', 'booking', 'result', 'exam', 'admit', 'syllabus', 'answer key', 'cutoff', 'merit', 'list', 'counseling', 'admission', 'fee', 'date', 'time', 'news', 'update', 'status', 'track', 'helpline', 'contact', 'address', 'map', 'route', 'distance', 'time table', 'schedule', 'calendar', 'weather', 'alert', 'warning', 'safety', 'tips', 'guide', 'tutorial', 'video', 'photo', 'image', 'gallery', 'review', 'rating', 'feedback', 'complaint', 'grievance', 'suggestion', 'idea', 'plan', 'project', 'report', 'analysis', 'data', 'statistics', 'information', 'knowledge', 'learning', 'education', 'job', 'career', 'skill', 'training', 'internship', 'placement', 'salary', 'pay scale', 'promotion', 'transfer', 'leave', 'holiday', 'list', 'calendar 2025', 'calendar 2026'];
-
             const baseKeys = Object.keys(BASE_DATA);
             const maxEntries = 5000;
             let count = Object.keys(FULL_DATA).length;
             const chunkSize = 50;
-
             while (count < maxEntries) {
                 let chunkCount = 0;
                 while (chunkCount < chunkSize && count < maxEntries) {
@@ -550,7 +686,7 @@
         enhanceDataAsync();
 
         // ================================================================
-        //  4. SEARCH FUNCTIONS (तुरंत काम करेंगे)
+        //  5. SEARCH FUNCTIONS
         // ================================================================
         function getSite(query) {
             const q = query.toLowerCase().trim();
@@ -580,18 +716,58 @@
             return results.slice(0, 10);
         }
 
-        function getAllQueries() { return Object.keys(FULL_DATA); }
+        // ================================================================
+        //  6. AI ANSWER (Math, capital, PM, etc.)
+        // ================================================================
+        function getAIAnswer(query) {
+            const q = query.trim().toLowerCase();
+            if (/^[\d+\-*/%(). ]+$/.test(q)) {
+                try { const result = eval(q); return { answer: result, desc: 'गणना का परिणाम' }; } catch(e) { return null; }
+            }
+            if (q.includes('capital of india')) return { answer: 'New Delhi', desc: 'भारत की राजधानी' };
+            if (q.includes('prime minister of india')) return { answer: 'Narendra Modi', desc: 'भारत के प्रधानमंत्री' };
+            if (q.includes('president of india')) return { answer: 'Droupadi Murmu', desc: 'भारत की राष्ट्रपति' };
+            return null;
+        }
 
         // ================================================================
-        //  5. नए फीचर्स – Bookmark, Speak, Zoom, etc.
+        //  7. नए फीचर्स (Camera, Shopping, Translate, Speak, Bookmark, etc.)
         // ================================================================
+        function openLens() {
+            const q = document.getElementById('homeInput').value.trim() || 'search';
+            window.open('https://lens.google.com/search?p=' + encodeURIComponent(q), '_blank');
+        }
+
+        function openShopping() {
+            const q = document.getElementById('resultInput').value.trim() || 'search';
+            const choice = confirm('Amazon पर खोलें? (OK = Amazon, Cancel = Flipkart)');
+            if (choice) {
+                window.open('https://www.amazon.in/s?k=' + encodeURIComponent(q), '_blank');
+            } else {
+                const choice2 = confirm('Flipkart? (OK = Flipkart, Cancel = Meesho)');
+                if (choice2) window.open('https://www.flipkart.com/search?q=' + encodeURIComponent(q), '_blank');
+                else window.open('https://www.meesho.com/search?q=' + encodeURIComponent(q), '_blank');
+            }
+        }
+
+        function translatePage() {
+            const lang = prompt('Translate to (e.g., hi, en, fr):', 'hi');
+            if (lang) window.open('https://translate.google.com/translate?sl=auto&tl=' + lang + '&u=' + encodeURIComponent(window.location.href), '_blank');
+        }
+
+        function speakPage() {
+            const text = document.getElementById('resultInput').value || 'ढूंढो सर्च इंजन';
+            if (!('speechSynthesis' in window)) { alert('Text-to-Speech समर्थित नहीं।'); return; }
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'hi-IN';
+            utterance.rate = 0.9;
+            speechSynthesis.speak(utterance);
+        }
+
         function bookmarkPage() {
             const url = window.location.href;
             let bookmarks = JSON.parse(localStorage.getItem('dhundho_bookmarks')) || [];
-            if (bookmarks.includes(url)) {
-                alert('यह पेज पहले से बुकमार्क है।');
-                return;
-            }
+            if (bookmarks.includes(url)) { alert('यह पेज पहले से बुकमार्क है।'); return; }
             bookmarks.push(url);
             localStorage.setItem('dhundho_bookmarks', JSON.stringify(bookmarks));
             alert('✅ बुकमार्क जोड़ा गया!');
@@ -606,13 +782,35 @@
             hideDrawer();
         }
 
-        function speakPage() {
-            const text = document.getElementById('resultInput').value || 'ढूंढो सर्च इंजन';
-            if (!('speechSynthesis' in window)) { alert('Text-to-Speech समर्थित नहीं।'); return; }
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'hi-IN';
-            utterance.rate = 0.9;
-            speechSynthesis.speak(utterance);
+        function showPasswordManager() {
+            hideDrawer();
+            const pwd = prompt('Enter master password to view saved passwords:');
+            if (pwd === 'admin123') {
+                const stored = JSON.parse(localStorage.getItem('dhundho_passwords')) || {};
+                let msg = '🔒 Saved Passwords:\n\n';
+                for (const [site, pass] of Object.entries(stored)) msg += `${site}: ${pass}\n`;
+                alert(msg);
+            } else if (pwd) alert('Incorrect password!');
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else if (document.exitFullscreen) document.exitFullscreen();
+            hideDrawer();
+        }
+
+        function incognitoMode() {
+            hideDrawer();
+            window.open(window.location.href + '?incognito=true', '_blank');
+        }
+
+        function showRecentSearches() {
+            hideDrawer();
+            const history = getHistory();
+            if (history.length === 0) { alert('कोई हालिया खोज नहीं।'); return; }
+            let msg = '🕒 हालिया खोजें:\n\n';
+            history.slice(0, 15).forEach((q, i) => msg += `${i+1}. ${q}\n`);
+            alert(msg);
         }
 
         let zoomLevel = 1;
@@ -623,7 +821,123 @@
         }
 
         // ================================================================
-        //  6. HISTORY, DARK MODE, UI (पुराने)
+        //  8. RENDER RESULTS (Knowledge Panel + All)
+        // ================================================================
+        function renderAllResults(query) {
+            const q = query.trim();
+            let html = '';
+
+            // ---- Knowledge Panel (सबसे ऊपर) ----
+            const knowledge = getKnowledgeAnswer(q);
+            if (knowledge) {
+                html += `
+                    <div class="knowledge-panel">
+                        <img src="${knowledge.image}" alt="${knowledge.title}" onerror="this.style.display='none'">
+                        <div class="info">
+                            <div class="title">${knowledge.title}</div>
+                            <div class="desc">${knowledge.desc}</div>
+                            <div class="detail">${knowledge.detail}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // ---- AI Answer (अगर Knowledge Panel नहीं मिला) ----
+            if (!knowledge) {
+                const ai = getAIAnswer(q);
+                if (ai) html += `<div class="ai-answer"><div class="answer">${ai.answer}</div><div class="desc">${ai.desc}</div></div>`;
+            }
+
+            // ---- Direct site ----
+            const directSite = getSite(q);
+            if (directSite) {
+                const displayName = q.length > 30 ? q.slice(0,30)+'...' : q;
+                html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">🌐</div>${new URL(directSite).hostname}</div><a href="${directSite}" target="_blank" class="title">${displayName}</a><div class="snippet">${q} की आधिकारिक वेबसाइट – सभी जानकारी यहाँ उपलब्ध है।</div></div>`;
+            }
+
+            // ---- Related from database ----
+            const related = getRelated(q);
+            const shown = new Set();
+            let count = 0;
+            for (const key of related) {
+                const url = getSite(key);
+                if (url && !shown.has(url) && key.toLowerCase() !== q.toLowerCase()) {
+                    shown.add(url);
+                    const displayName = key.length > 35 ? key.slice(0,35)+'...' : key;
+                    html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#4285F4;color:#fff;">🔗</div>${new URL(url).hostname}</div><a href="${url}" target="_blank" class="title">${displayName}</a><div class="snippet">"${key}" से संबंधित जानकारी – आधिकारिक स्रोत।</div></div>`;
+                    count++;
+                    if (count >= 5) break;
+                }
+            }
+
+            // ---- सोशल लिंक्स ----
+            const socialSites = [
+                { name: "Facebook", icon: "f", color: "#1877F2", url: "https://www.facebook.com/search/top/?q="+encodeURIComponent(q) },
+                { name: "Instagram", icon: "I", color: "#E1306C", url: "https://www.instagram.com/explore/search/keyword/?q="+encodeURIComponent(q) },
+                { name: "Snapchat", icon: "S", color: "#FFFC00", url: "https://www.snapchat.com/search?q="+encodeURIComponent(q) },
+                { name: "Quora", icon: "Q", color: "#B92B27", url: "https://www.quora.com/search?q="+encodeURIComponent(q) },
+                { name: "Wikipedia", icon: "W", color: "#000000", url: "https://www.wikipedia.org/w/index.php?search="+encodeURIComponent(q) },
+                { name: "Reddit", icon: "R", color: "#FF4500", url: "https://www.reddit.com/search/?q="+encodeURIComponent(q) },
+                { name: "X (Twitter)", icon: "🐦", color: "#000000", url: "https://x.com/search?q="+encodeURIComponent(q) },
+                { name: "LinkedIn", icon: "in", color: "#0A66C2", url: "https://www.linkedin.com/search/results/all/?keywords="+encodeURIComponent(q) }
+            ];
+            html += `<div class="box-title">🌐 सोशल और जानकारी</div>`;
+            for (const site of socialSites) {
+                if (!shown.has(site.url)) {
+                    html += `<div class="result-block"><div class="url"><div class="favicon" style="background:${site.color};color:#fff;">${site.icon}</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${site.name} पर "${q}" खोजें</a><div class="snippet">${site.name} पर "${q}" से संबंधित परिणाम।</div></div>`;
+                }
+            }
+
+            // ---- Extra sites (India, Cricket, etc.) ----
+            const extraMap = {
+                'india': ['india.gov.in', 'britanica.com', 'indiapost.gov.in', 'worldbank.org', 'nationalgeographic.com', 'globaledge.msu.edu'],
+                'cricket': ['cricinfo.com', 'icc-cricket.com', 'olympics.com', 'usacricket.org']
+            };
+            let extraUrls = [];
+            if (q.includes('india')) extraUrls = extraUrls.concat(extraMap['india']);
+            if (q.includes('cricket')) extraUrls = extraUrls.concat(extraMap['cricket']);
+            for (const [key, url] of Object.entries(EXTRA_SITES)) {
+                if (q.includes(key) && !shown.has(url) && !extraUrls.includes(url)) extraUrls.push(url);
+            }
+            if (extraUrls.length > 0) {
+                html += `<div class="box-title">📌 संबंधित आधिकारिक साइटें</div>`;
+                for (const url of extraUrls.slice(0, 6)) {
+                    const host = new URL(url).hostname;
+                    html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#0D47A1;color:#fff;">🏛</div>${host}</div><a href="${url}" target="_blank" class="title">${host.replace('www.','')}</a><div class="snippet">${host} – आधिकारिक जानकारी और सेवाएँ।</div></div>`;
+                }
+            }
+
+            // ---- Google fallback ----
+            if (!directSite && count === 0) {
+                html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#000;color:#fff;">G</div>www.google.com</div><a href="https://www.google.com/search?q=${encodeURIComponent(q)}" target="_blank" class="title">${q} – Google पर खोजें</a><div class="snippet">"${q}" के लिए Google पर अधिक परिणाम देखें।</div></div>`;
+            }
+
+            // ---- FAQ, People also search, Random sites ----
+            html += `<div class="box-title">लोग यह भी पूछते हैं</div>`;
+            const faqs = [`${q} क्या है?`, `${q} का अर्थ क्या है?`, `${q} कैसे करें?`, `${q} की उपयोगिता?`, `${q} से जुड़े फायदे?`];
+            faqs.forEach(f => html += `<div class="faq-item" onclick="performSearch('${f}')"><span>${f}</span><span class="arrow">⌄</span></div>`);
+
+            html += `<div class="box-title">लोग यह भी खोजते हैं</div>`;
+            const relatedSearches = getRelated(q).slice(0, 6);
+            relatedSearches.forEach(s => {
+                if (s.toLowerCase() !== q.toLowerCase()) html += `<div class="search-for-item" onclick="performSearch('${s}')"><span style="color:#1a73e8;">🔍</span> ${s}</div>`;
+            });
+
+            const randomKeys = Object.keys(FULL_DATA).sort(() => Math.random() - 0.5).slice(0, 7);
+            if (randomKeys.length > 0) {
+                html += `<div class="box-title">🎲 यादृच्छिक वेबसाइटें</div>`;
+                randomKeys.forEach(key => {
+                    const url = FULL_DATA[key];
+                    if (url && !shown.has(url)) {
+                        html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#673AB7;color:#fff;">🌀</div>${new URL(url).hostname}</div><a href="${url}" target="_blank" class="title">${key}</a><div class="snippet">"${key}" से संबंधित यादृच्छिक वेबसाइट।</div></div>`;
+                    }
+                });
+            }
+            return html;
+        }
+
+        // ================================================================
+        //  9. HISTORY, DARK MODE, UI
         // ================================================================
         let searchHistory = JSON.parse(localStorage.getItem('dhundho_history')) || [];
         function saveHistory() { localStorage.setItem('dhundho_history', JSON.stringify(searchHistory)); }
@@ -696,7 +1010,7 @@
         }
 
         // ================================================================
-        //  7. VOICE SEARCH (अब और सेंसिटिव – interim & continuous)
+        //  10. VOICE SEARCH (interim results)
         // ================================================================
         function voiceSearchHome() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert('वॉयस सर्च समर्थित नहीं है।'); return; }
@@ -707,19 +1021,12 @@
             recognition.continuous = true;
             recognition.start();
             recognition.onresult = function(event) {
-                let finalTranscript = '';
+                let final = '';
                 for (let i = event.resultIndex; i < event.results.length; i++) {
-                    if (event.results[i].isFinal) {
-                        finalTranscript += event.results[i][0].transcript;
-                    } else {
-                        // Interim results – show in input
-                        document.getElementById('homeInput').value = event.results[i][0].transcript;
-                    }
+                    if (event.results[i].isFinal) final += event.results[i][0].transcript;
+                    else document.getElementById('homeInput').value = event.results[i][0].transcript;
                 }
-                if (finalTranscript) {
-                    document.getElementById('homeInput').value = finalTranscript;
-                    performSearch(finalTranscript);
-                }
+                if (final) { document.getElementById('homeInput').value = final; performSearch(final); }
             };
             recognition.onerror = function() { alert('वॉयस सर्च में समस्या, कृपया पुनः प्रयास करें।'); };
         }
@@ -733,24 +1040,18 @@
             recognition.continuous = true;
             recognition.start();
             recognition.onresult = function(event) {
-                let finalTranscript = '';
+                let final = '';
                 for (let i = event.resultIndex; i < event.results.length; i++) {
-                    if (event.results[i].isFinal) {
-                        finalTranscript += event.results[i][0].transcript;
-                    } else {
-                        document.getElementById('resultInput').value = event.results[i][0].transcript;
-                    }
+                    if (event.results[i].isFinal) final += event.results[i][0].transcript;
+                    else document.getElementById('resultInput').value = event.results[i][0].transcript;
                 }
-                if (finalTranscript) {
-                    document.getElementById('resultInput').value = finalTranscript;
-                    performSearch(finalTranscript);
-                }
+                if (final) { document.getElementById('resultInput').value = final; performSearch(final); }
             };
             recognition.onerror = function() { alert('वॉयस सर्च में समस्या, कृपया पुनः प्रयास करें।'); };
         }
 
         // ================================================================
-        //  8. SUGGESTIONS
+        //  11. SUGGESTIONS
         // ================================================================
         function showHomeSuggestions() { filterHomeSuggestions(document.getElementById('homeInput').value); }
         function filterHomeSuggestions(val) {
@@ -780,7 +1081,7 @@
         }
 
         // ================================================================
-        //  9. PERFORM SEARCH (पुराना)
+        //  12. PERFORM SEARCH
         // ================================================================
         function performSearch(query) {
             if (!query) return;
@@ -820,172 +1121,104 @@
         }
 
         // ================================================================
-        //  10. RENDER RESULTS (अब नए लिंक्स जोड़े – Pinterest, FB, Insta, Quora, Play, Weather, etc.)
+        //  13. IMAGES, VIDEOS, NEWS, TOOLS TABS
         // ================================================================
-        function renderAllResults(query) {
-            const q = query.trim();
-            let html = '';
-
-            // Direct site
-            const directSite = getSite(q);
-            if (directSite) {
-                const displayName = q.length > 30 ? q.slice(0, 30) + '...' : q;
-                html += `
-                    <div class="result-block">
-                        <div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">🌐</div>${new URL(directSite).hostname}</div>
-                        <a href="${directSite}" target="_blank" class="title">${displayName}</a>
-                        <div class="snippet">${q} की आधिकारिक वेबसाइट – सभी जानकारी यहाँ उपलब्ध है।</div>
-                    </div>
-                `;
+        function renderImages(q) {
+            let html = `<div class="img-grid">`;
+            for (let i = 0; i < 9; i++) {
+                const seed = q + i;
+                const imgUrl = `https://picsum.photos/seed/${seed}/300/200`;
+                html += `<div class="img-card" onclick="window.open('https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}')"><img src="${imgUrl}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'display:flex;justify-content:center;align-items:center;height:100%;font-size:40px;\\'>🖼️</div>';"><div class="img-title">${q}</div></div>`;
             }
-
-            // Related sites from database
-            const related = getRelated(q);
-            const shown = new Set();
-            let count = 0;
-            for (const key of related) {
-                const url = getSite(key);
-                if (url && !shown.has(url) && key.toLowerCase() !== q.toLowerCase()) {
-                    shown.add(url);
-                    const displayName = key.length > 35 ? key.slice(0, 35) + '...' : key;
-                    html += `
-                        <div class="result-block">
-                            <div class="url"><div class="favicon" style="background:#4285F4;color:#fff;">🔗</div>${new URL(url).hostname}</div>
-                            <a href="${url}" target="_blank" class="title">${displayName}</a>
-                            <div class="snippet">"${key}" से संबंधित जानकारी – आधिकारिक स्रोत।</div>
-                        </div>
-                    `;
-                    count++;
-                    if (count >= 6) break;
-                }
-            }
-
-            // ---- नए रियल वेबसाइट लिंक – Pinterest, Facebook, Instagram, Quora, Play Store, Weather.com, आदि ----
-            const popularSites = [
-                { name: "Pinterest", url: "https://www.pinterest.com/search/?q="+encodeURIComponent(q), icon: "P" },
-                { name: "Facebook", url: "https://www.facebook.com/search/top/?q="+encodeURIComponent(q), icon: "f" },
-                { name: "Instagram", url: "https://www.instagram.com/explore/search/keyword/?q="+encodeURIComponent(q), icon: "I" },
-                { name: "Quora", url: "https://www.quora.com/search?q="+encodeURIComponent(q), icon: "Q" },
-                { name: "Play Store", url: "https://play.google.com/store/search?q="+encodeURIComponent(q), icon: "▶" },
-                { name: "Weather.com", url: "https://weather.com/search?q="+encodeURIComponent(q), icon: "☀" },
-                { name: "Snapchat", url: "https://www.snapchat.com/search?q="+encodeURIComponent(q), icon: "S" },
-                { name: "LinkedIn", url: "https://www.linkedin.com/search/results/all/?keywords="+encodeURIComponent(q), icon: "in" }
-            ];
-            // Add only if not already shown
-            html += `<div class="box-title">🌐 लोकप्रिय साइटों पर खोजें</div>`;
-            let popCount = 0;
-            for (const site of popularSites) {
-                if (!shown.has(site.url) && site.url !== directSite) {
-                    html += `
-                        <div class="result-block">
-                            <div class="url"><div class="favicon" style="background:#333;color:#fff;">${site.icon}</div>${new URL(site.url).hostname}</div>
-                            <a href="${site.url}" target="_blank" class="title">${site.name} पर "${q}" खोजें</a>
-                            <div class="snippet">${site.name} पर "${q}" के परिणाम देखें।</div>
-                        </div>
-                    `;
-                    popCount++;
-                    if (popCount >= 5) break;
-                }
-            }
-
-            // Fallback Google search
-            if (!directSite && count === 0 && popCount === 0) {
-                html += `
-                    <div class="result-block">
-                        <div class="url"><div class="favicon" style="background:#000;color:#fff;">G</div>www.google.com</div>
-                        <a href="https://www.google.com/search?q=${encodeURIComponent(q)}" target="_blank" class="title">${q} – Google पर खोजें</a>
-                        <div class="snippet">"${q}" के लिए Google पर अधिक परिणाम देखें।</div>
-                    </div>
-                `;
-            }
-
-            // FAQ
-            html += `<div class="box-title">लोग यह भी पूछते हैं</div>`;
-            const faqs = [`${q} क्या है?`, `${q} का अर्थ क्या है?`, `${q} कैसे करें?`, `${q} की उपयोगिता?`, `${q} से जुड़े फायदे?`];
-            faqs.forEach(f => {
-                html += `<div class="faq-item" onclick="performSearch('${f}')"><span>${f}</span><span class="arrow">⌄</span></div>`;
-            });
-
-            // People also search for
-            html += `<div class="box-title">लोग यह भी खोजते हैं</div>`;
-            const relatedSearches = getRelated(q).slice(0, 6);
-            relatedSearches.forEach(s => {
-                if (s.toLowerCase() !== q.toLowerCase()) {
-                    html += `<div class="search-for-item" onclick="performSearch('${s}')"><span style="color:#1a73e8;">🔍</span> ${s}</div>`;
-                }
-            });
-
-            // Random website links (5-7 random from FULL_DATA)
-            const randomKeys = Object.keys(FULL_DATA).sort(() => Math.random() - 0.5).slice(0, 7);
-            if (randomKeys.length > 0) {
-                html += `<div class="box-title">🎲 रैंडम वेबसाइटें</div>`;
-                randomKeys.forEach(key => {
-                    const url = FULL_DATA[key];
-                    if (url && !shown.has(url)) {
-                        html += `
-                            <div class="result-block">
-                                <div class="url"><div class="favicon" style="background:#673AB7;color:#fff;">🌀</div>${new URL(url).hostname}</div>
-                                <a href="${url}" target="_blank" class="title">${key}</a>
-                                <div class="snippet">"${key}" से संबंधित यादृच्छिक वेबसाइट।</div>
-                            </div>
-                        `;
-                    }
-                });
-            }
-
-            // Related searches (Google-style)
-            html += `<div class="box-title">संबंधित खोजें</div>`;
-            const googleRelated = [`${q} 2026`, `${q} का इतिहास`, `${q} के बारे में`, `${q} की तस्वीरें`, `${q} विकिपीडिया`];
-            googleRelated.forEach(r => {
-                html += `
-                    <div class="result-block">
-                        <div class="url"><div class="favicon" style="background:#eee;color:#555;">G</div>www.google.com</div>
-                        <a href="https://www.google.com/search?q=${encodeURIComponent(r)}" target="_blank" class="title">${r}</a>
-                        <div class="snippet">"${r}" के लिए नए परिणाम देखें।</div>
-                    </div>
-                `;
-            });
-
+            html += `</div><div style="text-align:center;margin-top:10px;"><a href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}" target="_blank" style="color:#1a73e8;text-decoration:none;font-weight:bold;">Google पर और तस्वीरें देखें →</a></div>`;
             return html;
         }
 
-        // ================================================================
-        //  11. IMAGES, VIDEOS, NEWS, TOOLS (पुराने)
-        // ================================================================
-        function renderImages(query) { /* ... same as before ... */ }
-        function renderVideos(query) { /* ... same as before ... */ }
-        function renderNews(query) { /* ... same as before ... */ }
-        function renderTools(query) { /* ... same as before ... */ }
+        function renderVideos(q) {
+            return `<div id="video-loading" style="text-align:center;padding:20px;">⏳ वीडियो लोड हो रहे हैं...</div>`;
+        }
+
+        function renderNews(q) {
+            const sources = [
+                { t: `${q} पर बड़ी खबर`, s: "आज तक", u: "https://www.aajtak.in", c: "#D32F2F" },
+                { t: `${q} से जुड़े ताज़ा अपडेट`, s: "TV9 भारतवर्ष", u: "https://www.tv9bharatvarsh.com", c: "#C62828" },
+                { t: `${q} का विश्लेषण`, s: "रिपब्लिक भारत", u: "https://www.republicbharat.com", c: "#1565C0" },
+                { t: `${q} की ब्रेकिंग न्यूज़`, s: "ABP न्यूज़", u: "https://www.abplive.com/hindi", c: "#E65100" },
+                { t: `${q} की सच्चाई`, s: "ज़ी न्यूज़", u: "https://zeenews.india.com/hindi/", c: "#4527A0" }
+            ];
+            let html = `<div class="box-title">📰 ताज़ा खबरें</div>`;
+            sources.forEach(n => {
+                html += `<div class="news-item" onclick="window.open('${n.u}')"><div class="news-icon" style="background:${n.c}">${n.s[0]}</div><div><div class="news-title">${n.t}</div><div class="news-src">${n.s} - लाइव अपडेट</div></div></div>`;
+            });
+            return html;
+        }
+
+        function renderTools(q) {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('hi-IN', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+            const dateStr = now.toLocaleDateString('hi-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+            return `<div class="tool-result"><div class="big-number">${timeStr}</div><div class="label">⏰ वर्तमान समय</div></div><div class="tool-result"><div style="font-size:28px;font-weight:bold;color:#1a73e8;">${dateStr}</div><div class="label">📅 आज की तारीख</div></div><div style="margin-top:15px;text-align:center;"><button onclick="window.open('https://www.google.com/search?q=calculator','_blank')" style="padding:12px 30px;border-radius:30px;background:#1a73e8;color:#fff;border:none;font-size:16px;cursor:pointer;">🧮 कैलकुलेटर खोलें</button></div>`;
+        }
 
         // ================================================================
-        //  12. TAB SWITCHING (पुराना)
+        //  14. TAB SWITCHING
         // ================================================================
         function showTab(tab) {
             const q = document.getElementById('resultInput').value.trim() || 'भारत';
-            const contentArea = document.getElementById('content-area');
+            const area = document.getElementById('content-area');
 
             if (tab === 'all') {
-                contentArea.innerHTML = renderAllResults(q);
+                area.innerHTML = renderAllResults(q);
             } else if (tab === 'images') {
-                contentArea.innerHTML = renderImages(q);
+                area.innerHTML = renderImages(q);
             } else if (tab === 'videos') {
-                contentArea.innerHTML = renderVideos(q);
-                // YouTube fetch (same as before)
+                area.innerHTML = renderVideos(q);
+                const API_KEY = "AIzaSyCggxsKMnuCCyFuw0p3LjG9LD213VCBRx8";
+                fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(q)}&key=${API_KEY}&maxResults=8`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.items && data.items.length > 0) {
+                            let vidHtml = `<div class="video-grid">`;
+                            data.items.forEach(item => {
+                                const vidId = item.id.videoId;
+                                vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${vidId}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${vidId}/hqdefault.jpg"></div><div class="video-title">${item.snippet.title}</div><div class="video-meta">${item.snippet.channelTitle}</div></div>`;
+                            });
+                            vidHtml += `</div>`;
+                            area.innerHTML = vidHtml;
+                        } else {
+                            const fallback = [{id:"AETFvQonfV8",title:"हनुमान चालीसा",channel:"भक्ति"},{id:"jdy0GgMbJY0",title:"शिव तांडव",channel:"दिव्य"}];
+                            let vidHtml = `<div class="video-grid">`;
+                            fallback.forEach(item => {
+                                vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div><div class="video-title">${item.title}</div><div class="video-meta">${item.channel}</div></div>`;
+                            });
+                            vidHtml += `</div>`;
+                            area.innerHTML = vidHtml;
+                        }
+                    })
+                    .catch(() => {
+                        const fallback = [{id:"AETFvQonfV8",title:"हनुमान चालीसा",channel:"भक्ति"},{id:"jdy0GgMbJY0",title:"शिव तांडव",channel:"दिव्य"}];
+                        let vidHtml = `<div class="video-grid">`;
+                        fallback.forEach(item => {
+                            vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div><div class="video-title">${item.title}</div><div class="video-meta">${item.channel}</div></div>`;
+                        });
+                        vidHtml += `</div>`;
+                        area.innerHTML = vidHtml;
+                    });
             } else if (tab === 'news') {
-                contentArea.innerHTML = renderNews(q);
+                area.innerHTML = renderNews(q);
             } else if (tab === 'tools') {
-                contentArea.innerHTML = renderTools(q);
+                area.innerHTML = renderTools(q);
             }
 
             document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
             const tabs = document.querySelectorAll('.tabs .tab');
-            const tabMap = { 'all': 0, 'images': 1, 'videos': 2, 'news': 4, 'tools': 6 };
+            const tabMap = { 'all':0, 'images':1, 'videos':2, 'news':4, 'tools':6 };
             const idx = tabMap[tab];
             if (idx !== undefined && tabs[idx]) tabs[idx].classList.add('active');
         }
 
         // ================================================================
-        //  13. SERVICE WORKER REGISTRATION
+        //  15. SERVICE WORKER
         // ================================================================
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -996,19 +1229,17 @@
         }
 
         // ================================================================
-        //  14. INIT
+        //  16. INIT
         // ================================================================
-        console.log('🚀 ढूंढो – इंस्टेंट लोड! प्रारंभिक entries:', Object.keys(FULL_DATA).length);
-        console.log('⏳ बैकग्राउंड में और entries जुड़ रही हैं...');
+        console.log('🚀 ढूंढो – अल्टीमेट संस्करण लोड! कुल क्वेरीज़:', Object.keys(FULL_DATA).length);
 
-        // Close suggestions on outside click
         document.addEventListener('click', function(e) {
-            const homeInput = document.getElementById('homeInput');
-            const resultInput = document.getElementById('resultInput');
-            const homeSuggestions = document.getElementById('homeSuggestions');
-            const resultSuggestions = document.getElementById('resultSuggestions');
-            if (homeInput && !homeInput.contains(e.target)) homeSuggestions.style.display = 'none';
-            if (resultInput && !resultInput.contains(e.target) && !e.target.closest('#resultSuggestions')) resultSuggestions.style.display = 'none';
+            const hi = document.getElementById('homeInput');
+            const ri = document.getElementById('resultInput');
+            const hs = document.getElementById('homeSuggestions');
+            const rs = document.getElementById('resultSuggestions');
+            if (hi && !hi.contains(e.target)) hs.style.display = 'none';
+            if (ri && !ri.contains(e.target) && !e.target.closest('#resultSuggestions')) rs.style.display = 'none';
         });
         document.getElementById('overlay').addEventListener('click', hideDrawer);
     </script>
