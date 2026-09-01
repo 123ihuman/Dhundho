@@ -161,9 +161,7 @@
 </head>
 <body>
 
-    <!-- ============================================================= -->
-    <!-- HOME VIEW -->
-    <!-- ============================================================= -->
+    <!-- ===== HOME VIEW ===== -->
     <div id="home-view">
         <div class="home-logo">ढूंढो</div>
         <div class="home-search-box">
@@ -178,9 +176,7 @@
         <div style="margin-top:20px;font-size:13px;color:#70757a;">भारत का अपना सर्च इंजन · 5000+ क्वेरीज़</div>
     </div>
 
-    <!-- ============================================================= -->
-    <!-- RESULTS VIEW -->
-    <!-- ============================================================= -->
+    <!-- ===== RESULTS VIEW ===== -->
     <div id="results-view">
         <div class="top-bar">
             <div class="top-left">
@@ -218,9 +214,7 @@
         <div id="content-area"></div>
     </div>
 
-    <!-- ============================================================= -->
-    <!-- DRAWER -->
-    <!-- ============================================================= -->
+    <!-- ===== DRAWER ===== -->
     <div class="overlay" id="overlay" onclick="toggleDrawer()"></div>
     <div class="drawer" id="drawer">
         <div class="drawer-section">SHORTCUTS</div>
@@ -242,9 +236,7 @@
         <div class="drawer-item" onclick="helpFeedback()"><span class="m-icon">❓</span> Help & feedback</div>
     </div>
 
-    <!-- ============================================================= -->
-    <!-- EXIT PROMPT -->
-    <!-- ============================================================= -->
+    <!-- ===== EXIT PROMPT ===== -->
     <div class="exit-overlay" id="exitOverlay">
         <div class="exit-box">
             <h2>🚪 बाहर निकलें?</h2>
@@ -256,9 +248,7 @@
         </div>
     </div>
 
-    <!-- ============================================================= -->
-    <!-- OWNER SECTION -->
-    <!-- ============================================================= -->
+    <!-- ===== OWNER SECTION ===== -->
     <div class="owner-section">
         <div class="owner-circle">D</div>
         <div>
@@ -271,7 +261,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <!-- ============================================================= -->
-    <!-- JAVASCRIPT – सारी कार्यक्षमता यहाँ -->
+    <!-- JAVASCRIPT – पूरी कार्यक्षमता -->
     <!-- ============================================================= -->
     <script>
         // ================================================================
@@ -490,7 +480,7 @@
         };
 
         // ================================================================
-        //  2. GENERATE 5000+ ENTRIES (prefix + base + suffix)
+        //  2. GENERATE 5000+ ENTRIES
         // ================================================================
         function generateData() {
             const prefixes = ['', 'online', 'apply', 'status', 'check', 'new', 'latest', 'old', 'free', 'official', 'gov', 'india', 'bharat', 'state', 'central', 'national', 'international', 'update', 'track', 'verify', 'download', 'form', 'result', 'exam', 'admit', 'syllabus', 'answer key', 'cutoff', 'merit', 'list', 'counseling', 'admission', 'fee', 'date', 'time', 'news', 'report', 'analysis', 'data', 'statistics', 'information', 'knowledge', 'learning', 'education', 'job', 'career', 'skill', 'training', 'internship', 'placement', 'salary', 'pay scale', 'promotion', 'transfer', 'leave', 'holiday', 'calendar', 'schedule', 'timetable', 'route', 'map', 'address', 'contact', 'helpline', 'support', 'help', 'guide', 'tutorial', 'video', 'photo', 'image', 'gallery', 'review', 'rating', 'feedback', 'complaint', 'grievance', 'suggestion', 'idea', 'plan', 'project', 'scheme', 'yojana', 'card', 'id', 'number', 'certificate', 'license', 'permit', 'pass', 'ticket', 'booking'];
@@ -501,15 +491,9 @@
             let count = 0;
             const maxEntries = 5000;
 
-            // First, add all base entries
             for (const [key, url] of Object.entries(BASE_DATA)) {
-                if (count < maxEntries) {
-                    newData[key] = url;
-                    count++;
-                }
+                if (count < maxEntries) { newData[key] = url; count++; }
             }
-
-            // Then generate combinations
             while (count < maxEntries) {
                 const base = baseKeys[Math.floor(Math.random() * baseKeys.length)];
                 const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
@@ -525,7 +509,6 @@
             return newData;
         }
 
-        // Generate the full dataset
         const FULL_DATA = generateData();
         console.log('✅ Total entries generated:', Object.keys(FULL_DATA).length);
 
@@ -560,9 +543,7 @@
             return results.slice(0, 10);
         }
 
-        function getAllQueries() {
-            return Object.keys(FULL_DATA);
-        }
+        function getAllQueries() { return Object.keys(FULL_DATA); }
 
         // ================================================================
         //  4. HISTORY (localStorage)
@@ -754,7 +735,6 @@
             const q = query.trim();
             let html = '';
 
-            // Direct site
             const directSite = getSite(q);
             if (directSite) {
                 const displayName = q.length > 30 ? q.slice(0, 30) + '...' : q;
@@ -767,7 +747,6 @@
                 `;
             }
 
-            // Related sites
             const related = getRelated(q);
             const shown = new Set();
             let count = 0;
@@ -788,7 +767,6 @@
                 }
             }
 
-            // Fallback Google
             if (!directSite && count === 0) {
                 html += `
                     <div class="result-block">
@@ -799,14 +777,12 @@
                 `;
             }
 
-            // FAQ
             html += `<div class="box-title">लोग यह भी पूछते हैं</div>`;
             const faqs = [`${q} क्या है?`, `${q} का अर्थ क्या है?`, `${q} कैसे करें?`, `${q} की उपयोगिता?`, `${q} से जुड़े फायदे?`];
             faqs.forEach(f => {
                 html += `<div class="faq-item" onclick="performSearch('${f}')"><span>${f}</span><span class="arrow">⌄</span></div>`;
             });
 
-            // People also search for
             html += `<div class="box-title">लोग यह भी खोजते हैं</div>`;
             const relatedSearches = getRelated(q).slice(0, 6);
             relatedSearches.forEach(s => {
@@ -815,7 +791,6 @@
                 }
             });
 
-            // Related searches
             html += `<div class="box-title">संबंधित खोजें</div>`;
             const googleRelated = [`${q} 2026`, `${q} का इतिहास`, `${q} के बारे में`, `${q} की तस्वीरें`, `${q} विकिपीडिया`];
             googleRelated.forEach(r => {
@@ -852,8 +827,6 @@
         }
 
         function renderVideos(query) {
-            const YOUTUBE_API_KEY = "AIzaSyCggxsKMnuCCyFuw0p3LjG9LD213VCBRx8";
-            // We'll fetch async via showTab, so return placeholder
             return `<div id="video-loading" style="text-align:center;padding:20px;">⏳ वीडियो लोड हो रहे हैं...</div>`;
         }
 
@@ -914,7 +887,6 @@
                 contentArea.innerHTML = renderImages(q);
             } else if (tab === 'videos') {
                 contentArea.innerHTML = renderVideos(q);
-                // Async fetch YouTube
                 const YOUTUBE_API_KEY = "AIzaSyCggxsKMnuCCyFuw0p3LjG9LD213VCBRx8";
                 fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(q)}&key=${YOUTUBE_API_KEY}&maxResults=8`)
                     .then(res => res.json())
@@ -965,7 +937,6 @@
                 contentArea.innerHTML = renderTools(q);
             }
 
-            // Update active tab
             document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
             const tabs = document.querySelectorAll('.tabs .tab');
             const tabMap = { 'all': 0, 'images': 1, 'videos': 2, 'news': 4, 'tools': 6 };
@@ -974,7 +945,7 @@
         }
 
         // ================================================================
-        //  12. SERVICE WORKER REGISTRATION (Offline support)
+        //  12. SERVICE WORKER REGISTRATION
         // ================================================================
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -985,12 +956,11 @@
         }
 
         // ================================================================
-        //  13. INIT – Load home page
+        //  13. INIT
         // ================================================================
         console.log('🚀 ढूंढो – भारत का अपना सर्च इंजन लोड हो गया!');
         console.log(`📚 ${Object.keys(FULL_DATA).length} क्वेरीज़ प्री-लोडेड हैं।`);
 
-        // Close suggestions on click outside
         document.addEventListener('click', function(e) {
             const homeInput = document.getElementById('homeInput');
             const resultInput = document.getElementById('resultInput');
