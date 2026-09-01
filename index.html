@@ -261,7 +261,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <!-- ============================================================= -->
-    <!-- JAVASCRIPT – पूरी कार्यक्षमता -->
+    <!-- JAVASCRIPT – FIXED: ASYNC DATA GENERATION -->
     <!-- ============================================================= -->
     <script>
         // ================================================================
@@ -480,9 +480,9 @@
         };
 
         // ================================================================
-        //  2. GENERATE 5000+ ENTRIES
+        //  2. ASYNC DATA GENERATOR (NO FREEZE)
         // ================================================================
-        function generateData() {
+        async function generateDataAsync() {
             const prefixes = ['', 'online', 'apply', 'status', 'check', 'new', 'latest', 'old', 'free', 'official', 'gov', 'india', 'bharat', 'state', 'central', 'national', 'international', 'update', 'track', 'verify', 'download', 'form', 'result', 'exam', 'admit', 'syllabus', 'answer key', 'cutoff', 'merit', 'list', 'counseling', 'admission', 'fee', 'date', 'time', 'news', 'report', 'analysis', 'data', 'statistics', 'information', 'knowledge', 'learning', 'education', 'job', 'career', 'skill', 'training', 'internship', 'placement', 'salary', 'pay scale', 'promotion', 'transfer', 'leave', 'holiday', 'calendar', 'schedule', 'timetable', 'route', 'map', 'address', 'contact', 'helpline', 'support', 'help', 'guide', 'tutorial', 'video', 'photo', 'image', 'gallery', 'review', 'rating', 'feedback', 'complaint', 'grievance', 'suggestion', 'idea', 'plan', 'project', 'scheme', 'yojana', 'card', 'id', 'number', 'certificate', 'license', 'permit', 'pass', 'ticket', 'booking'];
             const suffixes = ['', '2025', '2026', '2027', 'online', 'form', 'apply', 'download', 'login', 'register', 'portal', 'service', 'scheme', 'yojana', 'card', 'id', 'number', 'certificate', 'license', 'permit', 'pass', 'ticket', 'booking', 'result', 'exam', 'admit', 'syllabus', 'answer key', 'cutoff', 'merit', 'list', 'counseling', 'admission', 'fee', 'date', 'time', 'news', 'update', 'status', 'track', 'helpline', 'contact', 'address', 'map', 'route', 'distance', 'time table', 'schedule', 'calendar', 'weather', 'alert', 'warning', 'safety', 'tips', 'guide', 'tutorial', 'video', 'photo', 'image', 'gallery', 'review', 'rating', 'feedback', 'complaint', 'grievance', 'suggestion', 'idea', 'plan', 'project', 'report', 'analysis', 'data', 'statistics', 'information', 'knowledge', 'learning', 'education', 'job', 'career', 'skill', 'training', 'internship', 'placement', 'salary', 'pay scale', 'promotion', 'transfer', 'leave', 'holiday', 'list', 'calendar 2025', 'calendar 2026'];
 
@@ -491,29 +491,63 @@
             let count = 0;
             const maxEntries = 5000;
 
+            // First, add all base entries
             for (const [key, url] of Object.entries(BASE_DATA)) {
-                if (count < maxEntries) { newData[key] = url; count++; }
-            }
-            while (count < maxEntries) {
-                const base = baseKeys[Math.floor(Math.random() * baseKeys.length)];
-                const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-                const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
-                let newKey = prefix + ' ' + base + ' ' + suffix;
-                newKey = newKey.trim().replace(/\s+/g, ' ');
-                if (newKey.length > 3 && !newData[newKey] && !newData[base]) {
-                    const url = BASE_DATA[base] || 'https://www.google.com/search?q=' + encodeURIComponent(newKey);
-                    newData[newKey] = url;
+                if (count < maxEntries) {
+                    newData[key] = url;
                     count++;
                 }
+            }
+
+            // Generate combinations in chunks (100 per iteration) to keep UI responsive
+            const chunkSize = 100;
+            while (count < maxEntries) {
+                let chunkCount = 0;
+                while (chunkCount < chunkSize && count < maxEntries) {
+                    const base = baseKeys[Math.floor(Math.random() * baseKeys.length)];
+                    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                    const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+                    let newKey = prefix + ' ' + base + ' ' + suffix;
+                    newKey = newKey.trim().replace(/\s+/g, ' ');
+                    if (newKey.length > 3 && !newData[newKey] && !newData[base]) {
+                        const url = BASE_DATA[base] || 'https://www.google.com/search?q=' + encodeURIComponent(newKey);
+                        newData[newKey] = url;
+                        count++;
+                        chunkCount++;
+                    }
+                }
+                // Yield to UI
+                await new Promise(resolve => setTimeout(resolve, 0));
             }
             return newData;
         }
 
-        const FULL_DATA = generateData();
-        console.log('✅ Total entries generated:', Object.keys(FULL_DATA).length);
+        // ================================================================
+        //  3. FULL_DATA – LOAD ASYNC
+        // ================================================================
+        let FULL_DATA = {};
+
+        async function loadData() {
+            const homeLogo = document.querySelector('.home-logo');
+            if (homeLogo) homeLogo.textContent = '⏳ लोड हो रहा...';
+            
+            FULL_DATA = await generateDataAsync();
+            console.log('✅ Total entries generated:', Object.keys(FULL_DATA).length);
+            
+            if (homeLogo) homeLogo.textContent = 'ढूंढो';
+            
+            // Update allQueries
+            allQueries.length = 0;
+            allQueries.push(...Object.keys(FULL_DATA));
+            
+            const homeInput = document.getElementById('homeInput');
+            if (homeInput && homeInput.value) {
+                filterHomeSuggestions(homeInput.value);
+            }
+        }
 
         // ================================================================
-        //  3. SEARCH FUNCTIONS
+        //  4. SEARCH FUNCTIONS
         // ================================================================
         function getSite(query) {
             const q = query.toLowerCase().trim();
@@ -546,7 +580,7 @@
         function getAllQueries() { return Object.keys(FULL_DATA); }
 
         // ================================================================
-        //  4. HISTORY (localStorage)
+        //  5. HISTORY (localStorage)
         // ================================================================
         let searchHistory = JSON.parse(localStorage.getItem('dhundho_history')) || [];
         function saveHistory() { localStorage.setItem('dhundho_history', JSON.stringify(searchHistory)); }
@@ -562,7 +596,7 @@
         function getHistory() { return searchHistory; }
 
         // ================================================================
-        //  5. DARK MODE
+        //  6. DARK MODE
         // ================================================================
         let darkMode = localStorage.getItem('dhundho_dark') === 'true';
         function applyDarkMode() {
@@ -573,7 +607,7 @@
         applyDarkMode();
 
         // ================================================================
-        //  6. UI NAVIGATION
+        //  7. UI NAVIGATION
         // ================================================================
         function goHome() {
             document.getElementById('home-view').style.display = 'flex';
@@ -625,7 +659,7 @@
         }
 
         // ================================================================
-        //  7. VOICE SEARCH
+        //  8. VOICE SEARCH
         // ================================================================
         function voiceSearchHome() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert('वॉयस सर्च समर्थित नहीं है।'); return; }
@@ -657,9 +691,9 @@
         }
 
         // ================================================================
-        //  8. SUGGESTIONS
+        //  9. SUGGESTIONS
         // ================================================================
-        const allQueries = getAllQueries();
+        let allQueries = [];
 
         function showHomeSuggestions() { filterHomeSuggestions(document.getElementById('homeInput').value); }
         function filterHomeSuggestions(val) {
@@ -689,7 +723,7 @@
         }
 
         // ================================================================
-        //  9. PERFORM SEARCH
+        //  10. PERFORM SEARCH
         // ================================================================
         function performSearch(query) {
             if (!query) return;
@@ -729,7 +763,7 @@
         }
 
         // ================================================================
-        //  10. RENDER RESULTS (ALL TABS)
+        //  11. RENDER RESULTS (ALL TABS)
         // ================================================================
         function renderAllResults(query) {
             const q = query.trim();
@@ -875,7 +909,7 @@
         }
 
         // ================================================================
-        //  11. TAB SWITCHING (async video fetch)
+        //  12. TAB SWITCHING (async video fetch)
         // ================================================================
         function showTab(tab) {
             const q = document.getElementById('resultInput').value.trim() || 'भारत';
@@ -945,7 +979,7 @@
         }
 
         // ================================================================
-        //  12. SERVICE WORKER REGISTRATION
+        //  13. SERVICE WORKER REGISTRATION
         // ================================================================
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -956,11 +990,15 @@
         }
 
         // ================================================================
-        //  13. INIT
+        //  14. INIT – Load data asynchronously
         // ================================================================
-        console.log('🚀 ढूंढो – भारत का अपना सर्च इंजन लोड हो गया!');
-        console.log(`📚 ${Object.keys(FULL_DATA).length} क्वेरीज़ प्री-लोडेड हैं।`);
+        (async function init() {
+            await loadData();
+            console.log('🚀 ढूंढो – भारत का अपना सर्च इंजन लोड हो गया!');
+            console.log(`📚 ${Object.keys(FULL_DATA).length} क्वेरीज़ प्री-लोडेड हैं।`);
+        })();
 
+        // Close suggestions on outside click
         document.addEventListener('click', function(e) {
             const homeInput = document.getElementById('homeInput');
             const resultInput = document.getElementById('resultInput');
