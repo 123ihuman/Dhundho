@@ -20,6 +20,8 @@
         .dark-mode .tool-result { background:#303134 !important; }
         .dark-mode .exit-box { background:#303134; color:#e8eaed; }
         .dark-mode .exit-box p { color:#b0b0b0; }
+        .dark-mode .famous-chip { background:#303134; color:#e8eaed; }
+        .dark-mode .famous-chip:hover { background:#3c4043; }
 
         /* ===== HOME ===== */
         #home-view { min-height:100vh; display:flex; flex-direction:column; align-items:center; padding-top:80px; position:relative; }
@@ -34,6 +36,10 @@
         .home-buttons { display:flex; gap:20px; margin-top:30px; }
         .home-btn { background:#f8f9fa; border:1px solid #f8f9fa; padding:10px 20px; border-radius:4px; font-size:14px; color:#3c4043; cursor:pointer; transition:border-color .2s; }
         .home-btn:hover { border-color:#dadce0; }
+
+        .famous-chips { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:20px; }
+        .famous-chip { background:#f1f3f4; padding:8px 16px; border-radius:30px; font-size:14px; cursor:pointer; transition:background .2s; }
+        .famous-chip:hover { background:#e0e0e0; }
 
         /* ===== RESULTS ===== */
         #results-view { display:none; padding:0; }
@@ -173,6 +179,17 @@
             <div class="home-btn" onclick="performSearch(document.getElementById('homeInput').value)">ढूंढो</div>
             <div class="home-btn" onclick="iAmFeelingLucky()">मैं भाग्यशाली हूँ</div>
         </div>
+        <!-- ===== FAMOUS SEARCHES CHIPS ===== -->
+        <div class="famous-chips">
+            <span class="famous-chip" onclick="performSearch('cricket')">🏏 Cricket</span>
+            <span class="famous-chip" onclick="performSearch('politics')">🏛️ Politics</span>
+            <span class="famous-chip" onclick="performSearch('job')">💼 Job</span>
+            <span class="famous-chip" onclick="performSearch('weather')">🌤️ Weather</span>
+            <span class="famous-chip" onclick="performSearch('bollywood')">🎬 Bollywood</span>
+            <span class="famous-chip" onclick="performSearch('aadhaar')">🆔 Aadhaar</span>
+            <span class="famous-chip" onclick="performSearch('sarkari result')">📋 Sarkari Result</span>
+            <span class="famous-chip" onclick="performSearch('youtube')">▶️ YouTube</span>
+        </div>
         <div style="margin-top:20px;font-size:13px;color:#70757a;">भारत का अपना सर्च इंजन · 5000+ क्वेरीज़</div>
     </div>
 
@@ -260,12 +277,9 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- ============================================================= -->
-    <!-- JAVASCRIPT – FIXED: ASYNC DATA GENERATION -->
-    <!-- ============================================================= -->
     <script>
         // ================================================================
-        //  1. BASE DATA ( ~1500 entries – core)
+        //  1. BASE DATA (1500+ हार्डकोडेड entries – तुरंत काम करेंगी)
         // ================================================================
         const BASE_DATA = {
             "aadhaar": "https://uidai.gov.in",
@@ -480,27 +494,23 @@
         };
 
         // ================================================================
-        //  2. ASYNC DATA GENERATOR (NO FREEZE)
+        //  2. FULL_DATA को तुरंत BASE_DATA से भरें (इंस्टेंट सर्च)
         // ================================================================
-        async function generateDataAsync() {
+        let FULL_DATA = { ...BASE_DATA };
+        let allQueries = Object.keys(FULL_DATA);
+
+        // ================================================================
+        //  3. ASYNC ENHANCER – बैकग्राउंड में 5000 तक जोड़ें (फ्रीज़ नहीं)
+        // ================================================================
+        async function enhanceDataAsync() {
             const prefixes = ['', 'online', 'apply', 'status', 'check', 'new', 'latest', 'old', 'free', 'official', 'gov', 'india', 'bharat', 'state', 'central', 'national', 'international', 'update', 'track', 'verify', 'download', 'form', 'result', 'exam', 'admit', 'syllabus', 'answer key', 'cutoff', 'merit', 'list', 'counseling', 'admission', 'fee', 'date', 'time', 'news', 'report', 'analysis', 'data', 'statistics', 'information', 'knowledge', 'learning', 'education', 'job', 'career', 'skill', 'training', 'internship', 'placement', 'salary', 'pay scale', 'promotion', 'transfer', 'leave', 'holiday', 'calendar', 'schedule', 'timetable', 'route', 'map', 'address', 'contact', 'helpline', 'support', 'help', 'guide', 'tutorial', 'video', 'photo', 'image', 'gallery', 'review', 'rating', 'feedback', 'complaint', 'grievance', 'suggestion', 'idea', 'plan', 'project', 'scheme', 'yojana', 'card', 'id', 'number', 'certificate', 'license', 'permit', 'pass', 'ticket', 'booking'];
             const suffixes = ['', '2025', '2026', '2027', 'online', 'form', 'apply', 'download', 'login', 'register', 'portal', 'service', 'scheme', 'yojana', 'card', 'id', 'number', 'certificate', 'license', 'permit', 'pass', 'ticket', 'booking', 'result', 'exam', 'admit', 'syllabus', 'answer key', 'cutoff', 'merit', 'list', 'counseling', 'admission', 'fee', 'date', 'time', 'news', 'update', 'status', 'track', 'helpline', 'contact', 'address', 'map', 'route', 'distance', 'time table', 'schedule', 'calendar', 'weather', 'alert', 'warning', 'safety', 'tips', 'guide', 'tutorial', 'video', 'photo', 'image', 'gallery', 'review', 'rating', 'feedback', 'complaint', 'grievance', 'suggestion', 'idea', 'plan', 'project', 'report', 'analysis', 'data', 'statistics', 'information', 'knowledge', 'learning', 'education', 'job', 'career', 'skill', 'training', 'internship', 'placement', 'salary', 'pay scale', 'promotion', 'transfer', 'leave', 'holiday', 'list', 'calendar 2025', 'calendar 2026'];
 
             const baseKeys = Object.keys(BASE_DATA);
-            const newData = {};
-            let count = 0;
             const maxEntries = 5000;
+            let count = Object.keys(FULL_DATA).length;
+            const chunkSize = 50;
 
-            // First, add all base entries
-            for (const [key, url] of Object.entries(BASE_DATA)) {
-                if (count < maxEntries) {
-                    newData[key] = url;
-                    count++;
-                }
-            }
-
-            // Generate combinations in chunks (100 per iteration) to keep UI responsive
-            const chunkSize = 100;
             while (count < maxEntries) {
                 let chunkCount = 0;
                 while (chunkCount < chunkSize && count < maxEntries) {
@@ -509,45 +519,23 @@
                     const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
                     let newKey = prefix + ' ' + base + ' ' + suffix;
                     newKey = newKey.trim().replace(/\s+/g, ' ');
-                    if (newKey.length > 3 && !newData[newKey] && !newData[base]) {
+                    if (newKey.length > 3 && !FULL_DATA[newKey]) {
                         const url = BASE_DATA[base] || 'https://www.google.com/search?q=' + encodeURIComponent(newKey);
-                        newData[newKey] = url;
+                        FULL_DATA[newKey] = url;
                         count++;
                         chunkCount++;
                     }
                 }
-                // Yield to UI
                 await new Promise(resolve => setTimeout(resolve, 0));
             }
-            return newData;
+            allQueries = Object.keys(FULL_DATA);
+            console.log('✅ Enhanced data ready! Total:', allQueries.length);
         }
+        // बैकग्राउंड में enhancer चलाएँ
+        enhanceDataAsync();
 
         // ================================================================
-        //  3. FULL_DATA – LOAD ASYNC
-        // ================================================================
-        let FULL_DATA = {};
-
-        async function loadData() {
-            const homeLogo = document.querySelector('.home-logo');
-            if (homeLogo) homeLogo.textContent = '⏳ लोड हो रहा...';
-            
-            FULL_DATA = await generateDataAsync();
-            console.log('✅ Total entries generated:', Object.keys(FULL_DATA).length);
-            
-            if (homeLogo) homeLogo.textContent = 'ढूंढो';
-            
-            // Update allQueries
-            allQueries.length = 0;
-            allQueries.push(...Object.keys(FULL_DATA));
-            
-            const homeInput = document.getElementById('homeInput');
-            if (homeInput && homeInput.value) {
-                filterHomeSuggestions(homeInput.value);
-            }
-        }
-
-        // ================================================================
-        //  4. SEARCH FUNCTIONS
+        //  4. SEARCH FUNCTIONS (तुरंत काम करेंगे)
         // ================================================================
         function getSite(query) {
             const q = query.toLowerCase().trim();
@@ -693,8 +681,6 @@
         // ================================================================
         //  9. SUGGESTIONS
         // ================================================================
-        let allQueries = [];
-
         function showHomeSuggestions() { filterHomeSuggestions(document.getElementById('homeInput').value); }
         function filterHomeSuggestions(val) {
             const container = document.getElementById('homeSuggestions');
@@ -990,13 +976,10 @@
         }
 
         // ================================================================
-        //  14. INIT – Load data asynchronously
+        //  14. INIT – कोई भारी काम नहीं, बस लोग दिखाएँ
         // ================================================================
-        (async function init() {
-            await loadData();
-            console.log('🚀 ढूंढो – भारत का अपना सर्च इंजन लोड हो गया!');
-            console.log(`📚 ${Object.keys(FULL_DATA).length} क्वेरीज़ प्री-लोडेड हैं।`);
-        })();
+        console.log('🚀 ढूंढो – इंस्टेंट लोड! प्रारंभिक entries:', Object.keys(FULL_DATA).length);
+        console.log('⏳ बैकग्राउंड में और entries जुड़ रही हैं...');
 
         // Close suggestions on outside click
         document.addEventListener('click', function(e) {
