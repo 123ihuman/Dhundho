@@ -2154,24 +2154,18 @@ function refreshPage() {
                 const data = await res.json();
 
                 if (data.items && data.items.length > 0) {
+                                    if (data.items && data.items.length > 0) {
                     let html = data.items.map(item => `
                         <div class="result-block" onclick="window.open('${item.link}', '_blank');" style="cursor:pointer;">
                             <div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">🔗</div>${new URL(item.link).hostname}</div>
-                            <a href="${item.link}" target="_blank" class="title" onclick="event.stopPropagation();">${item.title}</a>
+                            <a href="${item.link}" target="_blank" class="title" onclick="event.stopPropagation();">${item.title}</a> <span style="background:#fef7e0;color:#b06000;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:bold;">Google</span>
                             <div class="snippet">${item.snippet}</div>
                         </div>
                     `).join('');
                     
-                    setCached(query, html, 'google'); // कैश में सेव करें
+                    setCached(query, html, 'google'); 
                     return html;
                 }
-            } catch (e) { 
-                console.warn('Google Search API Failed:', e);
-                return ''; 
-            }
-            return '';
-        }
-
         async function renderAllResults(query) {
             const q = query.trim();
             let html = '';
@@ -2190,11 +2184,11 @@ function refreshPage() {
             const googleHtml = await fetchGoogleResults(q);
             if (googleHtml) html += googleHtml;
 
-            const directSite = getSite(q);
-            if (directSite) {
-                const displayName = q.length > 30 ? q.slice(0,30)+'...' : q;
-                html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">🌐</div>${new URL(directSite).hostname}</div><a href="${directSite}" target="_blank" class="title">${displayName}</a><div class="snippet">${q} की आधिकारिक वेबसाइट – सभी जानकारी यहाँ उपलब्ध है।</div></div>`;
-            }
+                    const directSite = getSite(q);
+        if (directSite) {
+            const displayName = q.length > 30 ? q.slice(0,30)+'...' : q;
+            html += `<div class="result-block" onclick="window.open('${directSite}', '_blank');" style="cursor:pointer;"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">🌐</div>${new URL(directSite).hostname}</div><a href="${directSite}" target="_blank" class="title" onclick="event.stopPropagation();">${displayName}</a> <span style="background:#e8f0fe;color:#1a73e8;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:bold;">Direct</span><div class="snippet">${q} की आधिकारिक वेबसाइट – सभी जानकारी यहाँ उपलब्ध है।</div></div>`;
+        }
 
             const related = getRelated(q);
             const shown = new Set();
