@@ -635,16 +635,14 @@
         //  4. CACHING – localStorage for images & web results
         // ================================================================
         function getCached(key, type) {
-            const fullKey = type + '_' + key;
-            const cached = localStorage.getItem(fullKey);
-            if (!cached) return null;
-            try {
-                const data = JSON.parse(cached);
-                if (Date.now() - data.timestamp < 2592000000) return data.value; // 30 दिनों तक कैश रहेगा
-                localStorage.removeItem(fullKey);
-                return null;
-            } catch(e) { return null; }
-        }
+    const fullKey = type + '_' + key;
+    const cached = localStorage.getItem(fullKey);
+    if (!cached) return null;
+    try {
+        const data = JSON.parse(cached);
+        return data.value; // Infinite Cache (No time limit)
+    } catch(e) { return null; }
+}
         function setCached(key, value, type) {
             const fullKey = type + '_' + key;
             const data = { timestamp: Date.now(), value: value };
