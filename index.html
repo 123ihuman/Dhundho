@@ -223,7 +223,7 @@
             .video-grid { grid-template-columns:1fr; }
         }
     </style>
-</head>
+    </head>
 <body>
     <!-- ===== TOP BAR ===== -->
     <div class="top-bar" id="topBar">
@@ -341,37 +341,22 @@
         <div class="drawer-item" onclick="toggleDesktop()"><span class="m-icon">🖥️</span> Desktop site</div>
         <div class="drawer-item" onclick="toggleFullscreen()"><span class="m-icon">⛶</span> Full screen</div>
         <div class="drawer-item" onclick="zoomPage()"><span class="m-icon">🔍</span> Zoom (toggle)</div>
-        <div class="drawer-item" onclick="showPasswordManager()"><span class="m-icon">🔒</span> Password Manager</div>
-        <div class="drawer-item" onclick="addCustomSearch()"><span class="m-icon">🔧</span> Add Search Shortcut</div>
-        function showExtensions() {
-    hideDrawer();
-    let msg = '🧩 Available Shortcuts (type !name query):\n\n';
-    const shortcuts = JSON.parse(localStorage.getItem('dhundho_shortcuts')) || {};
-    if (Object.keys(shortcuts).length === 0) {
-        msg += 'No shortcuts yet. Use "Add Search Shortcut" from the drawer to create one.\n';
-    } else {
-        for (const [name, url] of Object.entries(shortcuts)) {
-            msg += `!${name}  →  ${url}\n`;
-        }
-    }
-    alert(msg);
-}
-        <div class="drawer-section">MORE</div>
+       <div class="drawer-item" onclick="showPasswordManager()"><span class="m-icon">🔒</span> Password Manager</div>
+                <div class="drawer-section">MORE</div>
         <div class="drawer-item" onclick="showExitPrompt()"><span class="m-icon">🚪</span> Exit</div>
         <div class="drawer-item" onclick="helpFeedback()"><span class="m-icon">❓</span> Help & feedback</div>
-    </div>
+</div> <!-- Close Drawer -->
 
-    <!-- ===== CONTEXT MENU ===== -->
+<!-- ===== CONTEXT MENU ===== -->
     <div class="context-menu" id="contextMenu">
         <div class="ctx-item" data-action="copy"><i class="fas fa-copy"></i> Copy</div>
         <div class="ctx-item" data-action="cut"><i class="fas fa-cut"></i> Cut</div>
         <div class="ctx-item" data-action="paste"><i class="fas fa-paste"></i> Paste</div>
         <div class="ctx-item" data-action="save"><i class="fas fa-bookmark"></i> Save (Bookmark)</div>
         <div class="ctx-item" data-action="download"><i class="fas fa-download"></i> Download Image</div>
-        <div class="ctx-item" data-action="exit"><i class="fas fa-times-circle"></i> Exit</div>
-    </div>
+                <div class="ctx-item" data-action="exit"><i class="fas fa-times-circle"></i> Exit</div>
+    </div> <!-- Close Context Menu -->
 
-    <!-- ===== EXIT PROMPT ===== -->
     <div class="exit-overlay" id="exitOverlay">
         <div class="exit-box">
             <h2>🚪 बाहर निकलें?</h2>
@@ -382,7 +367,6 @@
             </div>
         </div>
     </div>
-
     <!-- ===== OWNER SECTION ===== -->
     <div class="owner-section">
         <img src="owner.jpg" class="owner-img" onerror="this.style.display='none'" alt="Owner">
@@ -395,7 +379,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script>
-        // ================================================================
+            // ================================================================
         //  1. API KEYS
         // ================================================================
         const UNSPLASH_ACCESS_KEY = "jZ3pygrliHcPuw0XjT6Vmzacd-KJvu1F_PQH11a8EmM";
@@ -631,865 +615,13 @@
             "shine": "https://www.shine.com",
             "internshala": "https://internshala.com",
             "freelancer": "https://www.freelancer.in",
-            "upwork": "https://www.upwork.com",
-            "google": "https://www.google.com",
-            "youtube": "https://www.youtube.com",
-            "wikipedia": "https://www.wikipedia.org",
-            "microsoft": "https://www.microsoft.com",
-            "apple": "https://www.apple.com",
-            "openai": "https://www.openai.com",
-            "chatgpt": "https://chatgpt.com",
-            "gemini": "https://gemini.google.com",
-            "copilot": "https://copilot.microsoft.com",
-            "claude": "https://claude.ai",
-            "github": "https://www.github.com",
-            "stackoverflow": "https://stackoverflow.com",
-            "mozilla": "https://www.mozilla.org",
-            "cloudflare": "https://www.cloudflare.com",
-            "adobe": "https://www.adobe.com",
-            "oracle": "https://www.oracle.com",
-            "aws": "https://aws.amazon.com",
-            "cloudgoogle": "https://cloud.google.com",
-            "ibm": "https://www.ibm.com",
-            "intel": "https://www.intel.com",
-            "android": "https://www.android.com",
-            "nvidia": "https://www.nvidia.com",
-            "zoom": "https://www.zoom.com",
-            "canva": "https://www.canva.com",
-            "dropbox": "https://www.dropbox.com",
-            "facebook": "https://www.facebook.com",
-            "instagram": "https://www.instagram.com",
-            "whatsapp": "https://www.whatsapp.com",
-            "linkedin": "https://www.linkedin.com",
-            "x": "https://x.com",
-            "reddit": "https://www.reddit.com",
-            "pinterest": "https://www.pinterest.com",
-            "snapchat": "https://www.snapchat.com",
-            "discord": "https://discord.com",
-            "telegram": "https://telegram.org",
-            "quora": "https://www.quora.com",
-            "threads": "https://www.threads.com",
-            "messenger": "https://www.messenger.com",
-            "skype": "https://www.skype.com",
-            "meetgoogle": "https://meet.google.com",
-            "slack": "https://slack.com",
-            "signal": "https://signal.org",
-            "viber": "https://www.viber.com",
-            "tumblr": "https://www.tumblr.com",
-            "medium": "https://www.medium.com",
-            "amazon": "https://www.amazon.in",
-            "flipkart": "https://www.flipkart.com",
-            "meesho": "https://www.meesho.com",
-            "myntra": "https://www.myntra.com",
-            "ajio": "https://www.ajio.com",
-            "nykaa": "https://www.nykaa.com",
-            "jiomart": "https://www.jiomart.com",
-            "tatacliq": "https://www.tatacliq.com",
-            "croma": "https://www.croma.com",
-            "reliancedigital": "https://www.reliancedigital.in",
-            "vijaysales": "https://www.vijaysales.com",
-            "indiamart": "https://www.indiamart.com",
-            "tradeindia": "https://www.tradeindia.com",
-            "olx": "https://www.olx.in",
-            "quikr": "https://www.quikr.com",
-            "firstcry": "https://www.firstcry.com",
-            "lenskart": "https://www.lenskart.com",
-            "decathlon": "https://www.decathlon.in",
-            "bigbasket": "https://www.bigbasket.com",
-            "blinkit": "https://www.blinkit.com",
-            "zepto": "https://www.zepto.com",
-            "swiggy": "https://www.swiggy.com",
-            "zomato": "https://www.zomato.com",
-            "snapdeal": "https://www.snapdeal.com",
-            "shopclues": "https://www.shopclues.com",
-            "rbi": "https://www.rbi.org.in",
-            "sbi": "https://www.sbi.co.in",
-            "onlinesbi": "https://www.onlinesbi.sbi",
-            "hdfcbank": "https://www.hdfcbank.com",
-            "icicibank": "https://www.icicibank.com",
-            "axisbank": "https://www.axisbank.com",
-            "bankofbaroda": "https://www.bankofbaroda.in",
-            "pnbindia": "https://www.pnbindia.in",
-            "canarabank": "https://www.canarabank.com",
-            "unionbankofindia": "https://www.unionbankofindia.co.in",
-            "indianbank": "https://www.indianbank.in",
-            "bankofindia": "https://bankofindia.co.in",
-            "centralbankofindia": "https://www.centralbankofindia.co.in",
-            "iob": "https://www.iob.in",
-            "bankofmaharashtra": "https://bankofmaharashtra.in",
-            "ucobank": "https://www.ucobank.com",
-            "punjabandsindbank": "https://punjabandsindbank.co.in",
-            "npci": "https://www.npci.org.in",
-            "phonepe": "https://www.phonepe.com",
-            "gpay": "https://pay.google.com",
-            "paytm": "https://paytm.com",
-            "zerodha": "https://www.zerodha.com",
-            "groww": "https://groww.in",
-            "nseindia": "https://www.nseindia.com",
-            "bseindia": "https://www.bseindia.com",
-            "indiagov": "https://www.india.gov.in",
-            "mygov": "https://www.mygov.in",
-            "servicesindia": "https://services.india.gov.in",
-            "igod": "https://igod.gov.in",
-            "pmindia": "https://www.pmindia.gov.in",
-             "upgov": "https://up.gov.in",
-            "upbhulekh": "https://upbhulekh.gov.in",
-            "edistrictup": "https://edistrict.up.gov.in",
-            "igrsup": "https://igrsup.gov.in",
-            "panchayat": "https://panchayat.gov.in",
-            "egramswaraj": "https://egramswaraj.gov.in",
-            "rural": "https://rural.gov.in",
-            "nrega": "https://nrega.nic.in",
-            "pmkisan": "https://pmkisan.gov.in",
-            "pmfby": "https://pmfby.gov.in",
-            "agmarknet": "https://agmarknet.gov.in",
-            "agriwelfare": "https://agriwelfare.gov.in",
-            "jaljeevan": "https://jaljeevanmission.gov.in",
-            "swachhbharat": "https://swachhbharatmission.ddws.gov.in",
-            "csc": "https://csc.gov.in",
-            "udyam": "https://udyamregistration.gov.in",
-            "gem": "https://gem.gov.in",
-            "msme": "https://msme.gov.in",
-            "startupindia": "https://startupindia.gov.in",
-            "odop": "https://www.odop.in",
-            "bcci": "https://www.bcci.tv",
-            "iplt20": "https://www.iplt20.com",
-            "icc": "https://www.icc-cricket.com",
-            "cricbuzz": "https://www.cricbuzz.com",
-            "espncricinfo": "https://www.espncricinfo.com",
-            "olympics": "https://olympics.com",
-            "fifa": "https://www.fifa.com",
-            "uefa": "https://www.uefa.com",
-            "prokabaddi": "https://www.prokabaddi.com",
-            "hockeyindia": "https://www.hockeyindia.org",
-            "badmintonindia": "https://www.badmintonindia.org",
-            "sportsauthority": "https://www.sportsauthorityofindia.nic.in",
-            "kheloindia": "https://www.kheloindia.gov.in",
-            "sofascore": "https://www.sofascore.com",
-            "espn": "https://www.espn.com",
-            "sportstar": "https://www.sportstar.thehindu.com",
-            "fanatics": "https://www.fanatics.com",
-            "fiba": "https://www.fiba.basketball",
-            "worldathletics": "https://worldathletics.org",
-            "paralympic": "https://www.paralympic.org",
-            "imdb": "https://www.imdb.com",
-            "bollywoodhungama": "https://www.bollywoodhungama.com",
-            "filmfare": "https://www.filmfare.com",
-            "zee5": "https://www.zee5.com",
-            "netflix": "https://www.netflix.com",
-            "primevideo": "https://www.primevideo.com",
-            "jiocinema": "https://www.jiocinema.com",
-            "sonyliv": "https://www.sonyliv.com",
-            "hotstar": "https://www.hotstar.com",
-            "bookmyshow": "https://www.bookmyshow.com",
-            "tseries": "https://www.tseries.com",
-            "yashraj": "https://www.yashrajfilms.com",
-            "dharma": "https://www.dharma-production.com",
-            "redchillies": "https://www.redchillies.com",
-            "saregama": "https://www.saregama.com",
-            "zee": "https://www.zee.com",
-            "sony": "https://www.sony.co.in",
-            "spotify": "https://www.spotify.com",
-            "jiosaavn": "https://www.jiosaavn.com",
-            "musicyt": "https://music.youtube.com",
-            "ndtv": "https://www.ndtv.com",
-            "indiatoday": "https://www.indiatoday.in",
-            "aajtak": "https://www.aajtak.in",
-            "thehindu": "https://www.thehindu.com",
-            "indianexpress": "https://indianexpress.com",
-            "hindustantimes": "https://www.hindustantimes.com",
-            "timesofindia": "https://timesofindia.indiatimes.com",
-            "news18": "https://www.news18.com",
-            "zeenews": "https://zeenews.india.com",
-            "abplive": "https://www.abplive.com",
-            "bhaskar": "https://www.bhaskar.com",
-            "jagran": "https://www.jagran.com",
-            "amarujala": "https://www.amarujala.com",
-            "livehindustan": "https://www.livehindustan.com",
-            "firstpost": "https://www.firstpost.com",
-            "wionews": "https://www.wionews.com",
-            "moneycontrol": "https://www.moneycontrol.com",
-            "economictimes": "https://economictimes.indiatimes.com",
-            "businessstandard": "https://www.business-standard.com",
-            "financialexpress": "https://www.financialexpress.com",
-            "cbse": "https://www.cbse.gov.in",
-            "nta": "https://www.nta.ac.in",
-            "upsc": "https://upsc.gov.in",
-            "ssc": "https://ssc.gov.in",
-            "ugc": "https://ugc.gov.in",
-            "ncert": "https://ncert.nic.in",
-            "swayam": "https://swayam.gov.in",
-            "ncs": "https://ncs.gov.in",
-            "naukri": "https://www.naukri.com",
-            "indeed": "https://www.indeed.com",
-            "foundit": "https://www.foundit.in",
-            "coursera": "https://www.coursera.org",
-            "udemy": "https://www.udemy.com",
-            "khanacademy": "https://www.khanacademy.org",
-            "unacademy": "https://unacademy.com",
-            "vedantu": "https://www.vedantu.com",
-            "byjus": "https://byjus.com",
-            "iitb": "https://www.iitb.ac.in",
-            "iitd": "https://www.iitd.ac.in",
-            "iisc": "https://www.iisc.ac.in",
-            "irctc": "https://www.irctc.co.in",
-            "indianrailways": "https://indianrailways.gov.in",
-            "makemytrip": "https://www.makemytrip.com",
-            "goibibo": "https://www.goibibo.com",
-            "yatra": "https://www.yatra.com",
-            "cleartrip": "https://www.cleartrip.com",
-            "redbus": "https://www.redbus.in",
-            "goindigo": "https://www.goindigo.in",
-            "airindia": "https://www.airindia.com",
-            "spicejet": "https://www.spicejet.com",
-            "uber": "https://www.uber.com",
-            "booking": "https://www.booking.com",
-            "airbnb": "https://www.airbnb.co.in",
-            "incredibleindia": "https://www.incredibleindia.gov.in",
-            "mohfw": "https://www.mohfw.gov.in",
-            "icmr": "https://www.icmr.gov.in",
-            "aiims": "https://www.aiims.edu",
-            "who": "https://www.who.int",
-            "apollohospitals": "https://www.apollohospitals.com",
-            "fortishealthcare": "https://www.fortishealthcare.com",
-            "medanta": "https://www.medanta.org",
-            "practo": "https://www.practo.com",
-            "tata1mg": "https://www.tata1mg.com",
-            "netmeds": "https://www.netmeds.com",
-            "mayoclinic": "https://www.mayoclinic.org",
-            "justdial": "https://www.justdial.com",
-            "googlemaps": "https://maps.google.com",
-            "mapmyindia": "https://www.mapmyindia.com",
-            "sebi": "https://www.sebi.gov.in",
-            "licindia": "https://www.licindia.in",
-            "policybazaar": "https://www.policybazaar.com",
-            "airtel": "https://www.airtel.in",
-            "jio": "https://www.jio.com",
-            "vi": "https://www.vi.in",
-            "bsnl": "https://www.bsnl.co.in",
-            "indiaresults": "https://www.indiaresults.com",
-            "isro": "https://www.isro.gov.in",
-            "nasa": "https://www.nasa.gov",
-            "drdo": "https://www.drdo.gov.in",
-            "csir": "https://www.csir.res.in",
-            "nature": "https://www.nature.com",
-            "britannica": "https://www.britannica.com",
-            "nationalgeographic": "https://www.nationalgeographic.com",
-            "iskcon": "https://www.iskcon.org",
-            "isha": "https://isha.sadhguru.org",
-            "tirumala": "https://www.tirumala.org",
-            "drikpanchang": "https://www.drikpanchang.com",
-            "sarkariresult": "https://www.sarkariresult.com",
-            "freejobalert": "https://www.freejobalert.com",
-            "w3schools": "https://www.w3schools.com",
-            "dominospizza": "https://www.dominos.co.in",
-            "kfcindia": "https://www.kfc.co.in",
-            "mcdonaldsindia": "https://www.mcdonalds.in",
-            "starbucksindia": "https://www.starbucks.in",
-            "cafecoffeeday": "https://www.cafecoffeeday.com",
-            "tesla": "https://www.tesla.com",
-            "toyotabharat": "https://www.toyotabharat.com",
-            "hondacarindia": "https://www.hondacarindia.com",
-            "bmwindia": "https://www.bmw.in",
-            "mercedesbenzindia": "https://www.mercedes-benz.co.in",
-            "figma": "https://www.figma.com",
-            "notion": "https://www.notion.so",
-            "steam": "https://store.steampowered.com",
-            "epicgames": "https://www.epicgames.com",
-            "twitch": "https://www.twitch.tv",
-            "vimeo": "https://vimeo.com",
-            "blogger": "https://www.blogger.com",
-            "wordpress": "https://wordpress.org",
-            "alibaba": "https://www.alibaba.com",
-            "aliexpress": "https://www.aliexpress.com",
-            "ebay": "https://www.ebay.com",
-            "etsy": "https://www.etsy.com",
-            "walmart": "https://www.walmart.com",
-            "nfl": "https://www.nfl.com",
-            "premierleague": "https://www.premierleague.com",
-            "laliga": "https://www.laliga.com",
-            "ufc": "https://www.ufc.com",
-            "downdetector": "https://downdetector.in",
-            "accuweather": "https://www.accuweather.com",
-            "windy": "https://www.windy.com",
-            "duolingo": "https://www.duolingo.com",
-            "chegg": "https://www.chegg.com",
-            "gutenberg": "https://www.gutenberg.org",
-            "archive": "https://archive.org",
-            "worldometer": "https://www.worldometers.info",
-            "chess": "https://www.chess.com",
-            "lichess": "https://lichess.org",
-            "instructables": "https://www.instructables.com",
-            "binance": "https://www.binance.com",
-            "coinbase": "https://www.coinbase.com",
-            "angelone": "https://www.angelone.in",
-            "flickr": "https://www.flickr.com",
-            "imgur": "https://imgur.com",
-            "bandcamp": "https://bandcamp.com",
-            "letterboxd": "https://letterboxd.com",
-            "roblox": "https://www.roblox.com",
-            "minecraft": "https://www.minecraft.net",
-            "codecademy": "https://www.codecademy.com",
-            "monsterindia": "https://www.monsterindia.com",
-            "spacex": "https://www.spacex.com",
-            "pixabay": "https://pixabay.com",
-            "anthropic": "https://www.anthropic.com",
-            "deepmind": "https://deepmind.google",
-            "mastodon": "https://mastodon.social",
-            "bluesky": "https://bsky.app",
-            "vahan": "https://vahan.parivahan.gov.in",
-            "sarathi": "https://sarathi.parivahan.gov.in",
-            "darpan": "https://darpan.nic.in",
-            "myscheme": "https://www.myscheme.gov.in",
-            "scholarships": "https://scholarships.gov.in",
-            "vidyalakshmi": "https://www.vidyalakshmi.co.in",
-            "aha": "https://www.aha.video",
-            "sunnxt": "https://www.sunnxt.com",
-            "hoichoi": "https://www.hoichoi.tv",
-            "manoramamax": "https://www.manoramamax.com",
-            "etvwin": "https://www.etvwin.com",
-            "shemaroo": "https://www.shemaroome.com",
-            "kuku": "https://www.kuku.fm",
-            "purplle": "https://www.purplle.com",
-            "lifestyle": "https://www.lifestyleasia.com",
-            "westside": "https://www.westside.com",
-            "pantaloons": "https://www.pantaloons.com",
-            "fabindia": "https://www.fabindia.com",
-            "manyavar": "https://www.manyavar.com",
-            "easemytrip": "https://www.easemytrip.com",
-            "abhibus": "https://www.abhibus.com",
-            "expedia": "https://www.expedia.com",
-            "skyscanner": "https://www.skyscanner.net",
-            "theprint": "https://theprint.in",
-            "newslaundry": "https://www.newslaundry.com",
-            "unstop": "https://unstop.com",
-            "shiksha": "https://www.shiksha.com",
-            "collegedunia": "https://collegedunia.com",
-            "leetcode": "https://leetcode.com",
-            "hackerrank": "https://www.hackerrank.com",
-            "codeforces": "https://codeforces.com",
-            "kaggle": "https://www.kaggle.com",
-            "npmjs": "https://www.npmjs.com",
-            "postman": "https://www.postman.com",
-            "vercel": "https://vercel.com",
-            "netlify": "https://www.netlify.com",
-            "mojapp": "https://www.mojapp.in",
-            "joshapp": "https://www.joshapp.com",
-            "sharechat": "https://www.sharechat.com",
-            "kooapp": "https://www.kooapp.com",
-            "sportstiger": "https://sportstiger.com",
-            "mykhel": "https://www.mykhel.com",
-            "dunkin": "https://www.dunkin.in",
-            "wendys": "https://www.wendys.com",
-            "subway": "https://www.subway.com",
-            "burgerking": "https://www.burgerking.in",
-            "cnn": "https://edition.cnn.com",
-            "bbc": "https://www.bbc.com",
-            "nytimes": "https://www.nytimes.com",
-            "washingtonpost": "https://www.washingtonpost.com",
-            "theguardian": "https://www.theguardian.com",
-            "digitalocean": "https://www.digitalocean.com",
-            "azure": "https://azure.microsoft.com",
-            "playstore": "https://play.google.com",
-            "appstore": "https://www.apple.com/app-store/",
-            "disneyplus": "https://www.disneyplus.com",
-            "crunchyroll": "https://www.crunchyroll.com",
-            "mubi": "https://mubi.com",
-            "tripadvisor": "https://www.tripadvisor.in",
-            "agoda": "https://www.agoda.com",
-            "travelocity": "https://www.travelocity.com",
-            "tradingview": "https://www.tradingview.com",
-            "investing": "https://www.investing.com",
-            "eventbrite": "https://www.eventbrite.com",
-            "foodpanda": "https://www.foodpanda.com",
-            "doordash": "https://www.doordash.com",
-            "grubhub": "https://www.grubhub.com",
-            "instacart": "https://www.instacart.com",
-            "gotomeeting": "https://www.goto.com/meeting",
-            "webex": "https://www.webex.com",
-            "dailymotion": "https://www.dailymotion.com",
-            "okta": "https://www.okta.com",
-            "box": "https://www.box.com",
-            "mega": "https://mega.nz",
-            "wetransfer": "https://wetransfer.com",
-            "pastebin": "https://pastebin.com",
-            "jira": "https://www.atlassian.com/software/jira",
-            "confluence": "https://www.atlassian.com/software/confluence",
-            "autodesk": "https://www.autodesk.com",
-            "substack": "https://substack.com",
-            "ghost": "https://ghost.org",
-            "protonmail": "https://proton.me",
-            "gmail": "https://mail.google.com",
-            "outlook": "https://outlook.live.com",
-            "yahoomail": "https://mail.yahoo.com",
-            "ign": "https://www.ign.com",
-            "polygon": "https://www.polygon.com",
-            "genius": "https://genius.com",
-            "metacritic": "https://www.metacritic.com",
-            "rottentomatoes": "https://www.rottentomatoes.com",
-            "patreon": "https://www.patreon.com",
-            "kickstarter": "https://www.kickstarter.com",
-            "gofundme": "https://www.gofundme.com",
-            "indiegogo": "https://www.indiegogo.com",
-            "skillshare": "https://www.skillshare.com",
-            "futurelearn": "https://www.futurelearn.com",
-            "citibank": "https://www.citibank.com",
-            "chase": "https://www.chase.com",
-            "wellsfargo": "https://www.wellsfargo.com",
-            "bankofamerica": "https://www.bankofamerica.com",
-            "usbank": "https://www.usbank.com",
-            "capitalone": "https://www.capitalone.com",
-            "tdbank": "https://www.td.com",
-            "fedex": "https://www.fedex.com",
-            "ups": "https://www.ups.com",
-            "usps": "https://www.usps.com",
-            "dhl": "https://www.dhl.com",
-            "dell": "https://www.dell.com",
-            "hp": "https://www.hp.com",
-            "lenovo": "https://www.lenovo.com",
-            "acer": "https://www.acer.com",
-            "asus": "https://www.asus.com",
-            "lg": "https://www.lg.com",
-            "panasonic": "https://www.panasonic.com",
-            "canon": "https://www.usa.canon.com",
-            "nikon": "https://www.nikon.com",
-            "dyson": "https://www.dyson.com",
-            "philips": "https://www.philips.com",
-            "xiaomi": "https://www.mi.com",
-            "oppo": "https://www.oppo.com",
-            "vivo": "https://www.vivo.com",
-            "oneplus": "https://www.oneplus.com",
-            "motorola": "https://www.motorola.com",
-            "nokia": "https://www.nokia.com",
-            "qualcomm": "https://www.qualcomm.com",
-            "amd": "https://www.amd.com",
-            "msi": "https://www.msi.com",
-            "ubisoft": "https://www.ubisoft.com",
-            "ea": "https://www.ea.com",
-            "blizzard": "https://www.blizzard.com",
-            "capcom": "https://www.capcom.com",
-            "sega": "https://www.sega.com",
-            "openlibrary": "https://openlibrary.org",
-            "wiktionary": "https://www.wiktionary.org",
-            "wikiquote": "https://www.wikiquote.org",
-            "wikisource": "https://wikisource.org",
-            "commons": "https://commons.wikimedia.org",
-            "mediawiki": "https://www.mediawiki.org",
-            "mit": "https://www.mit.edu",
-            "stanford": "https://www.stanford.edu",
-            "harvard": "https://www.harvard.edu",
-            "caltech": "https://www.caltech.edu",
-            "oxford": "https://www.ox.ac.uk",
-            "cambridge": "https://www.cam.ac.uk",
-            "tsinghua": "https://www.tsinghua.edu.cn",
-            "nus": "https://www.nus.edu.sg",
-            "theverge": "https://www.theverge.com",
-            "techcrunch": "https://techcrunch.com",
-            "wired": "https://www.wired.com",
-            "cnet": "https://www.cnet.com",
-            "engadget": "https://www.engadget.com",
-            "zdnet": "https://www.zdnet.com",
-            "arstechnica": "https://arstechnica.com",
-            "eonline": "https://www.eonline.com",
-            "people": "https://people.com",
-            "tmz": "https://www.tmz.com",
-            "thesun": "https://www.thesun.co.uk",
-            "dailymail": "https://www.dailymail.co.uk",
-            "mirror": "https://www.mirror.co.uk",
-            "msn": "https://www.msn.com",
-            "yahoo": "https://www.yahoo.com",
-            "aol": "https://www.aol.com",
-            "ask": "https://www.ask.com",
-            "webmd": "https://www.webmd.com",
-            "healthline": "https://www.healthline.com",
-            "medicalnewstoday": "https://www.medicalnewstoday.com",
-            "everydayhealth": "https://www.everydayhealth.com",
-            "medicinenet": "https://www.medicinenet.com",
-            "rxlist": "https://www.rxlist.com",
-            "drugs": "https://www.drugs.com",
-            "verywellhealth": "https://www.verywellhealth.com",
-            "health": "https://www.health.com",
-            "runnersworld": "https://www.runnersworld.com",
-            "bicycling": "https://www.bicycling.com",
-            "cbssports": "https://www.cbssports.com",
-            "nbcsports": "https://www.nbcsports.com",
-            "foxsports": "https://www.foxsports.com",
-            "skysports": "https://www.skysports.com",
-            "newscomau": "https://www.news.com.au",
-            "theage": "https://www.theage.com.au",
-            "smh": "https://www.smh.com.au",
-            "nzherald": "https://www.nzherald.co.nz",
-            "straitstimes": "https://www.straitstimes.com",
-            "scmp": "https://www.scmp.com",
-            "japantimes": "https://www.japantimes.co.jp",
-            "koreatimes": "https://www.koreatimes.co.kr",
-            "timesnownews": "https://www.timesnownews.com",
-            "newsnationtv": "https://www.newsnationtv.com",
-            "tv9bharatvarsh": "https://www.tv9bharatvarsh.com",
-            "news9live": "https://www.news9live.com",
-            "fortune": "https://fortune.com",
-            "businessinsider": "https://www.businessinsider.com",
-            "fastcompany": "https://www.fastcompany.com",
-            "inc": "https://www.inc.com",
-            "entrepreneur": "https://www.entrepreneur.com",
-            "cbc": "https://www.cbc.ca",
-            "deepl": "https://www.deepl.com",
-            "norton": "https://us.norton.com",
-            "mcafee": "https://www.mcafee.com",
-            "ubuntu": "https://ubuntu.com",
-            "redhat": "https://www.redhat.com",
-            "mongodb": "https://www.mongodb.com",
-            "mysql": "https://www.mysql.com",
-            "postgresql": "https://www.postgresql.org",
-            "gdrive": "https://drive.google.com",
-            "gphotos": "https://photos.google.com",
-            "deviantart": "https://www.deviantart.com",
-            "mixcloud": "https://www.mixcloud.com",
-            "goodreads": "https://www.goodreads.com",
-            "allrecipes": "https://www.allrecipes.com",
-            "foodnetwork": "https://www.foodnetwork.com",
-            "motogp": "https://www.motogp.com",
-            "aew": "https://www.allelitewrestling.com",
-            "homedepot": "https://www.homedepot.com",
-            "lowes": "https://www.lowes.com",
-            "zohomail": "https://www.zoho.com/mail/",
-            "jitsi": "https://meet.jit.si",
-            "line": "https://line.me",
-            "wechat": "https://www.wechat.com",
-            "tidal": "https://tidal.com",
-            "gog": "https://www.gog.com",
-            "archlinux": "https://archlinux.org",
-            "debian": "https://www.debian.org",
-            "eclipse": "https://www.eclipse.org",
-            "jetbrains": "https://www.jetbrains.com",
-            "vscode": "https://code.visualstudio.com",
-            "fontawesome": "https://fontawesome.com",
-            "bootstrap": "https://getbootstrap.com",
-            "tailwindcss": "https://tailwindcss.com",
-            "svelte": "https://svelte.dev",
-            "python": "https://www.python.org",
-            "cppreference": "https://en.cppreference.com",
-            "swift": "https://www.swift.org",
-            "wunderground": "https://www.wunderground.com",
-            "linuxmint": "https://linuxmint.com",
-            "squarespace": "https://www.squarespace.com",
-            "weebly": "https://www.weebly.com",
-            "typeform": "https://www.typeform.com",
-            "surveymonkey": "https://www.surveymonkey.com",
-            "zillow": "https://www.zillow.com",
-            "redfin": "https://www.redfin.com",
-            "trulia": "https://www.trulia.com",
-            "quickenloans": "https://www.quickenloans.com",
-            "nerdwallet": "https://www.nerdwallet.com",
-            "bankrate": "https://www.bankrate.com",
-            "waze": "https://www.waze.com",
-            "hulu": "https://www.hulu.com",
-            "max": "https://www.max.com",
-            "paramountplus": "https://www.paramountplus.com",
-            "peacock": "https://www.peacocktv.com",
-            "appletvplus": "https://tv.apple.com",
-            "aljazeera": "https://www.aljazeera.com",
-            "dw": "https://www.dw.com",
-            "france24": "https://www.france24.com",
-            "nptel": "https://nptel.ac.in",
-            "edx": "https://www.edx.org",
-            "formula1": "https://www.formula1.com",
-            "nba": "https://www.nba.com",
-            "mlb": "https://www.mlb.com",
-            "nhl": "https://www.nhl.com",
-            "wta": "https://www.wtatennis.com",
-            "atp": "https://www.atptour.com",
-            "bbcsport": "https://www.bbc.com/sport",
-            "goal": "https://www.goal.com",
-            "transfermarkt": "https://www.transfermarkt.com",
-            "sportsillustrated": "https://www.si.com",
-            "yahoosports": "https://sports.yahoo.com",
-            "stackexchange": "https://stackexchange.com",
-            "googlescholar": "https://scholar.google.com",
-            "pubmed": "https://pubmed.ncbi.nlm.nih.gov",
-            "arxiv": "https://arxiv.org",
-            "science": "https://www.science.org",
-            "researchgate": "https://www.researchgate.net",
-            "academia": "https://www.academia.edu",
-            "applemusic": "https://music.apple.com",
-            "soundcloud": "https://soundcloud.com",
-            "amazonmusic": "https://music.amazon.com",
-            "googlepodcasts": "https://podcasts.google.com",
-            "yandex": "https://yandex.com",
-            "baidu": "https://www.baidu.com",
-            "naver": "https://www.naver.com",
-            "tutanota": "https://tuta.com",
-            "fastmail": "https://www.fastmail.com",
-            "zapier": "https://zapier.com",
-            "ifttt": "https://ifttt.com",
-            "trello": "https://trello.com",
-            "asana": "https://asana.com",
-            "monday": "https://monday.com",
-            "airtable": "https://www.airtable.com",
-            "basecamp": "https://basecamp.com",
-            "obsidian": "https://obsidian.md",
-            "roamresearch": "https://roamresearch.com",
-            "nationalgeographic": "https://www.nationalgeographic.com",
-            "smithsonian": "https://www.si.edu",
-            "history": "https://www.history.com",
-            "britannica": "https://www.britannica.com",
-             "nasa": "https://www.nasa.gov",
-"spacex": "https://www.spacex.com",
-"blueorigin": "https://www.blueorigin.com",
-"virgingalactic": "https://www.virgingalactic.com",
-"isro": "https://www.isro.gov.in",
-"jaxa": "https://global.jaxa.jp",
-"esa": "https://www.esa.int",
-"cern": "https://home.cern",
-"fermilab": "https://www.fnal.gov",
-"who": "https://www.who.int",
-"cdc": "https://www.cdc.gov",
-"nih": "https://www.nih.gov",
-"mayoclinic": "https://www.mayoclinic.org",
-"webmd": "https://www.webmd.com",
-"healthline": "https://www.healthline.com",
-"medscape": "https://www.medscape.com",
-"drugs": "https://www.drugs.com",
-"rxlist": "https://www.rxlist.com",
-"dailymail": "https://www.dailymail.co.uk",
-"thesun": "https://www.thesun.co.uk",
-"mirror": "https://www.mirror.co.uk",
-"theguardian": "https://www.theguardian.com",
-"telegraph": "https://www.telegraph.co.uk",
-"independent": "https://www.independent.co.uk",
-"standard": "https://www.standard.co.uk",
-"cityam": "https://www.cityam.com",
-"express": "https://www.express.co.uk",
-"star": "https://www.dailystar.co.uk",
-"thetimes": "https://www.thetimes.co.uk",
-"spectator": "https://www.spectator.co.uk",
-"newstatesman": "https://www.newstatesman.com",
-"prospect": "https://www.prospectmagazine.co.uk",
-"economist": "https://www.economist.com",
-"ft": "https://www.ft.com",
-"wsj": "https://www.wsj.com",
-"bloomberg": "https://www.bloomberg.com",
-"reuters": "https://www.reuters.com",
-"ap": "https://apnews.com",
-"afp": "https://www.afp.com",
-"upi": "https://www.upi.com",
-"christiansciencemonitor": "https://www.csmonitor.com",
-"politico": "https://www.politico.com",
-"thehill": "https://thehill.com",
-"rollcall": "https://rollcall.com",
-"axios": "https://www.axios.com",
-"buzzfeednews": "https://www.buzzfeednews.com",
-"vox": "https://www.vox.com",
-"slate": "https://slate.com",
-"theatlantic": "https://www.theatlantic.com",
-"newyorker": "https://www.newyorker.com",
-            "nasa": "https://www.nasa.gov",
-            "spacex": "https://www.spacex.com",
-            "blueorigin": "https://www.blueorigin.com",
-            "virgingalactic": "https://www.virgingalactic.com",
-            "isro": "https://www.isro.gov.in",
-            "jaxa": "https://global.jaxa.jp",
-            "esa": "https://www.esa.int",
-            "cern": "https://home.cern",
-            "fermilab": "https://www.fnal.gov",
-            "who": "https://www.who.int",
-            "cdc": "https://www.cdc.gov",
-            "nih": "https://www.nih.gov",
-            "mayoclinic": "https://www.mayoclinic.org",
-            "webmd": "https://www.webmd.com",
-            "healthline": "https://www.healthline.com",
-            "medscape": "https://www.medscape.com",
-            "drugs": "https://www.drugs.com",
-            "rxlist": "https://www.rxlist.com",
-            "dailymail": "https://www.dailymail.co.uk",
-            "thesun": "https://www.thesun.co.uk",
-            "mirror": "https://www.mirror.co.uk",
-            "theguardian": "https://www.theguardian.com",
-            "telegraph": "https://www.telegraph.co.uk",
-            "independent": "https://www.independent.co.uk",
-            "standard": "https://www.standard.co.uk",
-            "cityam": "https://www.cityam.com",
-            "express": "https://www.express.co.uk",
-            "star": "https://www.dailystar.co.uk",
-            "thetimes": "https://www.thetimes.co.uk",
-            "spectator": "https://www.spectator.co.uk",
-            "newstatesman": "https://www.newstatesman.com",
-            "prospect": "https://www.prospectmagazine.co.uk",
-            "economist": "https://www.economist.com",
-            "ft": "https://www.ft.com",
-            "wsj": "https://www.wsj.com",
-            "bloomberg": "https://www.bloomberg.com",
-            "reuters": "https://www.reuters.com",
-            "ap": "https://apnews.com",
-            "afp": "https://www.afp.com",
-            "upi": "https://www.upi.com",
-            "christiansciencemonitor": "https://www.csmonitor.com",
-            "politico": "https://www.politico.com",
-            "thehill": "https://thehill.com",
-            "rollcall": "https://rollcall.com",
-            "axios": "https://www.axios.com",
-            "buzzfeednews": "https://www.buzzfeednews.com",
-            "vox": "https://www.vox.com",
-            "slate": "https://slate.com",
-            "theatlantic": "https://www.theatlantic.com",
-            "newyorker": "https://www.newyorker.com",
-                    "reddit": "https://www.reddit.com",
-"discord": "https://discord.com",
-"telegram": "https://telegram.org",
-"slack": "https://slack.com",
-"signal": "https://signal.org",
-"zoom": "https://zoom.us",
-"webex": "https://www.webex.com",
-"meet": "https://meet.google.com",
-"teams": "https://teams.microsoft.com",
-"paypal": "https://www.paypal.com",
-"stripe": "https://stripe.com",
-"wise": "https://wise.com",
-"revolut": "https://www.revolut.com",
-"binance": "https://www.binance.com",
-"coinbase": "https://www.coinbase.com",
-"kraken": "https://www.kraken.com",
-"bitcoin": "https://bitcoin.org",
-"ethereum": "https://ethereum.org",
-"solana": "https://solana.com",
-"polkadot": "https://polkadot.com",
-"chainlink": "https://chain.link",
-"nvidia": "https://www.nvidia.com",
-"amd": "https://www.amd.com",
-"intel": "https://www.intel.com",
-"qualcomm": "https://www.qualcomm.com",
-"arm": "https://www.arm.com",
-"apple": "https://www.apple.com",
-"samsung": "https://www.samsung.com",
-"xiaomi": "https://www.mi.com",
-"oneplus": "https://www.oneplus.com",
-"sony": "https://www.sony.com",
-"lg": "https://www.lg.com",
-"panasonic": "https://www.panasonic.com",
-"dell": "https://www.dell.com",
-"hp": "https://www.hp.com",
-"lenovo": "https://www.lenovo.com",
-"acer": "https://www.acer.com",
-"asus": "https://www.asus.com",
-"microsoft": "https://www.microsoft.com",
-"google": "https://www.google.com",
-"bing": "https://www.bing.com",
-"duckduckgo": "https://duckduckgo.com",
-"yahoo": "https://www.yahoo.com",
-"ask": "https://www.ask.com",
-"wikipedia": "https://www.wikipedia.org",
-"wiktionary": "https://www.wiktionary.org",
-"wikidata": "https://www.wikidata.org",
-"archive": "https://archive.org",
-"gutenberg": "https://www.gutenberg.org",
-"openlibrary": "https://openlibrary.org",
-  "airbnb": "https://www.airbnb.com",
-"booking": "https://www.booking.com",
-"tripadvisor": "https://www.tripadvisor.com",
-"expedia": "https://www.expedia.com",
-"kayak": "https://www.kayak.com",
-"skyscanner": "https://www.skyscanner.net",
-"goibibo": "https://www.goibibo.com",
-"makemytrip": "https://www.makemytrip.com",
-"cleartrip": "https://www.cleartrip.com",
-"irctc": "https://www.irctc.co.in",
-"redbus": "https://www.redbus.in",
-"uber": "https://www.uber.com",
-"ola": "https://www.olacabs.com",
-"zomato": "https://www.zomato.com",
-"swiggy": "https://www.swiggy.com",
-"dominos": "https://www.dominos.co.in",
-"kfc": "https://www.kfc.co.in",
-"mcdonalds": "https://www.mcdonalds.in",
-"starbucks": "https://www.starbucks.in",
-"pizzahut": "https://www.pizzahut.co.in",
-"subway": "https://www.subway.com",
-"dunkin": "https://www.dunkin.in",
-"burgerking": "https://www.burgerking.in",
-"amazon": "https://www.amazon.in",
-"flipkart": "https://www.flipkart.com",
-"myntra": "https://www.myntra.com",
-"ajio": "https://www.ajio.com",
-"nykaa": "https://www.nykaa.com",
-"meesho": "https://www.meesho.com",
-"snapdeal": "https://www.snapdeal.com",
-"shopclues": "https://www.shopclues.com",
-"paytm": "https://paytm.com",
-"phonepe": "https://www.phonepe.com",
-"googlepay": "https://pay.google.com",
-"cred": "https://www.cred.club",
-"razorpay": "https://razorpay.com",
-"paypal": "https://www.paypal.com",
-"stripe": "https://stripe.com",
-"wise": "https://wise.com",
-"revolut": "https://www.revolut.com",
-"binance": "https://www.binance.com",
-"coinbase": "https://www.coinbase.com",
-"kraken": "https://www.kraken.com",
-"bitcoin": "https://bitcoin.org",
-"ethereum": "https://ethereum.org",
-"solana": "https://solana.com",
-"polkadot": "https://polkadot.com",
-"chainlink": "https://chain.link",
-"nvidia": "https://www.nvidia.com",
-"amd": "https://www.amd.com",
-                    "tiktok": "https://www.tiktok.com",
-"target": "https://www.target.com",
-"bestbuy": "https://www.bestbuy.com",
-"costco": "https://www.costco.com",
-"trivago": "https://www.trivago.com",
-"momondo": "https://www.momondo.com",
-"chipotle": "https://www.chipotle.com",
-"tacobell": "https://www.tacobell.com",
-"foxnews": "https://www.foxnews.com",
-"msnbc": "https://www.msnbc.com",
-"cnbc": "https://www.cnbc.com",
-"sputnikglobe": "https://sputnikglobe.com",
-"time": "https://time.com",
-"gizmodo": "https://gizmodo.com",
-"mashable": "https://mashable.com",
-"lifehacker": "https://lifehacker.com",
-"wikiquote": "https://www.wikiquote.org",
-"wikisource": "https://wikisource.org",
-"wikibooks": "https://www.wikibooks.org",
-"wikinews": "https://www.wikinews.org",
-"loc": "https://www.loc.gov",
-"bl": "https://www.bl.uk",
-"euronews": "https://www.euronews.com",
-"alarabiya": "https://www.alarabiya.net",
-"rollingstone": "https://www.rollingstone.com",
-"billboard": "https://www.billboard.com",
-"variety": "https://variety.com",
-"hollywoodreporter": "https://www.hollywoodreporter.com",
-"gamespot": "https://www.gamespot.com",
-"pcgamer": "https://www.pcgamer.com",
-"eurogamer": "https://www.eurogamer.net",
-"kotaku": "https://kotaku.com",
-"space": "https://www.space.com",
-"livescience": "https://www.livescience.com",
-"sciencedaily": "https://www.sciencedaily.com",
-"phys": "https://phys.org",
-"nbcnews": "https://www.nbcnews.com",
-"cbsnews": "https://www.cbsnews.com",
-"abcnews": "https://abcnews.go.com",
-"usatoday": "https://www.usatoday.com",
-"latimes": "https://www.latimes.com",
-"chicagotribune": "https://www.chicagotribune.com",
-"nypost": "https://nypost.com",
-"seattletimes": "https://www.seattletimes.com",
-"bostonglobe": "https://www.bostonglobe.com",
-"denverpost": "https://www.denverpost.com",
-"mercurynews": "https://www.mercurynews.com",
-"azcentral": "https://www.azcentral.com",
-"staradvertiser": "https://www.staradvertiser.com",
-"washingtontimes": "https://www.washingtontimes.com",
-                    
-    
+                        "upwork": "https://www.upwork.com",
+            "washingtontimes": "https://www.washingtontimes.com"
         };
 
-        // ================================================================
-        //  3. EXTRA SITES
-        // ================================================================
+// ================================================================
+//  3. EXTRA SITES
+// ================================================================
         const EXTRA_SITES = {
             "reddit": "https://www.reddit.com",
             "quora": "https://www.quora.com",
@@ -1517,9 +649,7 @@
             const fullKey = type + '_' + key;
             const data = { timestamp: Date.now(), value: value };
             localStorage.setItem(fullKey, JSON.stringify(data));
-        }
-
-        // ================================================================
+        }        // ================================================================
         //  5. KNOWLEDGE BASE, WIKIPEDIA, AI (same as before)
         // ================================================================
         const knowledgeBase = {
@@ -1536,7 +666,7 @@
             "ms dhoni": { title: "M.S. Dhoni", image: "https://picsum.photos/seed/dhoni/200/200", desc: "भारत के पूर्व कप्तान, विकेटकीपर", detail: "जन्म: 7 जुलाई 1981 · 2011 विश्व कप जीत · पद्मश्री, पद्मभूषण।" }
         };
 
-                function getKnowledgeAnswer(query) {
+        function getKnowledgeAnswer(query) {
             const q = query.trim().toLowerCase();
             if (knowledgeBase[q]) return knowledgeBase[q];
             for (const [key, value] of Object.entries(knowledgeBase)) {
@@ -1546,9 +676,9 @@
         }
 
         function getAIAnswer(query) {
-            // Simple fallback – you can integrate a real AI API later
             return null;
         }
+
         async function fetchWikipediaSummary(query) {
             try {
                 const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
@@ -1563,92 +693,90 @@
                 return null;
             }
         }
-        // ================================================================
-       let siteCache = {};
-let relatedCache = {};
-    function levenshteinDistance(a, b) {
-    const matrix = [];
-    for (let i = 0; i <= b.length; i++) matrix[i] = [i];
-    for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
-    for (let i = 1; i <= b.length; i++) {
-        for (let j = 1; j <= a.length; j++) {
-            if (b.charAt(i - 1) === a.charAt(j - 1)) matrix[i][j] = matrix[i - 1][j - 1];
-            else matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
-        }
-    }
-    return matrix[b.length][a.length];
-}
-    //  6. SEARCH FUNCTIONS (Core Logic)
-        // ================================================================
-                // Levenshtein Distance Function (for typo matching)
-        
-function clearSearchCache() {
-    siteCache = {};
-    relatedCache = {};
-}
 
-function getSite(query) {
-    const q = query.toLowerCase().trim();
-    if (siteCache[q]) return siteCache[q];
-    if (BASE_DATA[q]) return BASE_DATA[q];
-
-    let bestUrl = null;
-    let bestScore = 0;
-
-    for (const [key, url] of Object.entries(BASE_DATA)) {
-        let score = 0;
-        if (key === q) score = 100;
-        else if (key.startsWith(q) || q.startsWith(key)) score = 30;
-        else if (key.includes(q) || q.includes(key)) score = 15;
-        else {
-            if (Math.abs(key.length - q.length) <= 2 && q.length > 1) {
-                const distance = levenshteinDistance(key, q);
-                if (distance <= 2) score = 10 - distance;
+        let siteCache = {};
+        let relatedCache = {};
+        function levenshteinDistance(a, b) {
+            const matrix = [];
+            for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) matrix[i][j] = matrix[i - 1][j - 1];
+                    else matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+                }
             }
+            return matrix[b.length][a.length];
         }
-        if (score > bestScore) {
-            bestScore = score;
-            bestUrl = url;
+
+        function clearSearchCache() {
+            siteCache = {};
+            relatedCache = {};
         }
-    }
-    siteCache[q] = (bestScore > 0 ? bestUrl : null);
-    return siteCache[q];
-}
 
-function getRelated(query) {
-    const q = query.toLowerCase().trim();
-    if (relatedCache[q]) return relatedCache[q];
+        function getSite(query) {
+            const q = query.toLowerCase().trim();
+            if (siteCache[q]) return siteCache[q];
+            if (BASE_DATA[q]) return BASE_DATA[q];
 
-    const scored = [];
+            let bestUrl = null;
+            let bestScore = 0;
 
-    for (const key of Object.keys(BASE_DATA)) {
-        let score = 0;
-        if (key === q) score = 100;
-        else if (key.startsWith(q) || q.startsWith(key)) score = 30;
-        else if (key.includes(q) || q.includes(key)) score = 15;
-        else {
-            if (Math.abs(key.length - q.length) <= 2 && q.length > 1) {
-                const distance = levenshteinDistance(key, q);
-                if (distance <= 2) score = 10 - distance;
+            for (const [key, url] of Object.entries(BASE_DATA)) {
+                let score = 0;
+                if (key === q) score = 100;
+                else if (key.startsWith(q) || q.startsWith(key)) score = 30;
+                else if (key.includes(q) || q.includes(key)) score = 15;
+                else {
+                    if (Math.abs(key.length - q.length) <= 2 && q.length > 1) {
+                        const distance = levenshteinDistance(key, q);
+                        if (distance <= 2) score = 10 - distance;
+                    }
+                }
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestUrl = url;
+                }
             }
+            siteCache[q] = (bestScore > 0 ? bestUrl : null);
+            return siteCache[q];
         }
-        if (score > 0) scored.push({ key, score });
-    }
 
-    scored.sort((a, b) => b.score - a.score);
-    const results = scored.slice(0, 10).map(x => x.key);
+        function getRelated(query) {
+            const q = query.toLowerCase().trim();
+            if (relatedCache[q]) return relatedCache[q];
 
-    if (results.length === 0) {
-        const popular = ['sarkari result', 'cricket', 'bollywood', 'upsc', 'aadhaar', 'pan card', 'youtube', 'amazon'];
-        for (const p of popular) {
-            if (p.includes(q) || q.includes(p)) results.push(p);
-            if (results.length >= 8) break;
+            const scored = [];
+
+            for (const key of Object.keys(BASE_DATA)) {
+                let score = 0;
+                if (key === q) score = 100;
+                else if (key.startsWith(q) || q.startsWith(key)) score = 30;
+                else if (key.includes(q) || q.includes(key)) score = 15;
+                else {
+                    if (Math.abs(key.length - q.length) <= 2 && q.length > 1) {
+                        const distance = levenshteinDistance(key, q);
+                        if (distance <= 2) score = 10 - distance;
+                    }
+                }
+                if (score > 0) scored.push({ key, score });
+            }
+
+            scored.sort((a, b) => b.score - a.score);
+            const results = scored.slice(0, 10).map(x => x.key);
+
+            if (results.length === 0) {
+                const popular = ['sarkari result', 'cricket', 'bollywood', 'upsc', 'aadhaar', 'pan card', 'youtube', 'amazon'];
+                for (const p of popular) {
+                    if (p.includes(q) || q.includes(p)) results.push(p);
+                    if (results.length >= 8) break;
+                }
+            }
+            relatedCache[q] = results.slice(0, 10);
+            return relatedCache[q];
         }
-    }
-    relatedCache[q] = results.slice(0, 10);
-    return relatedCache[q];
-}
-    function getCreativeTitle(siteName, query) {
+
+        function getCreativeTitle(siteName, query) {
             const q = query.trim();
             const templates = {
                 'Facebook': [`${q} से जुड़ी चर्चा Facebook पर`, `Facebook पर ${q} का ट्रेंड`, `${q} के बारे में लोग क्या कह रहे हैं Facebook पर`, `${q} की ताज़ा पोस्ट Facebook पर`, `Facebook पर ${q} समुदाय`],
@@ -1661,9 +789,7 @@ function getRelated(query) {
             };
             const list = templates[siteName] || [`${siteName} पर ${q} देखें`];
             return list[Math.floor(Math.random() * Math.min(list.length, 4))] || list[0];
-        }
-
-        // ================================================================
+        }        // ================================================================
         //  7. FEATURES – Fullscreen, Shopping, Email, Back, Lens, etc.
         // ================================================================
         function toggleFullscreen() {
@@ -1801,41 +927,33 @@ function getRelated(query) {
                 btn.onclick = () => switchTab(index);
                 container.appendChild(btn);
             });
-                        container.appendChild(addBtn);
-        }  // <--- यह ब्रेसेस जोड़ें
+            container.appendChild(addBtn);
+        }
 
         function addNewTab(dark = false) {
-    const newId = tabs.length ? Math.max(...tabs.map(t => t.id)) + 1 : 0;
-    tabs.push({ id: newId, query: '', dark: dark });
-    activeTab = tabs.length - 1;
-    renderTabs();
-    goHome();
-    if (dark) { document.body.classList.add('dark-mode'); } 
-    else { document.body.classList.remove('dark-mode'); }
-}
+            const newId = tabs.length ? Math.max(...tabs.map(t => t.id)) + 1 : 0;
+            tabs.push({ id: newId, query: '', dark: dark });
+            activeTab = tabs.length - 1;
+            renderTabs();
+            goHome();
+            if (dark) { document.body.classList.add('dark-mode'); } 
+            else { document.body.classList.remove('dark-mode'); }
+        }
 
-function refreshPage() {
-    clearSearchCache();
-    const currentQuery = document.getElementById('resultInput').value;
-    if (currentQuery) { performSearch(currentQuery); } 
-    else { location.reload(); }
-}
+        function refreshPage() {
+            clearSearchCache();
+            const currentQuery = document.getElementById('resultInput').value;
+            if (currentQuery) { performSearch(currentQuery); } 
+            else { location.reload(); }
+        }
 
-            function switchTab(index) {
+        function switchTab(index) {
             if (index >= 0 && index < tabs.length) {
                 activeTab = index;
                 renderTabs();
                 const tab = tabs[index];
-                if (tab.query) {
-                    performSearch(tab.query);
-                } else {
-                    goHome();
-                }
-                if (tab.dark) {
-                    document.body.classList.add('dark-mode');
-                } else {
-                    document.body.classList.remove('dark-mode');
-                }
+                if (tab.query) { performSearch(tab.query); } else { goHome(); }
+                if (tab.dark) { document.body.classList.add('dark-mode'); } else { document.body.classList.remove('dark-mode'); }
             }
         }
 
@@ -1865,8 +983,21 @@ function refreshPage() {
             customShortcuts[name] = urlTemplate;
             localStorage.setItem('dhundho_shortcuts', JSON.stringify(customShortcuts));
             alert('Shortcut added! Type !' + name + ' query to use.');
+        }        function showExtensions() {
+            hideDrawer();
+            let msg = '🧩 Available Shortcuts (type !name query):\n\n';
+            const shortcuts = JSON.parse(localStorage.getItem('dhundho_shortcuts')) || {};
+            if (Object.keys(shortcuts).length === 0) {
+                msg += 'No shortcuts yet. Use "Add Search Shortcut" from the drawer to create one.\n';
+            } else {
+                for (const [name, url] of Object.entries(shortcuts)) {
+                    msg += `!${name}  →  ${url}\n`;
+                }
+            }
+            alert(msg);
         }
-            // ================================================================
+
+        // ================================================================
         //  10. HISTORY, DARK MODE, UI (continued)
         // ================================================================
         let searchHistory = JSON.parse(localStorage.getItem('dhundho_history')) || [];
@@ -1880,9 +1011,10 @@ function refreshPage() {
             if (searchHistory.length > 100) searchHistory = searchHistory.slice(0, 100);
             saveHistory();
         }
+        function getHistory() { return searchHistory; }
         function showRecentSearches() {
-    showHistoryDrawer();
-}
+            showHistoryDrawer();
+        }
 
         let darkMode = localStorage.getItem('dhundho_dark') === 'true';
         function applyDarkMode() {
@@ -1891,8 +1023,7 @@ function refreshPage() {
             localStorage.setItem('dhundho_dark', darkMode);
         }
         applyDarkMode();
-
-   function goHome() {
+       function goHome() {
             document.getElementById('home-view').style.display = 'flex';
             document.getElementById('results-view').style.display = 'none';
             document.getElementById('homeInput').value = '';
@@ -1962,8 +1093,7 @@ function refreshPage() {
             document.body.style.zoom = zoomLevel;
             hideDrawer();
         }
-
-        // ================================================================
+            // ================================================================
         //  11. VOICE SEARCH
         // ================================================================
         function voiceSearchHome() {
@@ -2088,81 +1218,7 @@ function refreshPage() {
                     window.open(BASE_DATA[pick], '_blank');
                 }
             }
-        }
-            // ================================================================
-        //  14. CONTEXT MENU
-        // ================================================================
-        let contextTarget = null;
-        let longPressTimer = null;
-
-        function showContextMenu(e, target) {
-            e.preventDefault();
-            contextTarget = target;
-            const menu = document.getElementById('contextMenu');
-            menu.style.display = 'block';
-            menu.style.left = (e.clientX || e.pageX) + 'px';
-            menu.style.top = (e.clientY || e.pageY) + 'px';
-        }
-
-        function hideContextMenu() {
-            document.getElementById('contextMenu').style.display = 'none';
-        }
-
-        document.addEventListener('touchstart', function(e) {
-            const target = e.target.closest('a, .title, .snippet, .faq-item, .search-for-item, .news-item, .result-block, .img-card');
-            if (!target) return;
-            longPressTimer = setTimeout(() => { showContextMenu(e, target); }, 600);
-        });
-
-        document.addEventListener('touchmove', function(e) { clearTimeout(longPressTimer); });
-        document.addEventListener('touchend', function(e) { clearTimeout(longPressTimer); });
-
-        document.addEventListener('contextmenu', function(e) {
-            const target = e.target.closest('a, .title, .snippet, .faq-item, .search-for-item, .news-item, .result-block, .img-card');
-            if (target) showContextMenu(e, target);
-        });
-
-        document.querySelectorAll('.ctx-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const action = this.dataset.action;
-                if (!contextTarget) return;
-                if (action === 'copy') {
-                    const text = contextTarget.innerText || contextTarget.href || '';
-                    navigator.clipboard.writeText(text).then(() => alert('Copied!')).catch(() => alert('Copy failed.'));
-                } else if (action === 'cut') {
-                    const text = contextTarget.innerText || '';
-                    navigator.clipboard.writeText(text).then(() => {
-                        if (contextTarget.tagName === 'A' || contextTarget.tagName === 'INPUT') contextTarget.value = '';
-                        else contextTarget.innerText = '';
-                        alert('Cut!');
-                    }).catch(() => alert('Cut failed.'));
-                } else if (action === 'paste') {
-                    navigator.clipboard.readText().then(text => {
-                        if (contextTarget.tagName === 'INPUT' || contextTarget.tagName === 'TEXTAREA') contextTarget.value = text;
-                        else contextTarget.innerText = text;
-                        alert('Pasted!');
-                    }).catch(() => alert('Paste failed.'));
-                } else if (action === 'save') bookmarkPage();
-                else if (action === 'download') {
-                    const img = contextTarget.querySelector('img');
-                    if (img && img.src) {
-                        const link = document.createElement('a');
-                        link.href = img.src; link.download = 'dhundho_image.jpg';
-                        document.body.appendChild(link); link.click(); document.body.removeChild(link);
-                        alert('Image downloaded!');
-                    } else alert('No image to download.');
-                } else if (action === 'exit') showExitPrompt();
-                hideContextMenu();
-            });
-        });
-
-        document.addEventListener('click', function(e) { if (!e.target.closest('.context-menu')) hideContextMenu(); });
-
-        // ================================================================
-        // ================================================================
-        //  15. RENDER FUNCTIONS (All, Images, Videos, News, More)
-        // ================================================================
-                       async function fetchGoogleResults(query) {
+        }        async function fetchGoogleResults(query) {
     const cached = getCached(query, 'google');
     if (cached) return cached;
 
@@ -2189,171 +1245,165 @@ function refreshPage() {
     }
     return '';
 }
-        
+
+async function renderAllResults(query) {
+    const q = query.trim();
+    let html = '';
+    const knowledge = getKnowledgeAnswer(q);
+    if (knowledge) html += `<div class="knowledge-panel"><img src="${knowledge.image}" alt="${knowledge.title}" onerror="this.style.display='none'"><div class="info"><div class="title">${knowledge.title}</div><div class="desc">${knowledge.desc}</div><div class="detail">${knowledge.detail}</div></div></div>`;
     
-        async function renderAllResults(query) {
-            const q = query.trim();
-            let html = '';
-            const knowledge = getKnowledgeAnswer(q);
-            if (knowledge) html += `<div class="knowledge-panel"><img src="${knowledge.image}" alt="${knowledge.title}" onerror="this.style.display='none'"><div class="info"><div class="title">${knowledge.title}</div><div class="desc">${knowledge.desc}</div><div class="detail">${knowledge.detail}</div></div></div>`;
-            
-            const wikiData = await fetchWikipediaSummary(q);
-            if (wikiData) html += `<div class="knowledge-panel" style="border-left-color:#3366cc;"><img src="${wikiData.thumbnail || 'https://picsum.photos/seed/wiki/200/200'}" alt="${wikiData.title}" onerror="this.style.display='none'"><div class="info"><div class="title">${wikiData.title}</div><div class="desc">Wikipedia से</div><div class="detail">${wikiData.extract.substring(0, 300)}...</div></div></div>`;
+    const wikiData = await fetchWikipediaSummary(q);
+    if (wikiData) html += `<div class="knowledge-panel" style="border-left-color:#3366cc;"><img src="${wikiData.thumbnail || 'https://picsum.photos/seed/wiki/200/200'}" alt="${wikiData.title}" onerror="this.style.display='none'"><div class="info"><div class="title">${wikiData.title}</div><div class="desc">Wikipedia से</div><div class="detail">${wikiData.extract.substring(0, 300)}...</div></div></div>`;
 
-            if (!knowledge && !wikiData) {
-                const ai = getAIAnswer(q);
-                if (ai) html += `<div class="ai-answer"><div class="answer">${ai.answer}</div><div class="desc">${ai.desc}</div></div>`;
-            }
+    if (!knowledge && !wikiData) {
+        const ai = getAIAnswer(q);
+        if (ai) html += `<div class="ai-answer"><div class="answer">${ai.answer}</div><div class="desc">${ai.desc}</div></div>`;
+    }
 
-            // असली Google के नीले रिजल्ट्स (सिर्फ एक बार कॉल होगा!)
-            const googleHtml = await fetchGoogleResults(q);
-            if (googleHtml) html += googleHtml;
+    const googleHtml = await fetchGoogleResults(q);
+    if (googleHtml) html += googleHtml;
 
-                    const directSite = getSite(q);
-        if (directSite) {
-            const displayName = q.length > 30 ? q.slice(0,30)+'...' : q;
-            html += `<div class="result-block" onclick="window.open('${directSite}', '_blank');" style="cursor:pointer;"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">🌐</div>${new URL(directSite).hostname}</div><a href="${directSite}" target="_blank" class="title" onclick="event.stopPropagation();">${displayName}</a> <span style="background:#e8f0fe;color:#1a73e8;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:bold;">Direct</span><div class="snippet">${q} की आधिकारिक वेबसाइट – सभी जानकारी यहाँ उपलब्ध है।</div></div>`;
+    const directSite = getSite(q);
+    if (directSite) {
+        const displayName = q.length > 30 ? q.slice(0,30)+'...' : q;
+        html += `<div class="result-block" onclick="window.open('${directSite}', '_blank');" style="cursor:pointer;"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">🌐</div>${new URL(directSite).hostname}</div><a href="${directSite}" target="_blank" class="title" onclick="event.stopPropagation();">${displayName}</a> <span style="background:#e8f0fe;color:#1a73e8;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:bold;">Direct</span><div class="snippet">${q} की आधिकारिक वेबसाइट – सभी जानकारी यहाँ उपलब्ध है।</div></div>`;
+    }
+
+    const related = getRelated(q);
+    const shown = new Set();
+    let count = 0;
+    for (const key of related) {
+        const url = getSite(key);
+        if (url && !shown.has(url) && key.toLowerCase() !== q.toLowerCase()) {
+            shown.add(url);
+            const displayName = key.length > 35 ? key.slice(0,35)+'...' : key;
+            html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#4285F4;color:#fff;">🔗</div>${new URL(url).hostname}</div><a href="${url}" target="_blank" class="title">${displayName}</a><div class="snippet">"${key}" से संबंधित जानकारी – आधिकारिक स्रोत।</div></div>`;
+            count++;
+            if (count >= 5) break;
         }
+    }
 
-            const related = getRelated(q);
-            const shown = new Set();
-            let count = 0;
-            for (const key of related) {
-                const url = getSite(key);
-                if (url && !shown.has(url) && key.toLowerCase() !== q.toLowerCase()) {
-                    shown.add(url);
-                    const displayName = key.length > 35 ? key.slice(0,35)+'...' : key;
-                    html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#4285F4;color:#fff;">🔗</div>${new URL(url).hostname}</div><a href="${url}" target="_blank" class="title">${displayName}</a><div class="snippet">"${key}" से संबंधित जानकारी – आधिकारिक स्रोत।</div></div>`;
-                    count++;
-                    if (count >= 5) break;
-                }
-            }
-
-            const socialSites = [
-                { name: "Facebook", icon: "f", color: "#1877F2", url: "https://www.facebook.com/search/top/?q="+encodeURIComponent(q) },
-                { name: "Instagram", icon: "I", color: "#E1306C", url: "https://www.instagram.com/explore/search/keyword/?q="+encodeURIComponent(q) },
-                { name: "Snapchat", icon: "S", color: "#FFFC00", url: "https://www.snapchat.com/search?q="+encodeURIComponent(q) },
-                { name: "Quora", icon: "Q", color: "#B92B27", url: "https://www.quora.com/search?q="+encodeURIComponent(q) },
-                { name: "Wikipedia", icon: "W", color: "#000000", url: "https://www.wikipedia.org/w/index.php?search="+encodeURIComponent(q) },
-                { name: "Reddit", icon: "R", color: "#FF4500", url: "https://www.reddit.com/search/?q="+encodeURIComponent(q) },
-                { name: "X (Twitter)", icon: "🐦", color: "#000000", url: "https://x.com/search?q="+encodeURIComponent(q) },
-                { name: "LinkedIn", icon: "in", color: "#0A66C2", url: "https://www.linkedin.com/search/results/all/?keywords="+encodeURIComponent(q) }
-            ];
-            html += `<div class="box-title">🌐 सोशल और जानकारी</div>`;
-            for (const site of socialSites) {
-                if (!shown.has(site.url)) {
-                    const title = getCreativeTitle(site.name, q);
-                    html += `<div class="result-block"><div class="url"><div class="favicon" style="background:${site.color};color:#fff;">${site.icon}</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${title}</a><div class="snippet">${site.name} पर "${q}" से संबंधित सामग्री।</div></div>`;
-                }
-            }
-
-            const extraMap = { 'india': ['india.gov.in', 'britannica.com', 'indiapost.gov.in', 'worldbank.org', 'nationalgeographic.com', 'globaledge.msu.edu'], 'cricket': ['cricinfo.com', 'icc-cricket.com', 'olympics.com', 'usacricket.org'], 'flight': ['airindia.com', 'goindigo.in', 'spicejet.com', 'airvistara.com'] };
-            let extraUrls = [];
-            if (q.includes('india')) extraUrls = extraUrls.concat(extraMap['india']);
-            if (q.includes('cricket')) extraUrls = extraUrls.concat(extraMap['cricket']);
-            if (q.includes('flight') || q.includes('air') || q.includes('plane')) extraUrls = extraUrls.concat(extraMap['flight']);
-            for (const [key, url] of Object.entries(EXTRA_SITES)) if (q.includes(key) && !shown.has(url) && !extraUrls.includes(url)) extraUrls.push(url);
-            if (extraUrls.length > 0) {
-                html += `<div class="box-title">📌 संबंधित आधिकारिक साइटें</div>`;
-                for (const url of extraUrls.slice(0, 6)) {
-                    const host = new URL(url).hostname;
-                    html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#0D47A1;color:#fff;">🏛</div>${host}</div><a href="${url}" target="_blank" class="title">${host.replace('www.','')}</a><div class="snippet">${host} – आधिकारिक जानकारी और सेवाएँ।</div></div>`;
-                }
-            }
-
-            html += `<div class="box-title">लोग यह भी पूछते हैं</div>`;
-            const faqs = [`${q} क्या है?`, `${q} का अर्थ क्या है?`, `${q} कैसे करें?`, `${q} की उपयोगिता?`, `${q} से जुड़े फायदे?`];
-            faqs.forEach(f => html += `<div class="faq-item" onclick="performSearch('${f}')"><span>${f}</span><span class="arrow">⌄</span></div>`);
-
-            html += `<div class="box-title">लोग यह भी खोजते हैं</div>`;
-            getRelated(q).slice(0, 6).forEach(s => { if (s.toLowerCase() !== q.toLowerCase()) html += `<div class="search-for-item" onclick="performSearch('${s}')"><span style="color:#1a73e8;">🔍</span> ${s}</div>`; });
-
-            const randomKeys = Object.keys(BASE_DATA).sort(() => Math.random() - 0.5).slice(0, 7);
-            if (randomKeys.length > 0) {
-                html += `<div class="box-title">🎲 यादृच्छिक वेबसाइटें</div>`;
-                randomKeys.forEach(key => {
-                    const url = BASE_DATA[key];
-                    if (url && !shown.has(url)) html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#673AB7;color:#fff;">🌀</div>${new URL(url).hostname}</div><a href="${url}" target="_blank" class="title">${key}</a><div class="snippet">"${key}" से संबंधित यादृच्छिक वेबसाइट।</div></div>`;
-                });
-            }
-
-            if (!directSite && count === 0) html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#000;color:#fff;">G</div>www.google.com</div><a href="https://www.google.com/search?q=${encodeURIComponent(q)}" target="_blank" class="title">${q} – Google पर खोजें</a><div class="snippet">"${q}" के लिए Google पर अधिक परिणाम देखें।</div></div>`;
-            return html;
+    const socialSites = [
+        { name: "Facebook", icon: "f", color: "#1877F2", url: "https://www.facebook.com/search/top/?q="+encodeURIComponent(q) },
+        { name: "Instagram", icon: "I", color: "#E1306C", url: "https://www.instagram.com/explore/search/keyword/?q="+encodeURIComponent(q) },
+        { name: "Snapchat", icon: "S", color: "#FFFC00", url: "https://www.snapchat.com/search?q="+encodeURIComponent(q) },
+        { name: "Quora", icon: "Q", color: "#B92B27", url: "https://www.quora.com/search?q="+encodeURIComponent(q) },
+        { name: "Wikipedia", icon: "W", color: "#000000", url: "https://www.wikipedia.org/w/index.php?search="+encodeURIComponent(q) },
+        { name: "Reddit", icon: "R", color: "#FF4500", url: "https://www.reddit.com/search/?q="+encodeURIComponent(q) },
+        { name: "X (Twitter)", icon: "🐦", color: "#000000", url: "https://x.com/search?q="+encodeURIComponent(q) },
+        { name: "LinkedIn", icon: "in", color: "#0A66C2", url: "https://www.linkedin.com/search/results/all/?keywords="+encodeURIComponent(q) }
+    ];
+    html += `<div class="box-title">🌐 सोशल और जानकारी</div>`;
+    for (const site of socialSites) {
+        if (!shown.has(site.url)) {
+            const title = getCreativeTitle(site.name, q);
+            html += `<div class="result-block"><div class="url"><div class="favicon" style="background:${site.color};color:#fff;">${site.icon}</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${title}</a><div class="snippet">${site.name} पर "${q}" से संबंधित सामग्री।</div></div>`;
         }
+    }
 
-        // renderImages, renderVideos, renderNews, renderMore के फंक्शन अभी आपके पास सही हैं
-                     function renderImages(q) {
-    const area = document.getElementById('content-area');
-    const cached = getCached(q, 'images');
-    if (cached) { area.innerHTML = cached; return; }
+    const extraMap = { 'india': ['india.gov.in', 'britannica.com', 'indiapost.gov.in', 'worldbank.org', 'nationalgeographic.com', 'globaledge.msu.edu'], 'cricket': ['cricinfo.com', 'icc-cricket.com', 'olympics.com', 'usacricket.org'], 'flight': ['airindia.com', 'goindigo.in', 'spicejet.com', 'airvistara.com'] };
+    let extraUrls = [];
+    if (q.includes('india')) extraUrls = extraUrls.concat(extraMap['india']);
+    if (q.includes('cricket')) extraUrls = extraUrls.concat(extraMap['cricket']);
+    if (q.includes('flight') || q.includes('air') || q.includes('plane')) extraUrls = extraUrls.concat(extraMap['flight']);
+    for (const [key, url] of Object.entries(EXTRA_SITES)) if (q.includes(key) && !shown.has(url) && !extraUrls.includes(url)) extraUrls.push(url);
+    if (extraUrls.length > 0) {
+        html += `<div class="box-title">📌 संबंधित आधिकारिक साइटें</div>`;
+        for (const url of extraUrls.slice(0, 6)) {
+            const host = new URL(url).hostname;
+            html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#0D47A1;color:#fff;">🏛</div>${host}</div><a href="${url}" target="_blank" class="title">${host.replace('www.','')}</a><div class="snippet">${host} – आधिकारिक जानकारी और सेवाएँ।</div></div>`;
+        }
+    }
 
-    area.innerHTML = `<div style="text-align:center;padding:20px;">🖼️ तस्वीरें लोड हो रही हैं...</div>`;
+    html += `<div class="box-title">लोग यह भी पूछते हैं</div>`;
+    const faqs = [`${q} क्या है?`, `${q} का अर्थ क्या है?`, `${q} कैसे करें?`, `${q} की उपयोगिता?`, `${q} से जुड़े फायदे?`];
+    faqs.forEach(f => html += `<div class="faq-item" onclick="performSearch('${f}')"><span>${f}</span><span class="arrow">⌄</span></div>`);
 
-    // 1) Try Wikipedia (real photos)
-    const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q)}&gsrnamespace=6&prop=pageimages&piprop=thumbnail&pithumbsize=400&format=json&origin=*`;
+    html += `<div class="box-title">लोग यह भी खोजते हैं</div>`;
+    getRelated(q).slice(0, 6).forEach(s => { if (s.toLowerCase() !== q.toLowerCase()) html += `<div class="search-for-item" onclick="performSearch('${s}')"><span style="color:#1a73e8;">🔍</span> ${s}</div>`; });
 
-    fetch(wikiUrl)
-        .then(res => res.json())
-        .then(data => {
-            const pages = data.query ? data.query.pages : null;
-            let html = `<div class="img-grid">`;
-            let count = 0;
-            if (pages) {
-                for (const key in pages) {
-                    const page = pages[key];
-                    if (page.thumbnail && page.thumbnail.source) {
-                        html += `<div class="img-card" onclick="window.open('${page.thumbnail.source}')"><img src="${page.thumbnail.source}" alt="${page.title || q}"><div class="img-title">${page.title || q}</div></div>`;
-                        count++;
-                        if (count >= 9) break;
-                    }
-                }
-            }
-            if (count > 0) {
-                html += `</div>`;
-                area.innerHTML = html;
-                setCached(q, html, 'images');
-                return;
-            }
-            // 2) Fallback to Unsplash
-            fallbackUnsplash(q, area);
-        })
-        .catch(() => fallbackUnsplash(q, area));
-}
-
-function fallbackUnsplash(q, area) {
-    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=9&client_id=${UNSPLASH_ACCESS_KEY}`;
-    fetch(url)
-        .then(res => res.json())
-        .then(data => {
-            let html = `<div class="img-grid">`;
-            if (data.results && data.results.length) {
-                data.results.forEach(img => {
-                    html += `<div class="img-card" onclick="window.open('${img.links.html}')"><img src="${img.urls.small}" alt="${img.alt_description || q}"><div class="img-title">${img.alt_description || q}</div></div>`;
-                });
-            } else {
-                for (let i = 0; i < 9; i++) {
-                    html += `<div class="img-card"><img src="https://picsum.photos/seed/${q}${i}/400/300"></div>`;
-                }
-            }
-            html += `</div>`;
-            area.innerHTML = html;
-            setCached(q, html, 'images');
-        })
-        .catch(() => {
-            let html = `<div class="img-grid">`;
-            for (let i = 0; i < 9; i++) {
-                html += `<div class="img-card"><img src="https://picsum.photos/seed/${q}${i}/400/300"></div>`;
-            }
-            html += `</div>`;
-            area.innerHTML = html;
-            setCached(q, html, 'images');
+    const randomKeys = Object.keys(BASE_DATA).sort(() => Math.random() - 0.5).slice(0, 7);
+    if (randomKeys.length > 0) {
+        html += `<div class="box-title">🎲 यादृच्छिक वेबसाइटें</div>`;
+        randomKeys.forEach(key => {
+            const url = BASE_DATA[key];
+            if (url && !shown.has(url)) html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#673AB7;color:#fff;">🌀</div>${new URL(url).hostname}</div><a href="${url}" target="_blank" class="title">${key}</a><div class="snippet">"${key}" से संबंधित यादृच्छिक वेबसाइट।</div></div>`;
         });
+    }
+
+    if (!directSite && count === 0) html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#000;color:#fff;">G</div>www.google.com</div><a href="https://www.google.com/search?q=${encodeURIComponent(q)}" target="_blank" class="title">${q} – Google पर खोजें</a><div class="snippet">"${q}" के लिए Google पर अधिक परिणाम देखें।</div></div>`;
+    return html;
 }
+    function renderImages(q) {
+            const area = document.getElementById('content-area');
+            const cached = getCached(q, 'images');
+            if (cached) { area.innerHTML = cached; return; }
+
+            area.innerHTML = `<div style="text-align:center;padding:20px;">🖼️ तस्वीरें लोड हो रही हैं...</div>`;
+
+            const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q)}&gsrnamespace=6&prop=pageimages&piprop=thumbnail&pithumbsize=400&format=json&origin=*`;
+
+            fetch(wikiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    const pages = data.query ? data.query.pages : null;
+                    let html = `<div class="img-grid">`;
+                    let count = 0;
+                    if (pages) {
+                        for (const key in pages) {
+                            const page = pages[key];
+                            if (page.thumbnail && page.thumbnail.source) {
+                                html += `<div class="img-card" onclick="window.open('${page.thumbnail.source}')"><img src="${page.thumbnail.source}" alt="${page.title || q}"><div class="img-title">${page.title || q}</div></div>`;
+                                count++;
+                                if (count >= 9) break;
+                            }
+                        }
+                    }
+                    if (count > 0) {
+                        html += `</div>`;
+                        area.innerHTML = html;
+                        setCached(q, html, 'images');
+                        return;
+                    }
+                    fallbackUnsplash(q, area);
+                })
+                .catch(() => fallbackUnsplash(q, area));
+        }
+
+        function fallbackUnsplash(q, area) {
+            const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=9&client_id=${UNSPLASH_ACCESS_KEY}`;
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    let html = `<div class="img-grid">`;
+                    if (data.results && data.results.length) {
+                        data.results.forEach(img => {
+                            html += `<div class="img-card" onclick="window.open('${img.links.html}')"><img src="${img.urls.small}" alt="${img.alt_description || q}"><div class="img-title">${img.alt_description || q}</div></div>`;
+                        });
+                    } else {
+                        for (let i = 0; i < 9; i++) {
+                            html += `<div class="img-card"><img src="https://picsum.photos/seed/${q}${i}/400/300"></div>`;
+                        }
+                    }
+                    html += `</div>`;
+                    area.innerHTML = html;
+                    setCached(q, html, 'images');
+                })
+                .catch(() => {
+                    let html = `<div class="img-grid">`;
+                    for (let i = 0; i < 9; i++) {
+                        html += `<div class="img-card"><img src="https://picsum.photos/seed/${q}${i}/400/300"></div>`;
+                    }
+                    html += `</div>`;
+                    area.innerHTML = html;
+                    setCached(q, html, 'images');
+                });
+        }
 
         function renderVideos(q) {
             const area = document.getElementById('content-area');
             const cached = getCached(q, 'videos');
-            if (cached) { area.innerHTML = cached; return; } // पहले से सेव है, API हिट नहीं होगी
+            if (cached) { area.innerHTML = cached; return; }
 
             area.innerHTML = `<div id="video-loading" style="text-align:center;padding:20px;">⏳ वीडियो लोड हो रहे हैं...</div>`;
             const API_KEY = "AIzaSyCggxsKMnuCCyFuw0p3LjG9LD213VCBRx8";
@@ -2363,73 +1413,73 @@ function fallbackUnsplash(q, area) {
                     if (data.items && data.items.length > 0) data.items.forEach(item => { const vidId = item.id.videoId; vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${vidId}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${vidId}/hqdefault.jpg"></div><div class="video-title">${item.snippet.title}</div><div class="video-meta">${item.snippet.channelTitle}</div></div>`; });
                     else { const fallback = [{id:"AETFvQonfV8",title:"हनुमान चालीसा",channel:"भक्ति"},{id:"jdy0GgMbJY0",title:"शिव तांडव",channel:"दिव्य"}]; fallback.forEach(item => { vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div><div class="video-title">${item.title}</div><div class="video-meta">${item.channel}</div></div>`; }); }
                     vidHtml += `</div>`; area.innerHTML = vidHtml;
-                    setCached(q, vidHtml, 'videos'); // सेव करें
+                    setCached(q, vidHtml, 'videos');
                 }).catch(() => { let vidHtml = `<div class="video-grid">`; const fallback = [{id:"AETFvQonfV8",title:"हनुमान चालीसा",channel:"भक्ति"},{id:"jdy0GgMbJY0",title:"शिव तांडव",channel:"दिव्य"}]; fallback.forEach(item => { vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div><div class="video-title">${item.title}</div><div class="video-meta">${item.channel}</div></div>`; }); vidHtml += `</div>`; area.innerHTML = vidHtml; setCached(q, vidHtml, 'videos'); });
-        }  
-    function renderNews(q) {
-    const area = document.getElementById('content-area');
-    area.innerHTML = `<div style="text-align:center;padding:20px;">📰 न्यूज़ लोड हो रही है...</div>`;
+        }
 
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://news.google.com/rss/search?q=' + encodeURIComponent(q) + '&hl=en-IN&gl=IN&ceid=IN:en')}`;
+        function renderNews(q) {
+            const area = document.getElementById('content-area');
+            area.innerHTML = `<div style="text-align:center;padding:20px;">📰 न्यूज़ लोड हो रही है...</div>`;
 
-    fetch(proxyUrl)
-        .then(r => r.text())
-        .then(str => {
-            const parser = new DOMParser();
-            const xml = parser.parseFromString(str, "text/xml");
-            const items = xml.querySelectorAll("item");
-            let html = '';
-            // shuffle items for random order
-            const shuffled = Array.from(items).sort(() => Math.random() - 0.5);
-            shuffled.slice(0, 15).forEach((item, i) => {
-                const title = item.querySelector("title")?.textContent || 'No title';
-                const link = item.querySelector("link")?.textContent || '#';
-                const date = item.querySelector("pubDate")?.textContent || '';
-                html += `<div class="news-item" onclick="window.open('${link}')">
-                    <div class="news-icon" style="background:#4285F4;">📰</div>
-                    <div>
-                        <div class="news-title">${title}</div>
-                        <div class="news-src">Google News · ${date.substring(0, 16)}</div>
-                    </div>
-                </div>`;
-            });
-            area.innerHTML = html || `<p>न्यूज़ उपलब्ध नहीं है।</p>`;
-        })
-        .catch(() => {
-            area.innerHTML = `<p>न्यूज़ उपलब्ध नहीं है।</p>`;
-        });
-}
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://news.google.com/rss/search?q=' + encodeURIComponent(q) + '&hl=en-IN&gl=IN&ceid=IN:en')}`;
+
+            fetch(proxyUrl)
+                .then(r => r.text())
+                .then(str => {
+                    const parser = new DOMParser();
+                    const xml = parser.parseFromString(str, "text/xml");
+                    const items = xml.querySelectorAll("item");
+                    let html = '';
+                    const shuffled = Array.from(items).sort(() => Math.random() - 0.5);
+                    shuffled.slice(0, 15).forEach((item, i) => {
+                        const title = item.querySelector("title")?.textContent || 'No title';
+                        const link = item.querySelector("link")?.textContent || '#';
+                        const date = item.querySelector("pubDate")?.textContent || '';
+                        html += `<div class="news-item" onclick="window.open('${link}')">
+                            <div class="news-icon" style="background:#4285F4;">📰</div>
+                            <div>
+                                <div class="news-title">${title}</div>
+                                <div class="news-src">Google News · ${date.substring(0, 16)}</div>
+                            </div>
+                        </div>`;
+                    });
+                    area.innerHTML = html || `<p>न्यूज़ उपलब्ध नहीं है।</p>`;
+                })
+                .catch(() => {
+                    area.innerHTML = `<p>न्यूज़ उपलब्ध नहीं है।</p>`;
+                });
+        }
 
         function renderShopping() {
-    const sites = [
-        { name: "Amazon", domain: "amazon.in" },
-        { name: "Flipkart", domain: "flipkart.com" },
-        { name: "Myntra", domain: "myntra.com" },
-        { name: "Meesho", domain: "meesho.com" },
-        { name: "Ajio", domain: "ajio.com" },
-        { name: "Nykaa", domain: "nykaa.com" },
-        { name: "JioMart", domain: "jiomart.com" },
-        { name: "Blinkit", domain: "blinkit.com" },
-        { name: "Croma", domain: "croma.com" }
-    ];
-    let html = `<div class="box-title">🛒 Shopping Sites</div><div class="img-grid">`;
-    sites.forEach(site => {
-        const logoUrl = `https://www.google.com/s2/favicons?domain=${site.domain}&sz=64`;
-        html += `<div class="img-card" onclick="window.open('https://www.${site.domain}')" style="flex-direction:column; gap:5px; padding:10px; height:auto; background:#f8f9fa;">
-            <img src="${logoUrl}" alt="${site.name}" style="width:48px; height:48px; border-radius:8px; object-fit:contain;">
-            <span style="font-size:13px; font-weight:bold; color:#1a73e8;">${site.name}</span>
-        </div>`;
-    });
-    html += `</div>`;
-    return html;
-}
-function renderMore(q) {
-    const flightSites = [{ name: "Air India", url: "https://www.airindia.com", icon: "✈️" }, { name: "IndiGo", url: "https://www.goindigo.in", icon: "✈️" }, { name: "SpiceJet", url: "https://www.spicejet.com", icon: "✈️" }];
-    let html = `<div class="box-title">✈️ उड़ान वेबसाइटें</div>`;
-    flightSites.forEach(site => html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">✈</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${site.name}</a><div class="snippet">${site.name} – उड़ान बुक करें।</div></div>`);
-    return html;
-}
-        // ================================================================
+            const sites = [
+                { name: "Amazon", domain: "amazon.in" },
+                { name: "Flipkart", domain: "flipkart.com" },
+                { name: "Myntra", domain: "myntra.com" },
+                { name: "Meesho", domain: "meesho.com" },
+                { name: "Ajio", domain: "ajio.com" },
+                { name: "Nykaa", domain: "nykaa.com" },
+                { name: "JioMart", domain: "jiomart.com" },
+                { name: "Blinkit", domain: "blinkit.com" },
+                { name: "Croma", domain: "croma.com" }
+            ];
+            let html = `<div class="box-title">🛒 Shopping Sites</div><div class="img-grid">`;
+            sites.forEach(site => {
+                const logoUrl = `https://www.google.com/s2/favicons?domain=${site.domain}&sz=64`;
+                html += `<div class="img-card" onclick="window.open('https://www.${site.domain}')" style="flex-direction:column; gap:5px; padding:10px; height:auto; background:#f8f9fa;">
+                    <img src="${logoUrl}" alt="${site.name}" style="width:48px; height:48px; border-radius:8px; object-fit:contain;">
+                    <span style="font-size:13px; font-weight:bold; color:#1a73e8;">${site.name}</span>
+                </div>`;
+            });
+            html += `</div>`;
+            return html;
+        }
+
+        function renderMore(q) {
+            const flightSites = [{ name: "Air India", url: "https://www.airindia.com", icon: "✈️" }, { name: "IndiGo", url: "https://www.goindigo.in", icon: "✈️" }, { name: "SpiceJet", url: "https://www.spicejet.com", icon: "✈️" }];
+            let html = `<div class="box-title">✈️ उड़ान वेबसाइटें</div>`;
+            flightSites.forEach(site => html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">✈</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${site.name}</a><div class="snippet">${site.name} – उड़ान बुक करें।</div></div>`);
+            return html;
+        }        // ================================================================
         //  16. TAB SWITCHING (All, Images, Videos, News, More)
         // ================================================================
         function showTab(tab) {
@@ -2519,3 +1569,4 @@ function renderMore(q) {
     </script>
 </body>
 </html>
+    
