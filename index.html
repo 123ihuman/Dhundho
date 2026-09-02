@@ -332,6 +332,8 @@
         <div class="drawer-item" onclick="showHistoryDrawer()"><span class="m-icon">🕒</span> Recent tabs</div>
         <div class="drawer-item" onclick="clearHistory()"><span class="m-icon">🗑️</span> Delete browsing data</div>
         <div class="drawer-item" onclick="downloadHistory()"><span class="m-icon">⬇️</span> Download</div>
+        <div class="drawer-item" onclick="window.print()"><span class="m-icon">🖨️</span> Print this page</div>
+        <div class="drawer-item" onclick="showExtensions()"><span class="m-icon">🧩</span> Extensions (Shortcuts)</div>
         <div class="drawer-item" onclick="showBookmarks()"><span class="m-icon">⭐</span> Bookmarks</div>
         <div class="drawer-item" onclick="showRecentSearches()"><span class="m-icon">🕒</span> Recent searches</div>
         <div class="drawer-section">TOOLS</div>
@@ -341,6 +343,19 @@
         <div class="drawer-item" onclick="zoomPage()"><span class="m-icon">🔍</span> Zoom (toggle)</div>
         <div class="drawer-item" onclick="showPasswordManager()"><span class="m-icon">🔒</span> Password Manager</div>
         <div class="drawer-item" onclick="addCustomSearch()"><span class="m-icon">🔧</span> Add Search Shortcut</div>
+        function showExtensions() {
+    hideDrawer();
+    let msg = '🧩 Available Shortcuts (type !name query):\n\n';
+    const shortcuts = JSON.parse(localStorage.getItem('dhundho_shortcuts')) || {};
+    if (Object.keys(shortcuts).length === 0) {
+        msg += 'No shortcuts yet. Use "Add Search Shortcut" from the drawer to create one.\n';
+    } else {
+        for (const [name, url] of Object.entries(shortcuts)) {
+            msg += `!${name}  →  ${url}\n`;
+        }
+    }
+    alert(msg);
+}
         <div class="drawer-section">MORE</div>
         <div class="drawer-item" onclick="showExitPrompt()"><span class="m-icon">🚪</span> Exit</div>
         <div class="drawer-item" onclick="helpFeedback()"><span class="m-icon">❓</span> Help & feedback</div>
@@ -2148,32 +2163,32 @@ function refreshPage() {
         //  15. RENDER FUNCTIONS (All, Images, Videos, News, More)
         // ================================================================
                        async function fetchGoogleResults(query) {
-            const cached = getCached(query, 'google');
-            if (cached) return cached;
+    const cached = getCached(query, 'google');
+    if (cached) return cached;
 
-            const targetUrl = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${GOOGLE_CX}&q=${encodeURIComponent(query)}`;
-            const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+    const targetUrl = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${GOOGLE_CX}&q=${encodeURIComponent(query)}`;
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
 
-            try {
-                const res = await fetch(url);
-                const data = await res.json();
-                if (data.items && data.items.length > 0) {
-                    let html = data.items.map(item => `
-                        <div class="result-block" onclick="window.open('${item.link}', '_blank');" style="cursor:pointer;">
-                            <div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">🔗</div>${new URL(item.link).hostname}</div>
-                            <a href="${item.link}" target="_blank" class="title" onclick="event.stopPropagation();">${item.title}</a> <span style="background:#fef7e0;color:#b06000;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:bold;">Google</span>
-                            <div class="snippet">${item.snippet}</div>
-                        </div>
-                    `).join('');
-                    setCached(query, html, 'google');
-                    return html;
-                }
-            } catch (e) {
-                console.warn('Google Search API Failed:', e);
-                return '';
-            }
-            return '';
+    try {
+        const res = await fetch(proxyUrl);
+        const data = await res.json();
+        if (data.items && data.items.length > 0) {
+            let html = data.items.map(item => `
+                <div class="result-block" onclick="window.open('${item.link}', '_blank');" style="cursor:pointer;">
+                    <div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">🔗</div>${new URL(item.link).hostname}</div>
+                    <a href="${item.link}" target="_blank" class="title" onclick="event.stopPropagation();">${item.title}</a>
+                    <span style="background:#fef7e0;color:#b06000;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:bold;">Google</span>
+                    <div class="snippet">${item.snippet}</div>
+                </div>
+            `).join('');
+            setCached(query, html, 'google');
+            return html;
         }
+    } catch (e) {
+        console.warn('Google Search API Failed:', e);
+    }
+    return '';
+}
         
     
         async function renderAllResults(query) {
@@ -2268,65 +2283,72 @@ function refreshPage() {
 
         // renderImages, renderVideos, renderNews, renderMore के फंक्शन अभी आपके पास सही हैं
                      function renderImages(q) {
-            const area = document.getElementById('content-area');
-            const cached = getCached(q, 'images');
-            if (cached) { area.innerHTML = cached; return; } // पहले से सेव है, API हिट नहीं होगी
+    const area = document.getElementById('content-area');
+    const cached = getCached(q, 'images');
+    if (cached) { area.innerHTML = cached; return; }
 
-            area.innerHTML = `<div style="text-align:center;padding:20px;">🖼️ तस्वीरें लोड हो रही हैं...</div>`;
+    area.innerHTML = `<div style="text-align:center;padding:20px;">🖼️ तस्वीरें लोड हो रही हैं...</div>`;
 
-            // पहले Wikipedia से असली तस्वीरें खोजें (CORS Friendly, No API Key needed)
-            const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q)}&gsrnamespace=6&prop=pageimages&piprop=thumbnail&pithumbsize=400&format=json&origin=*`;
+    // 1) Try Wikipedia (real photos)
+    const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q)}&gsrnamespace=6&prop=pageimages&piprop=thumbnail&pithumbsize=400&format=json&origin=*`;
 
-            fetch(wikiUrl)
-                .then(res => res.json())
-                .then(data => {
-                    const pages = data.query ? data.query.pages : null;
-                    let html = `<div class="img-grid">`;
-                    let imgCount = 0;
-                    if (pages) {
-                        for (const key in pages) {
-                            const page = pages[key];
-                            if (page.thumbnail && page.thumbnail.source) {
-                                html += `<div class="img-card" onclick="window.open('${page.thumbnail.source}')"><img src="${page.thumbnail.source}" alt="${page.title || q}"><div class="img-title">${page.title || q}</div></div>`;
-                                imgCount++;
-                                if (imgCount >= 9) break;
-                            }
-                        }
+    fetch(wikiUrl)
+        .then(res => res.json())
+        .then(data => {
+            const pages = data.query ? data.query.pages : null;
+            let html = `<div class="img-grid">`;
+            let count = 0;
+            if (pages) {
+                for (const key in pages) {
+                    const page = pages[key];
+                    if (page.thumbnail && page.thumbnail.source) {
+                        html += `<div class="img-card" onclick="window.open('${page.thumbnail.source}')"><img src="${page.thumbnail.source}" alt="${page.title || q}"><div class="img-title">${page.title || q}</div></div>`;
+                        count++;
+                        if (count >= 9) break;
                     }
-                    
-                    // अगर Wikipedia से 1 भी असली तस्वीर मिल गई, तो उसे दिखाएं
-                    if (imgCount > 0) {
-                        html += `</div>`;
-                        area.innerHTML = html;
-                        setCached(q, html, 'images');
-                        return;
-                    }
+                }
+            }
+            if (count > 0) {
+                html += `</div>`;
+                area.innerHTML = html;
+                setCached(q, html, 'images');
+                return;
+            }
+            // 2) Fallback to Unsplash
+            fallbackUnsplash(q, area);
+        })
+        .catch(() => fallbackUnsplash(q, area));
+}
 
-                    // वरना (Fallback) Unsplash से खोजें (बाकी रैंडम चीज़ों के लिए)
-                    const imgUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=9&client_id=${UNSPLASH_ACCESS_KEY}`;
-                    fetch(imgUrl).then(res => res.json()).then(data => {
-                        html = `<div class="img-grid">`;
-                        if (data.results && data.results.length > 0) data.results.forEach(img => { html += `<div class="img-card" onclick="window.open('${img.links.html}')"><img src="${img.urls.small}" alt="${img.alt_description}"><div class="img-title">${img.alt_description || q}</div></div>`; });
-                        else for(let i=0;i<9;i++) html += `<div class="img-card"><img src="https://picsum.photos/seed/${q}${i}/400/300"></div>`;
-                        html += `</div>`;
-                        area.innerHTML = html;
-                        setCached(q, html, 'images');
-                    }).catch(() => { html = `<div class="img-grid">`; for(let i=0;i<9;i++) html += `<div class="img-card"><img src="https://picsum.photos/seed/${q}${i}/400/300"></div>`; html += `</div>`; area.innerHTML = html; setCached(q, html, 'images'); });
-
-                })
-                .catch(() => {
-                    // Wikipedia काम न करे तो सीधा Unsplash
-                    const imgUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=9&client_id=${UNSPLASH_ACCESS_KEY}`;
-                    fetch(imgUrl).then(res => res.json()).then(data => {
-                        let html = `<div class="img-grid">`;
-                        if (data.results && data.results.length > 0) data.results.forEach(img => { html += `<div class="img-card" onclick="window.open('${img.links.html}')"><img src="${img.urls.small}" alt="${img.alt_description}"><div class="img-title">${img.alt_description || q}</div></div>`; });
-                        else for(let i=0;i<9;i++) html += `<div class="img-card"><img src="https://picsum.photos/seed/${q}${i}/400/300"></div>`;
-                        html += `</div>`;
-                        area.innerHTML = html;
-                        setCached(q, html, 'images');
-                    }).catch(() => { let html = `<div class="img-grid">`; for(let i=0;i<9;i++) html += `<div class="img-card"><img src="https://picsum.photos/seed/${q}${i}/400/300"></div>`; html += `</div>`; area.innerHTML = html; setCached(q, html, 'images'); });
+function fallbackUnsplash(q, area) {
+    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=9&client_id=${UNSPLASH_ACCESS_KEY}`;
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            let html = `<div class="img-grid">`;
+            if (data.results && data.results.length) {
+                data.results.forEach(img => {
+                    html += `<div class="img-card" onclick="window.open('${img.links.html}')"><img src="${img.urls.small}" alt="${img.alt_description || q}"><div class="img-title">${img.alt_description || q}</div></div>`;
                 });
-        }
+            } else {
+                for (let i = 0; i < 9; i++) {
+                    html += `<div class="img-card"><img src="https://picsum.photos/seed/${q}${i}/400/300"></div>`;
+                }
+            }
+            html += `</div>`;
+            area.innerHTML = html;
+            setCached(q, html, 'images');
+        })
+        .catch(() => {
+            let html = `<div class="img-grid">`;
+            for (let i = 0; i < 9; i++) {
+                html += `<div class="img-card"><img src="https://picsum.photos/seed/${q}${i}/400/300"></div>`;
+            }
+            html += `</div>`;
+            area.innerHTML = html;
+            setCached(q, html, 'images');
+        });
+}
 
         function renderVideos(q) {
             const area = document.getElementById('content-area');
@@ -2345,40 +2367,62 @@ function refreshPage() {
                 }).catch(() => { let vidHtml = `<div class="video-grid">`; const fallback = [{id:"AETFvQonfV8",title:"हनुमान चालीसा",channel:"भक्ति"},{id:"jdy0GgMbJY0",title:"शिव तांडव",channel:"दिव्य"}]; fallback.forEach(item => { vidHtml += `<div class="video-card" onclick="window.open('https://www.youtube.com/watch?v=${item.id}')"><div class="video-thumb"><img src="https://img.youtube.com/vi/${item.id}/hqdefault.jpg"></div><div class="video-title">${item.title}</div><div class="video-meta">${item.channel}</div></div>`; }); vidHtml += `</div>`; area.innerHTML = vidHtml; setCached(q, vidHtml, 'videos'); });
         }  
     function renderNews(q) {
-            const area = document.getElementById('content-area');
-            area.innerHTML = `<div style="text-align:center;padding:20px;">📰 न्यूज़ लोड हो रही है...</div>`;
-            fetch('https://news.google.com/rss/search?q=' + encodeURIComponent(q) + '&hl=en-IN&gl=IN&ceid=IN:en')
-                .then(r => r.text()).then(str => {
-                    const parser = new DOMParser(); const xml = parser.parseFromString(str, "text/xml");
-                    const items = xml.querySelectorAll("item"); let html = '';
-                    items.forEach((item, i) => { if(i < 6) { const title = item.querySelector("title").textContent; const link = item.querySelector("link").textContent; const date = item.querySelector("pubDate").textContent; html += `<div class="news-item" onclick="window.open('${link}')"><div class="news-icon" style="background:#4285F4;">📰</div><div><div class="news-title">${title}</div><div class="news-src">Google News · ${date.substring(0, 16)}</div></div></div>`; }});
-                    area.innerHTML = html || `<p>न्यूज़ उपलब्ध नहीं है।</p>`;
-                }).catch(() => { area.innerHTML = `<p>न्यूज़ उपलब्ध नहीं है।</p>`; });
-        }
+    const area = document.getElementById('content-area');
+    area.innerHTML = `<div style="text-align:center;padding:20px;">📰 न्यूज़ लोड हो रही है...</div>`;
+
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://news.google.com/rss/search?q=' + encodeURIComponent(q) + '&hl=en-IN&gl=IN&ceid=IN:en')}`;
+
+    fetch(proxyUrl)
+        .then(r => r.text())
+        .then(str => {
+            const parser = new DOMParser();
+            const xml = parser.parseFromString(str, "text/xml");
+            const items = xml.querySelectorAll("item");
+            let html = '';
+            // shuffle items for random order
+            const shuffled = Array.from(items).sort(() => Math.random() - 0.5);
+            shuffled.slice(0, 15).forEach((item, i) => {
+                const title = item.querySelector("title")?.textContent || 'No title';
+                const link = item.querySelector("link")?.textContent || '#';
+                const date = item.querySelector("pubDate")?.textContent || '';
+                html += `<div class="news-item" onclick="window.open('${link}')">
+                    <div class="news-icon" style="background:#4285F4;">📰</div>
+                    <div>
+                        <div class="news-title">${title}</div>
+                        <div class="news-src">Google News · ${date.substring(0, 16)}</div>
+                    </div>
+                </div>`;
+            });
+            area.innerHTML = html || `<p>न्यूज़ उपलब्ध नहीं है।</p>`;
+        })
+        .catch(() => {
+            area.innerHTML = `<p>न्यूज़ उपलब्ध नहीं है।</p>`;
+        });
+}
 
         function renderShopping() {
-    const shoppingSites = [
-        { name: "Amazon India", url: "https://www.amazon.in" },
-        { name: "Flipkart", url: "https://www.flipkart.com" },
-        { name: "Myntra", url: "https://www.myntra.com" },
-        { name: "Meesho", url: "https://www.meesho.com" },
-        { name: "Ajio", url: "https://www.ajio.com" },
-        { name: "Nykaa", url: "https://www.nykaa.com" },
-        { name: "JioMart", url: "https://www.jiomart.com" },
-        { name: "Blinkit", url: "https://www.blinkit.com" },
-        { name: "Croma", url: "https://www.croma.com" }
+    const sites = [
+        { name: "Amazon", domain: "amazon.in" },
+        { name: "Flipkart", domain: "flipkart.com" },
+        { name: "Myntra", domain: "myntra.com" },
+        { name: "Meesho", domain: "meesho.com" },
+        { name: "Ajio", domain: "ajio.com" },
+        { name: "Nykaa", domain: "nykaa.com" },
+        { name: "JioMart", domain: "jiomart.com" },
+        { name: "Blinkit", domain: "blinkit.com" },
+        { name: "Croma", domain: "croma.com" }
     ];
-    let html = `<div class="box-title">🛒 Shopping Sites</div>`;
-    html += `<div class="img-grid">`;
-    shoppingSites.forEach(site => {
-        html += `<div class="img-card" onclick="window.open('${site.url}')" style="font-size:14px; font-weight:bold; color:#1a73e8; text-align:center;">
-            <div>🛒 ${site.name}</div>
+    let html = `<div class="box-title">🛒 Shopping Sites</div><div class="img-grid">`;
+    sites.forEach(site => {
+        const logoUrl = `https://www.google.com/s2/favicons?domain=${site.domain}&sz=64`;
+        html += `<div class="img-card" onclick="window.open('https://www.${site.domain}')" style="flex-direction:column; gap:5px; padding:10px; height:auto; background:#f8f9fa;">
+            <img src="${logoUrl}" alt="${site.name}" style="width:48px; height:48px; border-radius:8px; object-fit:contain;">
+            <span style="font-size:13px; font-weight:bold; color:#1a73e8;">${site.name}</span>
         </div>`;
     });
     html += `</div>`;
     return html;
 }
-
 function renderMore(q) {
     const flightSites = [{ name: "Air India", url: "https://www.airindia.com", icon: "✈️" }, { name: "IndiGo", url: "https://www.goindigo.in", icon: "✈️" }, { name: "SpiceJet", url: "https://www.spicejet.com", icon: "✈️" }];
     let html = `<div class="box-title">✈️ उड़ान वेबसाइटें</div>`;
