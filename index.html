@@ -1521,7 +1521,7 @@
             "ms dhoni": { title: "M.S. Dhoni", image: "https://picsum.photos/seed/dhoni/200/200", desc: "भारत के पूर्व कप्तान, विकेटकीपर", detail: "जन्म: 7 जुलाई 1981 · 2011 विश्व कप जीत · पद्मश्री, पद्मभूषण।" }
         };
 
-        function getKnowledgeAnswer(query) {
+                function getKnowledgeAnswer(query) {
             const q = query.trim().toLowerCase();
             if (knowledgeBase[q]) return knowledgeBase[q];
             for (const [key, value] of Object.entries(knowledgeBase)) {
@@ -1530,6 +1530,10 @@
             return null;
         }
 
+        function getAIAnswer(query) {
+            // Simple fallback – you can integrate a real AI API later
+            return null;
+        }
         async function fetchWikipediaSummary(query) {
             try {
                 const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
@@ -1861,7 +1865,9 @@ function refreshPage() {
             if (searchHistory.length > 100) searchHistory = searchHistory.slice(0, 100);
             saveHistory();
         }
-        function getHistory() { return searchHistory; }
+        function showRecentSearches() {
+    showHistoryDrawer();
+}
 
         let darkMode = localStorage.getItem('dhundho_dark') === 'true';
         function applyDarkMode() {
@@ -2141,20 +2147,9 @@ function refreshPage() {
         // ================================================================
         //  15. RENDER FUNCTIONS (All, Images, Videos, News, More)
         // ================================================================
-                async function fetchGoogleResults(query) {
+                       async function fetchGoogleResults(query) {
             const cached = getCached(query, 'google');
-            if (cached) return cached; // 30 दिन का कैश
-
-            // Google API को CORS Proxy के जरिए कॉल करें (यही असली जादू है)
-            const targetUrl = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${GOOGLE_CX}&q=${encodeURIComponent(query)}`;
-            const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-
-            try {
-                const res = await fetch(url);
-                const data = await res.json();
-        async function fetchGoogleResults(query) {
-            const cached = getCached(query, 'google');
-            if (cached) return cached; // 30 दिन का कैश
+            if (cached) return cached;
 
             const targetUrl = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${GOOGLE_CX}&q=${encodeURIComponent(query)}`;
             const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
@@ -2162,7 +2157,6 @@ function refreshPage() {
             try {
                 const res = await fetch(url);
                 const data = await res.json();
-
                 if (data.items && data.items.length > 0) {
                     let html = data.items.map(item => `
                         <div class="result-block" onclick="window.open('${item.link}', '_blank');" style="cursor:pointer;">
@@ -2171,13 +2165,12 @@ function refreshPage() {
                             <div class="snippet">${item.snippet}</div>
                         </div>
                     `).join('');
-                    
-                    setCached(query, html, 'google'); 
+                    setCached(query, html, 'google');
                     return html;
                 }
-            } catch (e) { 
+            } catch (e) {
                 console.warn('Google Search API Failed:', e);
-                return ''; 
+                return '';
             }
             return '';
         }
