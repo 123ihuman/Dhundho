@@ -230,6 +230,7 @@
         <div class="top-left">
             <span onclick="goHome()" style="cursor:pointer;" title="Home">🏠</span>
             <span onclick="goBack()" style="cursor:pointer;" title="Back">⬅</span>
+            <span onclick="refreshPage()" style="cursor:pointer;" title="Refresh">🔄</span>
             <div class="address-pill">🌐 www.dhundho.com/search?</div>
         </div>
         <div class="top-right">
@@ -313,7 +314,7 @@
             <div class="tab active" onclick="showTab('all')">All</div>
             <div class="tab" onclick="showTab('images')">Images</div>
             <div class="tab" onclick="showTab('videos')">Videos</div>
-            <div class="tab" onclick="toggleShopping()">Shopping</div>
+            <div class="tab" onclick="showTab('shopping')">Shopping</div>
             <div class="tab" onclick="showTab('news')">News</div>
             <div class="tab" onclick="window.open('https://www.google.com/maps/search/'+encodeURIComponent(document.getElementById('resultInput').value), '_blank')">Maps</div>
             <div class="tab" onclick="showTab('more')">More</div>
@@ -1544,96 +1545,91 @@
             }
         }
         // ================================================================
-        //  6. SEARCH FUNCTIONS (Core Logic)
+       let siteCache = {};
+let relatedCache = {};
+    function levenshteinDistance(a, b) {
+    const matrix = [];
+    for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+    for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+    for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+            if (b.charAt(i - 1) === a.charAt(j - 1)) matrix[i][j] = matrix[i - 1][j - 1];
+            else matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+        }
+    }
+    return matrix[b.length][a.length];
+}
+    //  6. SEARCH FUNCTIONS (Core Logic)
         // ================================================================
                 // Levenshtein Distance Function (for typo matching)
-       
-        // Improved getSite for Partial and Typo Search
         
-       
+function clearSearchCache() {
+    siteCache = {};
+    relatedCache = {};
+}
 
-        // Improved getSite for Partial and Typo Search
-               // Levenshtein Distance Function (for typo matching)
-        function levenshteinDistance(a, b) {
-            const matrix = [];
-            for (let i = 0; i <= b.length; i++) matrix[i] = [i];
-            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
-            for (let i = 1; i <= b.length; i++) {
-                for (let j = 1; j <= a.length; j++) {
-                    if (b.charAt(i - 1) === a.charAt(j - 1)) matrix[i][j] = matrix[i - 1][j - 1];
-                    else matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
-                }
+function getSite(query) {
+    const q = query.toLowerCase().trim();
+    if (siteCache[q]) return siteCache[q];
+    if (BASE_DATA[q]) return BASE_DATA[q];
+
+    let bestUrl = null;
+    let bestScore = 0;
+
+    for (const [key, url] of Object.entries(BASE_DATA)) {
+        let score = 0;
+        if (key === q) score = 100;
+        else if (key.startsWith(q) || q.startsWith(key)) score = 30;
+        else if (key.includes(q) || q.includes(key)) score = 15;
+        else {
+            if (Math.abs(key.length - q.length) <= 2 && q.length > 1) {
+                const distance = levenshteinDistance(key, q);
+                if (distance <= 2) score = 10 - distance;
             }
-            return matrix[b.length][a.length];
         }
-
-        // Improved getSite for Partial and Typo Search
-        function getSite(query) {
-            const q = query.toLowerCase().trim();
-            if (BASE_DATA[q]) return BASE_DATA[q];
-
-            let bestUrl = null;
-            let bestScore = 0;
-
-            for (const [key, url] of Object.entries(BASE_DATA)) {
-                let score = 0;
-                if (key === q) score = 100;
-                else if (key.startsWith(q) || q.startsWith(key)) score = 20;
-                else if (key.includes(q) || q.includes(key)) score = 10;
-                else {
-                    const distance = levenshteinDistance(key, q);
-                    if (distance <= 2) score = 5 - distance; 
-                }
-                
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestUrl = url;
-                }
-            }
-            return bestScore > 0 ? bestUrl : null;
+        if (score > bestScore) {
+            bestScore = score;
+            bestUrl = url;
         }
-        
-        // Improved getRelated to Sort by Best Match
-        function getRelated(query) {
-            const q = query.toLowerCase().trim();
-            const scored = [];
+    }
+    siteCache[q] = (bestScore > 0 ? bestUrl : null);
+    return siteCache[q];
+}
 
-            for (const key of Object.keys(BASE_DATA)) {
-                let score = 0;
-                if (key === q) score = 100;
-                else if (key.startsWith(q) || q.startsWith(key)) score = 20;
-                else if (key.includes(q) || q.includes(key)) score = 10;
-                else {
-                    const distance = levenshteinDistance(key, q);
-                    if (distance <= 2) score = 5 - distance;
-                }
-                if (score > 0) scored.push({ key, score });
+function getRelated(query) {
+    const q = query.toLowerCase().trim();
+    if (relatedCache[q]) return relatedCache[q];
+
+    const scored = [];
+
+    for (const key of Object.keys(BASE_DATA)) {
+        let score = 0;
+        if (key === q) score = 100;
+        else if (key.startsWith(q) || q.startsWith(key)) score = 30;
+        else if (key.includes(q) || q.includes(key)) score = 15;
+        else {
+            if (Math.abs(key.length - q.length) <= 2 && q.length > 1) {
+                const distance = levenshteinDistance(key, q);
+                if (distance <= 2) score = 10 - distance;
             }
-
-            scored.sort((a, b) => b.score - a.score);
-            const results = scored.slice(0, 10).map(x => x.key);
-
-            if (results.length === 0) {
-                const popular = ['sarkari result', 'cricket', 'bollywood', 'upsc', 'aadhaar', 'pan card', 'youtube', 'amazon'];
-                for (const p of popular) {
-                    if (p.includes(q) || q.includes(p)) results.push(p);
-                    if (results.length >= 8) break;
-                }
-            }
-            return results.slice(0, 10);
         }
-        function getAIAnswer(query) {
-            const q = query.trim().toLowerCase();
-            if (/^[\d+\-*/%(). ]+$/.test(q)) {
-                try { const result = eval(q); return { answer: result, desc: 'गणना का परिणाम' }; } catch(e) { return null; }
-            }
-            if (q.includes('capital of india')) return { answer: 'New Delhi', desc: 'भारत की राजधानी' };
-            if (q.includes('prime minister of india')) return { answer: 'Narendra Modi', desc: 'भारत के प्रधानमंत्री' };
-            if (q.includes('president of india')) return { answer: 'Droupadi Murmu', desc: 'भारत की राष्ट्रपति' };
-            return null;
-        }
+        if (score > 0) scored.push({ key, score });
+    }
 
-        function getCreativeTitle(siteName, query) {
+    scored.sort((a, b) => b.score - a.score);
+    const results = scored.slice(0, 10).map(x => x.key);
+
+    if (results.length === 0) {
+        const popular = ['sarkari result', 'cricket', 'bollywood', 'upsc', 'aadhaar', 'pan card', 'youtube', 'amazon'];
+        for (const p of popular) {
+            if (p.includes(q) || q.includes(p)) results.push(p);
+            if (results.length >= 8) break;
+        }
+    }
+    relatedCache[q] = results.slice(0, 10);
+    return relatedCache[q];
+}
+    function getCreativeTitle(siteName, query) {
             const q = query.trim();
             const templates = {
                 'Facebook': [`${q} से जुड़ी चर्चा Facebook पर`, `Facebook पर ${q} का ट्रेंड`, `${q} के बारे में लोग क्या कह रहे हैं Facebook पर`, `${q} की ताज़ा पोस्ट Facebook पर`, `Facebook पर ${q} समुदाय`],
@@ -1786,25 +1782,27 @@
                 btn.onclick = () => switchTab(index);
                 container.appendChild(btn);
             });
-            container.appendChild(addBtn);
-        }
+                        container.appendChild(addBtn);
+        }  // <--- यह ब्रेसेस जोड़ें
 
         function addNewTab(dark = false) {
-            const newId = tabs.length ? Math.max(...tabs.map(t => t.id)) + 1 : 0;
-            tabs.push({ id: newId, query: '', dark: dark });
-            activeTab = tabs.length - 1;
-            renderTabs();
-            goHome();
-            if (dark) {
-                document.body.classList.add('dark-mode');
-                localStorage.setItem('dhundho_dark', 'true');
-            } else {
-                document.body.classList.remove('dark-mode');
-                localStorage.setItem('dhundho_dark', 'false');
-            }
-        }
+    const newId = tabs.length ? Math.max(...tabs.map(t => t.id)) + 1 : 0;
+    tabs.push({ id: newId, query: '', dark: dark });
+    activeTab = tabs.length - 1;
+    renderTabs();
+    goHome();
+    if (dark) { document.body.classList.add('dark-mode'); } 
+    else { document.body.classList.remove('dark-mode'); }
+}
 
-        function switchTab(index) {
+function refreshPage() {
+    clearSearchCache();
+    const currentQuery = document.getElementById('resultInput').value;
+    if (currentQuery) { performSearch(currentQuery); } 
+    else { location.reload(); }
+}
+
+            function switchTab(index) {
             if (index >= 0 && index < tabs.length) {
                 activeTab = index;
                 renderTabs();
@@ -1873,7 +1871,7 @@
         }
         applyDarkMode();
 
-        function goHome() {
+   function goHome() {
             document.getElementById('home-view').style.display = 'flex';
             document.getElementById('results-view').style.display = 'none';
             document.getElementById('homeInput').value = '';
@@ -2295,16 +2293,35 @@
                 }).catch(() => { area.innerHTML = `<p>न्यूज़ उपलब्ध नहीं है।</p>`; });
         }
 
-        function renderMore(q) {
-            const flightSites = [{ name: "Air India", url: "https://www.airindia.com", icon: "✈️" }, { name: "IndiGo", url: "https://www.goindigo.in", icon: "✈️" }, { name: "SpiceJet", url: "https://www.spicejet.com", icon: "✈️" }, { name: "Vistara", url: "https://www.airvistara.com", icon: "✈️" }];
-            let html = `<div class="box-title">✈️ उड़ान वेबसाइटें</div>`;
-            flightSites.forEach(site => html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">✈</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${site.name}</a><div class="snippet">${site.name} – उड़ान बुक करें, ऑनलाइन चेक-इन करें।</div></div>`);
-            const extra = [{ name: "IRCTC", url: "https://www.irctc.co.in", icon: "🚆" }, { name: "MakeMyTrip", url: "https://www.makemytrip.com", icon: "🏨" }, { name: "ClearTrip", url: "https://www.cleartrip.com", icon: "🏨" }];
-            html += `<div class="box-title">🌐 अन्य सेवाएँ</div>`;
-            extra.forEach(site => html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#0D47A1;color:#fff;">${site.icon}</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${site.name}</a><div class="snippet">${site.name} – यात्रा, टिकट, होटल।</div></div>`);
-            return html;
-        }
+        function renderShopping() {
+    const shoppingSites = [
+        { name: "Amazon India", url: "https://www.amazon.in" },
+        { name: "Flipkart", url: "https://www.flipkart.com" },
+        { name: "Myntra", url: "https://www.myntra.com" },
+        { name: "Meesho", url: "https://www.meesho.com" },
+        { name: "Ajio", url: "https://www.ajio.com" },
+        { name: "Nykaa", url: "https://www.nykaa.com" },
+        { name: "JioMart", url: "https://www.jiomart.com" },
+        { name: "Blinkit", url: "https://www.blinkit.com" },
+        { name: "Croma", url: "https://www.croma.com" }
+    ];
+    let html = `<div class="box-title">🛒 Shopping Sites</div>`;
+    html += `<div class="img-grid">`;
+    shoppingSites.forEach(site => {
+        html += `<div class="img-card" onclick="window.open('${site.url}')" style="font-size:14px; font-weight:bold; color:#1a73e8; text-align:center;">
+            <div>🛒 ${site.name}</div>
+        </div>`;
+    });
+    html += `</div>`;
+    return html;
+}
 
+function renderMore(q) {
+    const flightSites = [{ name: "Air India", url: "https://www.airindia.com", icon: "✈️" }, { name: "IndiGo", url: "https://www.goindigo.in", icon: "✈️" }, { name: "SpiceJet", url: "https://www.spicejet.com", icon: "✈️" }];
+    let html = `<div class="box-title">✈️ उड़ान वेबसाइटें</div>`;
+    flightSites.forEach(site => html += `<div class="result-block"><div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">✈</div>${new URL(site.url).hostname}</div><a href="${site.url}" target="_blank" class="title">${site.name}</a><div class="snippet">${site.name} – उड़ान बुक करें।</div></div>`);
+    return html;
+}
         // ================================================================
         //  16. TAB SWITCHING (All, Images, Videos, News, More)
         // ================================================================
@@ -2315,11 +2332,14 @@
             else if (tab === 'images') renderImages(q);
             else if (tab === 'videos') renderVideos(q);
             else if (tab === 'news') renderNews(q);
+            else if (tab === 'shopping') area.innerHTML = renderShopping();
+           
+
             else if (tab === 'more') area.innerHTML = renderMore(q);
 
             document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
             const tabs = document.querySelectorAll('.tabs .tab');
-            const tabMap = { 'all':0, 'images':1, 'videos':2, 'news':4, 'more':6 };
+            const tabMap = { 'all':0, 'images':1, 'videos':2, 'shopping':3, 'news':4, 'more':6 };
             const idx = tabMap[tab];
             if (idx !== undefined && tabs[idx]) tabs[idx].classList.add('active');
         }
