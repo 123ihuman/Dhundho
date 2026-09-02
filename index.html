@@ -2152,9 +2152,18 @@ function refreshPage() {
             try {
                 const res = await fetch(url);
                 const data = await res.json();
+        async function fetchGoogleResults(query) {
+            const cached = getCached(query, 'google');
+            if (cached) return cached; // 30 दिन का कैश
+
+            const targetUrl = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${GOOGLE_CX}&q=${encodeURIComponent(query)}`;
+            const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
 
                 if (data.items && data.items.length > 0) {
-                                    if (data.items && data.items.length > 0) {
                     let html = data.items.map(item => `
                         <div class="result-block" onclick="window.open('${item.link}', '_blank');" style="cursor:pointer;">
                             <div class="url"><div class="favicon" style="background:#1a73e8;color:#fff;">🔗</div>${new URL(item.link).hostname}</div>
@@ -2166,6 +2175,14 @@ function refreshPage() {
                     setCached(query, html, 'google'); 
                     return html;
                 }
+            } catch (e) { 
+                console.warn('Google Search API Failed:', e);
+                return ''; 
+            }
+            return '';
+        }
+        
+    
         async function renderAllResults(query) {
             const q = query.trim();
             let html = '';
